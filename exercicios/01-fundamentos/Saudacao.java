@@ -1,3 +1,4 @@
+// Saudacao.java — 8 setembro 2026, 17:37
 import java.util.Scanner;
 
 public class Saudacao{
