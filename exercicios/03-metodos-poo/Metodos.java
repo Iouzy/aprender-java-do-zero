@@ -1,3 +1,4 @@
+// Metodos.java — 9 setembro 2026, 23:30
 	public class Metodos{
 	public static void main(String[] args){
 		tabuada(9);
