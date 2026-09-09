@@ -1,3 +1,4 @@
+// Tabuada.java — 9 setembro 2026, 20:14
 import java.util.Scanner;
 
 public class Tabuada{
