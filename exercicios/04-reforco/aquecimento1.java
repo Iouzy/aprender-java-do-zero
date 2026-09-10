@@ -1,3 +1,4 @@
+// aquecimento1.java — 10 setembro 2026, 18:12
 import java.util.Scanner;
 
 public class aquecimento1{
