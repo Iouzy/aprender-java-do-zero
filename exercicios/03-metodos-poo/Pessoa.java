@@ -1,3 +1,4 @@
+// Pessoa.java — 10 setembro 2026, 02:42
 public class Pessoa{
 	private String nome;
 	private String genero;
