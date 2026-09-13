@@ -1,3 +1,4 @@
+// somaIntervalo.java — 13 setembro 2026, 22:41
 import java.util.Scanner;
 
 public class somaIntervalo{
