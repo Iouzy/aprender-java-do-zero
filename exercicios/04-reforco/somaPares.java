@@ -1,3 +1,4 @@
+// somaPares.java — 13 setembro 2026, 21:35
 import java.util.Scanner;
 
 public class somaPares	{
