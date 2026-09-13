@@ -1,3 +1,4 @@
+// exContagem.java — 13 setembro 2026, 21:09
 import java.util.Scanner;
 
 public class exContagem{
