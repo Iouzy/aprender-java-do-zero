@@ -154,6 +154,8 @@ body[data-mode=bibi] .menu{display:none}
 .unlock input{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--line2);border-radius:999px;padding:9px 14px;font-size:14px}
 .unlock button,.nb-forget{font-size:13px;font-weight:600;border-radius:999px;padding:9px 14px;background:var(--accent);color:var(--accent-ink)}
 .nb-forget{background:none;color:var(--dim);padding:6px 0;font-weight:500;text-decoration:underline}
+.unlock-remember{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.unlock-remember input{accent-color:var(--accent)}
 .unlock-msg{font-size:13px;color:var(--muted);margin-top:8px;min-height:1.4em}
 
 /* exercícios */
@@ -513,6 +515,8 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
 .lock-card .lock-sub{color:var(--parch-soft);margin:12px auto 22px;max-width:40ch}
 .lock-card input[type=password],.lock-card input[type=text]{width:100%;padding:12px 16px;border-radius:999px;border:1px solid rgba(51,36,26,.35);background:rgba(255,250,238,.7);font:italic 21px var(--display);color:var(--parch-ink);text-align:center}
 .lock-card input:focus-visible{outline:2px solid var(--burgundy);outline-offset:2px}
+.lock-opts{display:flex;gap:6px 18px;justify-content:center;flex-wrap:wrap;margin:12px 0 18px}
+.lock-opts .lock-show{margin:0}
 .lock-show{display:inline-flex;gap:8px;align-items:center;margin:12px 0 18px;font-style:italic;color:var(--parch-soft);font-size:16px;cursor:pointer}
 .lock-show input{accent-color:var(--burgundy);width:16px;height:16px}
 .lock-err{min-height:1.6em;margin-top:14px;font-style:italic;color:var(--burgundy)}
@@ -755,7 +759,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
       </div>
       <div class="card" id="bibiNotesCard">
         <h2>Recadinhos da Bibi</h2>
-        <p class="desc" id="bibiNotesDesc">Encriptados com a vossa frase secreta. Sem ela, aparecem como letras baralhadas.</p>
+        <p class="desc" id="bibiNotesDesc">Só aparecem com a tua conta iniciada.</p>
         <div class="notes-bibi" id="bibiNotesMini"></div>
       </div>
     </div>
@@ -832,13 +836,16 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
   <form class="parchment lock-card" id="lockForm">
     <p class="script">só para a Bibi</p>
     <h1 id="lockTitle">Este cantinho está fechado com lacre</h1>
-    <p class="lock-sub">Escreve a vossa frase secreta. Fica guardada neste navegador, para não teres de a escrever outra vez.</p>
-    <label class="sr" for="lockPhrase">Frase secreta</label>
-    <input id="lockPhrase" type="password" name="frase" autocomplete="off" spellcheck="false" placeholder="a vossa frase…">
-    <label class="lock-show"><input type="checkbox" id="lockShow"> mostrar a frase</label>
-    <div><button class="btn-wax" type="submit" id="lockBtn">Abrir</button></div>
+    <p class="lock-sub">Entra com o teu nome e a tua password. A sessão fica guardada neste aparelho.</p>
+    <label class="sr" for="lockUser">Nome de utilizador</label>
+    <input id="lockUser" type="text" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="nome…">
+    <label class="sr" for="lockPhrase">Password</label>
+    <input id="lockPhrase" type="password" name="password" autocomplete="current-password" placeholder="password…" style="margin-top:10px">
+    <div class="lock-opts"><label class="lock-show"><input type="checkbox" id="lockRemember" checked> lembrar-me neste aparelho</label>
+    <label class="lock-show"><input type="checkbox" id="lockShow"> mostrar a password</label></div>
+    <div><button class="btn-wax" type="submit" id="lockBtn">Entrar</button></div>
     <p class="lock-err" id="lockErr" role="alert"></p>
-    <p class="lock-foot">A frase nunca sai deste aparelho. Sem ela, as cartas são só letras baralhadas.</p>
+    <p class="lock-foot">Só existem duas contas: a tua e a dele.</p>
   </form>
 </section>
 
@@ -1072,7 +1079,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
     <div class="wrap letters">
       <form class="parchment letter-form" id="noteForm">
         <label for="noteText">Querido…</label>
-        <p class="sub">As cartas vão fechadas com a vossa frase secreta. Ele lê-as em qualquer aparelho onde tenha escrito a mesma frase.</p>
+        <p class="sub">Só vocês os dois conseguem ler as cartas, em qualquer aparelho onde tenham entrado.</p>
         <textarea id="noteText" name="recado" maxlength="240" autocomplete="off" placeholder="estou orgulhosa de ti…"></textarea>
         <div class="seals" role="group" aria-label="Escolhe o lacre">
           <button type="button" class="seal-btn" data-stk="swan" aria-pressed="true" aria-label="Lacre com cisne"><svg aria-hidden="true"><use href="#s-swan"/></svg></button>
@@ -1093,7 +1100,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
   <footer class="b-foot">
     <p class="script">com carinho</p>
     <p>feito com cerejas, cisnes e muitas linhas de código</p>
-    <button type="button" class="forget" id="forgetPhrase">Esquecer a frase neste aparelho</button>
+    <button type="button" class="forget" id="forgetPhrase">Sair desta conta</button>
     <small>Gravuras: Cisne-trombeteiro, Robert Havell segundo John James Audubon, 1837 (National Gallery of Art, CC0) · Prunus cerasus, Köhler's Medizinal-Pflanzen, 1887 (domínio público). Cenas animadas geradas com IA a partir de pinturas criadas para esta página.</small>
   </footer>
 
@@ -1124,7 +1131,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
 const EXERCISES=[{"n": "Ola.java", "d": "Primeiro programa: classe, main e println.", "src": "cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"}, {"n": "Tipos.java", "d": "Tipos primitivos, divisão inteira, resto e cast.", "src": "cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="}, {"n": "Iva.java", "d": "Variáveis String/int e concatenação.", "src": "cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"}, {"n": "Saudacao.java", "d": "Scanner, hasNextInt, if/else if e validação.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="}, {"n": "Contagem.java", "d": "for crescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "ContagemR.java", "d": "for decrescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "Pares.java", "d": "Números pares alterando o passo do for.", "src": "cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="}, {"n": "Pares2.java", "d": "Números pares usando % e if.", "src": "cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"}, {"n": "Tabuada.java", "d": "Scanner + for + cálculo da tabuada.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="}, {"n": "Metodos.java", "d": "Métodos, parâmetros, return, void e boolean.", "src": "CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"}, {"n": "Pessoa.java", "d": "Classe, private, construtor, this, setter e métodos.", "src": "cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="}, {"n": "Programa.java", "d": "Criação e utilização de objetos Pessoa.", "src": "cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}, {"n": "aquecimento1.java", "d": "Validação de input com while: insistir até a idade fazer sentido.", "src": "Ly8gYXF1ZWNpbWVudG8xLmphdmEg4oCUIDEwIHNldGVtYnJvIDIwMjYsIDE4OjEyCmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBhcXVlY2ltZW50bzF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkKCQlpbnQgaWRhZGU7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIGEgc3VhIGlkYWRlPyIpOwoJCWlkYWRlID0gc2MubmV4dEludCgpOwoJCQoJCXdoaWxlKGlkYWRlIDwgMCl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiQSBpZGFkZSBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLCByZWludHJvZHV6YSBhIGlkYWRlLiIpOyAKCQkJaWRhZGUgPSBzYy5uZXh0SW50KCk7CgkJfQoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGVucyAiICsgaWRhZGUgKyAiIGFub3MuIik7Cgl9Cn0K"}, {"n": "exContagem.java", "d": "Validar com while e contar só os pares até ao número.", "src": "Ly8gZXhDb250YWdlbS5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMTowOQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3MgZXhDb250YWdlbXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCVNjYW5uZXIgc2MgPSAgbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCgkJaW50IG51bWVybzsKCQlpbnQgY29udGFnZW0gPSAwOwoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG51bWVybyBwb3NpdGl2byBwYXJhIGNvbWXDp2FyIGEgY29udGFnZW0uIik7CgkJbnVtZXJvID0gc2MubmV4dEludCgpOwoKCQl3aGlsZShudW1lcm8gPCAxKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKCJJbnRyb2R1emEgdW0gbnVtZXJvIHBvc2l0aXZvLiIpOwoJCQludW1lcm8gPSBzYy5uZXh0SW50KCk7CgkJfQoKCQl3aGlsZShjb250YWdlbSA8IG51bWVybyl7CgkJCWNvbnRhZ2VtKys7CgkJCQoJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oY29udGFnZW0pOwoJCQl9CgkJCQoJCX0KCX0KfQo="}, {"n": "somaPares.java", "d": "Acumulador: somar os pares até um número.", "src": "Ly8gc29tYVBhcmVzLmphdmEg4oCUIDEzIHNldGVtYnJvIDIwMjYsIDIxOjM1CmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBzb21hUGFyZXMJewoJCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkJCgkJCWludCBudW1lcm8gPSAwOwoJCQlpbnQgY29udGFnZW0gPSAxOwoJCQlpbnQgc29tYVBhcmVzID0gMDsKCQkJCgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG7Dum1lcm86Iik7CgkJCW51bWVybyA9IHNjLm5leHRJbnQoKTsKCgkJCXdoaWxlKG51bWVybyA8PSAwKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBuw7ptZXJvIG7Do28gcG9kZSBzZXIgbmVnYXRpdm8sIGludHJvZHV6YSB1bSBuw7ptZXJvIHBvc2l0aXZvLiIpOwoJCQkJbnVtZXJvID0gc2MubmV4dEludCgpOwoJCQl9CgkJCQoJCQkKCQkJd2hpbGUoY29udGFnZW0gPCBudW1lcm8pewoJCQkJY29udGFnZW0rKzsgCgkJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQkJc29tYVBhcmVzID0gY29udGFnZW0gKyBzb21hUGFyZXM7CgkJCQl9CgkJCQkKCQkJfQoJCQkKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgYXTDqSAiICsgbnVtZXJvICsgIiDDqSBkZSAiICsgc29tYVBhcmVzICsgIi4iKTsKCX0KfQoK"}, {"n": "somaIntervalo.java", "d": "Acumulador num intervalo, com validação do início e do fim.", "src": "Ly8gc29tYUludGVydmFsby5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMjo0MQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3Mgc29tYUludGVydmFsb3sKCQlwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgoJCQlpbnQgaW50ZXJ2YWxvSW5pY2lvID0gMDsKCQkJaW50IGludGVydmFsb0ZpbmFsID0gMDsKCQkJaW50IGNvbnRhZ2VtID0gMDsKCQkJaW50IHNvbWFQYXJlcyA9IDA7CgkJCQoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIGludGVydmFsbyBkZSBudW1lcm9zIGRvIHF1YWwgcXVlciBhIHNvbWE6ICIpOwoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIG51bWVybyBkbyBpbmljaW86ICIpOwoJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIG8gbnVtZXJvIGRvIGZpbmFsOiAiKTsKCQkJaW50ZXJ2YWxvRmluYWwgPSBzYy5uZXh0SW50KCk7CgkJCgkJCXdoaWxlKGludGVydmFsb0luaWNpbyA+IGludGVydmFsb0ZpbmFsKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBudW1lcm8gaW5pY2lhbCBuw6NvIHBvZGUgc2VyIHN1cGVyaW9yIGFvIG51bWVybyBmaW5hbC4iKTsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiUmVpbnRyb2R1emEgbyBudW1lcm8gaW5pY2lhbDogIik7CgkJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCX0KCQkJCgkJCWNvbnRhZ2VtID0gaW50ZXJ2YWxvSW5pY2lvOwoJCQkKCQkJd2hpbGUoY29udGFnZW0gPD0gaW50ZXJ2YWxvRmluYWwpewoJCQkJaWYoY29udGFnZW0gJSAyID09IDApewoJCQkJCXNvbWFQYXJlcyA9IGNvbnRhZ2VtICsgc29tYVBhcmVzOwoJCQkJfQoJCQkJY29udGFnZW0rKzsKCQkJfQoKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgbm8gaW50ZXJ2YWxvIGRlIG51bWVyb3MgZGUgIiArIGludGVydmFsb0luaWNpbyArICIgYSAiICsgaW50ZXJ2YWxvRmluYWwgKyAiIMOpIGRlOiAiICsgc29tYVBhcmVzKTsKCQl9CgoJCn0K"}];
 
 /* Histórico do Git. Não editar à mão: corre  python3 bibi-atualizar.py */
-const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "61d0ec5", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql"]}]/*@COMMITS:END*/;
+const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "14c60ad", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}]/*@COMMITS:END*/;
 
 /* ---------- guiões de execução ----------
    Cada guião é um gerador: devolve um passo de cada vez.
@@ -1407,78 +1414,71 @@ const BIBI_KEY = "java-bibi-v1";
 const bibiStore = store(BIBI_KEY);
 let bibiInited = false;
 
-/* ---------- recadinhos encriptados (Supabase) ----------
-   A frase secreta nunca sai do navegador: gera uma chave AES-GCM com PBKDF2.
-   O Supabase só guarda texto encriptado; a chave publicável serve para isso. */
+/* ---------- contas e cartas (Supabase) ----------
+   Login com nome de utilizador: "bibi" entra como bibi@bancada.local.
+   A sessão fica guardada neste navegador e renova-se sozinha. */
 const SUPA = {url:"https://kuahxuhkiiknvydiwfzu.supabase.co", key:"sb_publishable_oiTLyIpAxZH7oDwGI1NRMw_FsrbGV0l"};
-const Recados = (() => {
-  const KEY_STORE = "java-bibi-chave";
-  const enc = new TextEncoder(), dec = new TextDecoder();
-  const b64 = buf => { let s = ""; new Uint8Array(buf).forEach(c => s += String.fromCharCode(c)); return btoa(s); };
-  const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
-  const headers = {apikey:SUPA.key, "Content-Type":"application/json"};
-  let key = null;
-
-  // minúsculas e espaços normalizados: "Cisne  Cereja" e "cisne cereja" dão a mesma chave
-  const normalize = p => p.normalize("NFKC").trim().toLowerCase().replace(/\s+/g, " ");
-  async function derive(phrase){
-    const base = await crypto.subtle.importKey("raw", enc.encode(normalize(phrase)), "PBKDF2", false, ["deriveBits"]);
-    return new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt:enc.encode("bibi-recados:kuahxuhkiiknvydiwfzu:v1"), iterations:600000}, base, 256));
-  }
-  const importRaw = raw => crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
-  async function tryDecrypt(k, s){
+const USER_DOMAIN = "bancada.local";
+try{ localStorage.removeItem("java-bibi-chave"); }catch(e){}
+const Conta = (() => {
+  const KEY = "java-sessao";
+  const base = {apikey:SUPA.key, "Content-Type":"application/json"};
+  // "lembrar-me" guarda a sessão para sempre (localStorage); sem isso, dura até fechar o navegador
+  let s = null, remember = true;
+  try{ s = JSON.parse(localStorage.getItem(KEY)); if(!s){ s = JSON.parse(sessionStorage.getItem(KEY)); remember = !s; } }catch(e){ s = null; }
+  const keep = v => {
+    s = v;
     try{
-      const [v, iv, ct] = s.split(".");
-      if(v !== "v1") return null;
-      const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:unb64(iv)}, k, unb64(ct));
-      const m = JSON.parse(dec.decode(pt));
-      return m && typeof m === "object" ? m : null;
-    }catch(e){ return null; }
-  }
-  async function encrypt(obj){
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-    const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, key, enc.encode(JSON.stringify(obj)));
-    return "v1." + b64(iv) + "." + b64(ct);
-  }
-  async function list(){
-    const r = await fetch(SUPA.url + "/rest/v1/recados?select=id,criado,dados&order=id.asc&limit=1000", {headers});
+      localStorage.removeItem(KEY); sessionStorage.removeItem(KEY);
+      if(v) (remember ? localStorage : sessionStorage).setItem(KEY, JSON.stringify(v));
+    }catch(e){}
+  };
+  const fromToken = j => ({access:j.access_token, refresh:j.refresh_token, exp:Date.now() + (j.expires_in || 3600) * 1000,
+    id:j.user && j.user.id, nome:((j.user && j.user.email) || "").split("@")[0]});
+  const authError = msg => Object.assign(new Error(msg), {auth:true});
+
+  async function login(user, pass, keepMe = true){
+    remember = keepMe;
+    const email = user.trim().toLowerCase().replace(/\s+/g, "") + "@" + USER_DOMAIN;
+    const r = await fetch(SUPA.url + "/auth/v1/token?grant_type=password", {method:"POST", headers:base, body:JSON.stringify({email, password:pass})});
+    if(r.status === 400 || r.status === 401 || r.status === 422) return false;
     if(!r.ok) throw new Error("HTTP " + r.status);
-    return r.json();
+    keep(fromToken(await r.json()));
+    return true;
   }
-  async function send(obj){
-    if(!key) throw new Error("sem chave");
-    const r = await fetch(SUPA.url + "/rest/v1/recados", {method:"POST", headers:{...headers, Prefer:"return=minimal"}, body:JSON.stringify({dados:await encrypt(obj)})});
-    if(!r.ok) throw new Error("HTTP " + r.status);
+  let refreshing = null;
+  async function token(){
+    if(!s) return null;
+    if(Date.now() < s.exp - 60000) return s.access;
+    if(!refreshing) refreshing = (async () => {
+      const r = await fetch(SUPA.url + "/auth/v1/token?grant_type=refresh_token", {method:"POST", headers:base, body:JSON.stringify({refresh_token:s.refresh})});
+      if(r.status === 400 || r.status === 401){ keep(null); return null; }
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      keep(fromToken(await r.json()));
+      return s.access;
+    })().finally(() => { refreshing = null; });
+    return refreshing;
   }
-  async function load(){
-    if(key) return key;
-    try{ const raw = localStorage.getItem(KEY_STORE); if(raw) key = await importRaw(unb64(raw)); }catch(e){ key = null; }
-    return key;
+  async function api(path, opts = {}){
+    const tk = await token();
+    if(!tk) throw authError("sem sessão");
+    const r = await fetch(SUPA.url + "/rest/v1/" + path, {...opts, headers:{...base, Authorization:"Bearer " + tk, ...(opts.headers || {})}});
+    if(r.status === 401){ keep(null); throw authError("sessão terminada"); }
+    if(!r.ok){ let m = ""; try{ m = (await r.json()).message || ""; }catch(e){} throw new Error(m || "HTTP " + r.status); }
+    const txt = await r.text();
+    return txt ? JSON.parse(txt) : null;
   }
-  // "ok" se a frase abre as cartas que já existem (ou se ainda não há nenhuma); "wrong" se não abre
-  async function unlock(phrase){
-    const rows = await list();
-    const raw = await derive(phrase), k = await importRaw(raw);
-    if(rows.length){
-      let ok = false;
-      for(const row of rows.slice(-60).reverse()){ if(await tryDecrypt(k, row.dados)){ ok = true; break; } }
-      if(!ok) return "wrong";
-    }
-    key = k;
-    try{ localStorage.setItem(KEY_STORE, b64(raw)); }catch(e){}
-    // a primeira frase deixa um marco na caixa, para as frases seguintes poderem ser confirmadas
-    if(!rows.length) await send({k:"chave", t:Date.now()});
-    return "ok";
+  async function logout(){
+    const tk = s && s.access;
+    keep(null);
+    if(tk) try{ await fetch(SUPA.url + "/auth/v1/logout", {method:"POST", headers:{...base, Authorization:"Bearer " + tk}}); }catch(e){}
   }
-  function forget(){ key = null; try{ localStorage.removeItem(KEY_STORE); }catch(e){} }
-  async function readAll(){
-    const rows = await list(), k = await load(), msgs = [];
-    if(k) for(const row of rows){ const m = await tryDecrypt(k, row.dados); if(m) msgs.push(Object.assign(m, {id:row.id, criado:row.criado})); }
-    return {rows, msgs, locked:!k};
-  }
-  return {load, unlock, forget, send, readAll, has:() => !!key};
+  return {login, logout, api, user:() => s && {id:s.id, nome:s.nome}, loggedIn:() => !!s};
 })();
-const phraseOk = p => { const s = p.trim(); return s.split(/\s+/).length >= 4 || s.length >= 24; };
+const Cartas = {
+  list:() => Conta.api("cartas?select=id,criado,autor,nome,tipo,texto,selo&order=id.desc&limit=500"),
+  send:body => Conta.api("cartas", {method:"POST", headers:{Prefer:"return=minimal"}, body:JSON.stringify(body)})
+};
 
 function setMode(mode, push){
   const bibi = mode === "bibi";
@@ -1494,7 +1494,7 @@ function setMode(mode, push){
   if(push !== false){
     try{ history.replaceState(null, "", bibi ? "#bibi" : location.pathname + location.search); }catch(e){}
   }
-  if(bibi) Recados.load().then(k => { if(document.body.dataset.mode === "bibi") k ? openBibi() : showLock(); });
+  if(bibi) Conta.loggedIn() ? openBibi() : showLock();
   if(!bibi){ renderBibiPeek(); window.dispatchEvent(new Event("bancada:show")); }
 }
 function openBibi(){
@@ -1506,25 +1506,25 @@ function openBibi(){
 function showLock(){
   $("#mBibi").hidden = true;
   $("#bibiLock").hidden = false;
-  setTimeout(() => $("#lockPhrase").focus(), 50);
+  setTimeout(() => $("#lockUser").focus(), 50);
 }
 $("#lockShow").addEventListener("change", e => { $("#lockPhrase").type = e.target.checked ? "text" : "password"; });
 $("#lockForm").addEventListener("submit", async e => {
   e.preventDefault();
-  const input = $("#lockPhrase"), err = $("#lockErr"), btn = $("#lockBtn");
+  const user = $("#lockUser"), pass = $("#lockPhrase"), err = $("#lockErr"), btn = $("#lockBtn");
   err.textContent = "";
-  if(!phraseOk(input.value)){ err.textContent = "A frase tem de ter pelo menos 4 palavras."; input.focus(); return; }
-  btn.disabled = true; btn.textContent = "A abrir…";
+  if(!user.value.trim()){ err.textContent = "Escreve o teu nome."; user.focus(); return; }
+  if(!pass.value){ err.textContent = "Falta a password."; pass.focus(); return; }
+  btn.disabled = true; btn.textContent = "A entrar…";
   try{
-    const res = await Recados.unlock(input.value);
-    if(res === "wrong"){ err.textContent = "Esta frase não abre as cartas. Confirma a frase com ele."; input.select(); }
-    else { input.value = ""; openBibi(); }
-  }catch(x){ err.textContent = "Não foi possível falar com a caixa do correio. Verifica a internet e tenta outra vez."; }
-  finally{ btn.disabled = false; btn.textContent = "Abrir"; }
+    if(await Conta.login(user.value, pass.value, $("#lockRemember").checked)){ pass.value = ""; openBibi(); }
+    else { err.textContent = "Nome ou password errados."; pass.select(); }
+  }catch(x){ err.textContent = "Não foi possível ligar ao servidor. Verifica a internet e tenta outra vez."; }
+  finally{ btn.disabled = false; btn.textContent = "Entrar"; }
 });
-$("#forgetPhrase").addEventListener("click", () => {
-  if(!confirm("Esquecer a frase neste aparelho? Para voltar a entrar vais ter de a escrever outra vez.")) return;
-  Recados.forget();
+$("#forgetPhrase").addEventListener("click", async () => {
+  if(!confirm("Sair desta conta neste aparelho?")) return;
+  await Conta.logout();
   location.reload();
 });
 document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => {
@@ -1854,35 +1854,40 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
 /* recadinhos da Bibi vistos do lado dele */
 async function renderBibiPeek(){
   const mini = $("#bibiNotesMini");
-  let r;
-  try{ r = await Recados.readAll(); }
-  catch(e){ $("#bibiCount").textContent = "—"; mini.innerHTML = `<div class="nb">Não foi possível ler a caixa do correio. Verifica a internet.</div>`; return; }
-  const letters = r.msgs.filter(m => m.k === "recado").sort((a, b) => b.t - a.t);
-  const hugs = r.msgs.filter(m => m.k === "abraco").length;
-  if(r.locked){
-    const rows = r.rows.slice(-3).reverse();
-    $("#bibiCount").textContent = r.rows.length ? r.rows.length : 0;
-    mini.innerHTML = (rows.length
-      ? rows.map(row => `<div class="nb enc">${esc(row.dados.slice(3, 90))}…<small>${esc(fmt.long.format(new Date(row.criado)))}</small></div>`).join("")
-      : `<div class="nb">Ainda não há cartas. Escreve a frase secreta primeiro, para ficar combinada.</div>`) +
-      `<form class="unlock" id="unlockForm"><input type="password" id="unlockPhrase" autocomplete="off" spellcheck="false" placeholder="Frase secreta…" aria-label="Frase secreta"><button type="submit">Desbloquear</button></form><p class="unlock-msg" id="unlockMsg" aria-live="polite"></p>`;
+  if(!Conta.loggedIn()){
+    $("#bibiCount").textContent = "—";
+    mini.innerHTML = `<form class="unlock" id="unlockForm">
+        <input type="text" id="peekUser" autocomplete="username" autocapitalize="none" spellcheck="false" placeholder="Nome…" aria-label="Nome de utilizador">
+        <input type="password" id="peekPass" autocomplete="current-password" placeholder="Password…" aria-label="Password">
+        <label class="unlock-remember"><input type="checkbox" id="peekRemember" checked> lembrar</label><button type="submit">Entrar</button></form><p class="unlock-msg" id="unlockMsg" aria-live="polite"></p>`;
     $("#unlockForm").addEventListener("submit", async e => {
       e.preventDefault();
-      const v = $("#unlockPhrase").value, msg = $("#unlockMsg");
-      if(!phraseOk(v)){ msg.textContent = "A frase tem de ter pelo menos 4 palavras."; return; }
-      msg.textContent = "A abrir…";
-      try{ const res = await Recados.unlock(v); if(res === "wrong") msg.textContent = "Esta frase não abre as cartas."; else renderBibiPeek(); }
-      catch(x){ msg.textContent = "Não foi possível falar com a caixa do correio."; }
+      const msg = $("#unlockMsg"), u = $("#peekUser").value, pw = $("#peekPass").value;
+      if(!u.trim() || !pw){ msg.textContent = "Escreve o nome e a password."; return; }
+      msg.textContent = "A entrar…";
+      try{ (await Conta.login(u, pw, $("#peekRemember").checked)) ? renderBibiPeek() : (msg.textContent = "Nome ou password errados."); }
+      catch(x){ msg.textContent = "Não foi possível ligar ao servidor."; }
     });
     return;
   }
+  let rows;
+  try{ rows = await Cartas.list(); }
+  catch(e){
+    if(e.auth) return renderBibiPeek();
+    $("#bibiCount").textContent = "—";
+    mini.innerHTML = `<div class="nb">Não foi possível ler as cartas. Verifica a internet.</div>`;
+    return;
+  }
+  const me = Conta.user();
+  const fromOthers = rows.filter(r => r.autor !== me.id);
+  const letters = fromOthers.filter(r => r.tipo === "carta"), hugs = fromOthers.filter(r => r.tipo === "abraco").length;
   $("#bibiCount").textContent = letters.length;
   mini.innerHTML = (letters.length
-    ? letters.slice(0, 3).map(n => `<div class="nb">${esc(n.text)}<small>${esc(fmt.long.format(new Date(n.t)))}</small></div>`).join("")
-    : `<div class="nb">Ainda não há cartas da Bibi.</div>`) +
+    ? letters.slice(0, 3).map(n => `<div class="nb">${esc(n.texto)}<small>de ${esc(n.nome)} · ${esc(fmt.long.format(new Date(n.criado)))}</small></div>`).join("")
+    : `<div class="nb">Ainda não há cartas para ti.</div>`) +
     (hugs ? `<div class="nb">${hugs} ${hugs === 1 ? "abraço recebido" : "abraços recebidos"}</div>` : "") +
-    `<button type="button" class="nb-forget" id="peekForget">Esquecer a frase neste aparelho</button>`;
-  $("#peekForget").addEventListener("click", () => { if(confirm("Esquecer a frase neste aparelho?")){ Recados.forget(); renderBibiPeek(); } });
+    `<button type="button" class="nb-forget" id="peekForget">Sair da conta ${esc(me.nome)}</button>`;
+  $("#peekForget").addEventListener("click", async () => { if(confirm("Sair desta conta neste aparelho?")){ await Conta.logout(); renderBibiPeek(); } });
 }
 renderBibiPeek();
 </script>
@@ -2257,31 +2262,32 @@ function initBibi(){
   function renderBoard(){
     board.innerHTML = letters.length
       ? letters.map(n => `
-          <button type="button" class="env" aria-expanded="false" aria-label="Carta de ${esc(fmt.long.format(new Date(n.t)))}: abrir">
+          <button type="button" class="env" aria-expanded="false" aria-label="Carta de ${esc(n.nome)}, ${esc(fmt.long.format(new Date(n.criado)))}: abrir">
             <span class="body"></span><span class="flap"></span>
-            <span class="wax"><svg aria-hidden="true"><use href="#s-${sealOf(n.stk)}"/></svg></span>
-            <span class="to">para ele</span>
-            <span class="note">${esc(n.text)}<small>${esc(fmt.long.format(new Date(n.t)))}</small></span>
+            <span class="wax"><svg aria-hidden="true"><use href="#s-${sealOf(n.selo)}"/></svg></span>
+            <span class="to">de ${esc(n.nome)}</span>
+            <span class="note">${esc(n.texto)}<small>${esc(fmt.long.format(new Date(n.criado)))}</small></span>
           </button>`).join("")
       : `<p class="empty-note">Ainda não há cartas. A primeira vai deixá-lo muito contente.</p>`;
-    formMsg.textContent = hugs ? `Já lhe mandaste ${plural(hugs, "abraço", "abraços")}.` : "";
+    formMsg.textContent = hugs ? `Já mandaste ${plural(hugs, "abraço", "abraços")}.` : "";
   }
   async function refreshBoard(){
     try{
-      const r = await Recados.readAll();
-      letters = r.msgs.filter(m => m.k === "recado" && typeof m.text === "string").sort((a, b) => b.t - a.t);
-      hugs = r.msgs.filter(m => m.k === "abraco").length;
+      const rows = await Cartas.list(), me = Conta.user();
+      letters = rows.filter(r => r.tipo === "carta");
+      hugs = rows.filter(r => r.tipo === "abraco" && me && r.autor === me.id).length;
       renderBoard();
     }catch(e){
+      if(e.auth) return showLock();
       board.innerHTML = `<p class="empty-note">Não foi possível abrir a caixa do correio. <button type="button" class="forget" id="retryBoard">Tentar outra vez</button></p>`;
       $("#retryBoard").addEventListener("click", refreshBoard);
     }
   }
-  // cartas antigas, guardadas só neste navegador: vão para a caixa encriptadas, uma vez
+  // cartas antigas, guardadas só neste navegador: vão para a caixa, uma vez
   async function migrateLocal(){
     if(!data.notes.length) return;
     try{
-      for(const n of data.notes) await Recados.send({k:"recado", text:String(n.text).slice(0, 240), stk:sealOf(n.stk), t:n.t});
+      for(const n of data.notes) await Cartas.send({tipo:"carta", texto:String(n.text).slice(0, 240), selo:sealOf(n.stk)});
       data.notes = []; saveData();
     }catch(e){}
   }
@@ -2297,19 +2303,21 @@ function initBibi(){
     if(!msg){ formMsg.textContent = "Escreve alguma coisa primeiro, nem que seja só um olá."; ta.focus(); return; }
     btn.disabled = true; btn.textContent = "A selar…";
     try{
-      await Recados.send({k:"recado", text:msg, stk:sticker, t:Date.now()});
+      await Cartas.send({tipo:"carta", texto:msg.slice(0, 240), selo:sticker});
       ta.value = "";
       hearts(...centerOf(btn), 12);
       await refreshBoard();
       formMsg.textContent = "Carta selada e enviada.";
-    }catch(x){ formMsg.textContent = /429|Demasiados/.test(x.message) ? "Muitas cartas seguidas. Espera um bocadinho." : "Não foi possível enviar. A carta continua escrita, tenta outra vez."; }
-    finally{ btn.disabled = false; btn.textContent = "Selar a carta"; }
+    }catch(x){
+      if(x.auth) return showLock();
+      formMsg.textContent = /Demasiadas/.test(x.message) ? "Muitas cartas seguidas. Espera um bocadinho." : "Não foi possível enviar. A carta continua escrita, tenta outra vez.";
+    }finally{ btn.disabled = false; btn.textContent = "Selar a carta"; }
   });
   $("#hugBtn").addEventListener("click", async e => {
     const btn = e.currentTarget;
     hearts(...centerOf(btn), 14);
-    try{ await Recados.send({k:"abraco", t:Date.now()}); hugs++; renderBoard(); }
-    catch(x){ formMsg.textContent = "O abraço não chegou. Tenta outra vez."; }
+    try{ await Cartas.send({tipo:"abraco"}); hugs++; renderBoard(); }
+    catch(x){ if(x.auth) return showLock(); formMsg.textContent = "O abraço não chegou. Tenta outra vez."; }
   });
   board.innerHTML = `<p class="empty-note">A abrir a caixa do correio…</p>`;
   migrateLocal().then(refreshBoard);

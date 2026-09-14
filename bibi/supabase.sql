@@ -1,51 +1,54 @@
--- Recadinhos encriptados do Modo Bibi.
+-- Cartas do Modo Bibi, com login.
 -- Correr uma vez no Supabase: SQL Editor -> New query -> colar -> Run.
 --
--- A página encripta cada recado no navegador (AES-GCM, chave derivada da
--- frase secreta com PBKDF2) antes de o enviar. Aqui só chega texto ilegível.
--- Qualquer pessoa pode ler e enviar texto encriptado; ninguém pode editar
--- nem apagar pelo site.
+-- Só as contas criadas em Authentication -> Users (com o registo de contas
+-- novas desligado) conseguem ler e escrever. Quem não tem sessão não vê nada.
 
-create table if not exists public.recados (
+-- a versão anterior (frase secreta) deixa de ser usada
+drop table if exists public.recados cascade;
+drop function if exists public.recados_limite();
+
+create table if not exists public.cartas (
   id bigint generated always as identity primary key,
   criado timestamptz not null default now(),
-  dados text not null
+  autor uuid not null default auth.uid() references auth.users(id) on delete cascade,
+  nome text not null default split_part(coalesce(auth.jwt() ->> 'email', ''), '@', 1),
+  tipo text not null check (tipo in ('carta', 'abraco')),
+  texto text check (texto is null or char_length(texto) between 1 and 240),
+  selo text check (selo is null or selo in ('swan', 'cherry', 'heart', 'flower')),
+  constraint carta_tem_texto check (tipo <> 'carta' or texto is not null)
 );
 
--- o Postgres não aceita repetições acima de 255 numa expressão regular: o tamanho vai à parte
-alter table public.recados drop constraint if exists recados_dados_check;
-alter table public.recados add constraint recados_dados_check
-  check (length(dados) between 60 and 6100 and dados ~ '^v1\.[A-Za-z0-9+/]{16}\.[A-Za-z0-9+/=]+$');
+alter table public.cartas enable row level security;
 
-alter table public.recados enable row level security;
+revoke all on public.cartas from anon, authenticated;
+grant select on public.cartas to authenticated;
+-- autor, nome e data vêm sempre do servidor: não dá para escrever em nome do outro
+grant insert (tipo, texto, selo) on public.cartas to authenticated;
 
-revoke all on public.recados from anon, authenticated;
-grant select (id, criado, dados) on public.recados to anon;
-grant insert (dados) on public.recados to anon;
+drop policy if exists "ler cartas" on public.cartas;
+create policy "ler cartas" on public.cartas
+  for select to authenticated using (true);
 
-drop policy if exists "ler recados encriptados" on public.recados;
-create policy "ler recados encriptados" on public.recados
-  for select to anon using (true);
+drop policy if exists "escrever cartas" on public.cartas;
+create policy "escrever cartas" on public.cartas
+  for insert to authenticated with check (autor = (select auth.uid()));
 
-drop policy if exists "enviar recados encriptados" on public.recados;
-create policy "enviar recados encriptados" on public.recados
-  for insert to anon with check (true);
-
--- Trava contra spam: no máximo 30 recados em 10 minutos.
-create or replace function public.recados_limite()
+-- trava contra enganos: no máximo 30 cartas ou abraços em 10 minutos por conta
+create or replace function public.cartas_limite()
 returns trigger
 language plpgsql
 set search_path = ''
 as $$
 begin
-  if (select count(*) from public.recados where criado > now() - interval '10 minutes') >= 30 then
-    raise exception 'Demasiados recados seguidos. Tenta daqui a pouco.';
+  if (select count(*) from public.cartas where autor = new.autor and criado > now() - interval '10 minutes') >= 30 then
+    raise exception 'Demasiadas cartas seguidas. Tenta daqui a pouco.';
   end if;
   return new;
 end;
 $$;
 
-drop trigger if exists recados_limite on public.recados;
-create trigger recados_limite
-  before insert on public.recados
-  for each row execute function public.recados_limite();
+drop trigger if exists cartas_limite on public.cartas;
+create trigger cartas_limite
+  before insert on public.cartas
+  for each row execute function public.cartas_limite();
