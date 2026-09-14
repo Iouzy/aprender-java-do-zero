@@ -149,6 +149,12 @@ body[data-mode=bibi] .menu{display:none}
 .notes-bibi{display:grid;gap:8px;margin-top:4px}
 .notes-bibi .nb{padding:12px 14px;border-radius:12px;background:rgba(255,160,190,.08);color:#F6D5E0;font-size:14px}
 .notes-bibi .nb small{display:block;color:var(--dim);font-size:12px;margin-top:4px}
+.notes-bibi .nb.enc{font:12px/1.5 var(--mono);color:var(--dim);background:rgba(255,255,255,.04);word-break:break-all}
+.unlock{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.unlock input{flex:1;min-width:180px;background:var(--bg2);border:1px solid var(--line2);border-radius:999px;padding:9px 14px;font-size:14px}
+.unlock button,.nb-forget{font-size:13px;font-weight:600;border-radius:999px;padding:9px 14px;background:var(--accent);color:var(--accent-ink)}
+.nb-forget{background:none;color:var(--dim);padding:6px 0;font-weight:500;text-decoration:underline}
+.unlock-msg{font-size:13px;color:var(--muted);margin-top:8px;min-height:1.4em}
 
 /* exercícios */
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
@@ -333,6 +339,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
 .parchment::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;opacity:.35;mix-blend-mode:multiply;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012 .02' numOctaves='4' seed='7'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .42 0 0 0 0 .28 0 0 0 .9 -.3'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23p)'/%3E%3C/svg%3E")}
 .parchment > *{position:relative}
+.parchment > .sr{position:absolute}
 .gilt{border:1px solid rgba(201,165,95,.55);outline:1px solid rgba(201,165,95,.25);outline-offset:5px}
 .btn-wax{display:inline-flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:19px;letter-spacing:.01em;padding:12px 24px;border-radius:999px;color:var(--parch);
   background:radial-gradient(120% 140% at 30% 20%,#C23A50,var(--burgundy) 60%,#3E0E17);box-shadow:inset 0 1px 0 rgba(255,210,200,.35),inset 0 -3px 6px rgba(0,0,0,.35),0 10px 22px -12px rgba(106,28,41,.9);
@@ -495,6 +502,65 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
 .b-foot .script{font-family:var(--hand);font-size:44px;color:var(--gold-2);line-height:1}
 .b-foot p{font-style:italic;margin-top:10px}
 .b-foot small{display:block;margin:26px auto 0;max-width:720px;font-size:13px;line-height:1.6;color:#8C7C66}
+
+/* ---------- cadeado ---------- */
+.lock{position:fixed;inset:0;z-index:30;display:grid;place-items:center;padding:96px 18px 24px;overflow:auto}
+.lock[hidden]{display:none}
+.lock-bg{position:fixed;inset:0;background:#0C0907 url("bibi/frames/lago/000.webp") center/cover no-repeat;filter:blur(6px) brightness(.45) sepia(.2);transform:scale(1.06)}
+.lock-card{width:min(520px,100%);padding:clamp(28px,5vw,48px);text-align:center}
+.lock-card .script{font-family:var(--hand);font-size:34px;color:var(--burgundy);line-height:1}
+.lock-card h1{font-size:clamp(32px,4.4vw,46px);line-height:1.02;margin-top:6px;color:var(--parch-ink)}
+.lock-card .lock-sub{color:var(--parch-soft);margin:12px auto 22px;max-width:40ch}
+.lock-card input[type=password],.lock-card input[type=text]{width:100%;padding:12px 16px;border-radius:999px;border:1px solid rgba(51,36,26,.35);background:rgba(255,250,238,.7);font:italic 21px var(--display);color:var(--parch-ink);text-align:center}
+.lock-card input:focus-visible{outline:2px solid var(--burgundy);outline-offset:2px}
+.lock-show{display:inline-flex;gap:8px;align-items:center;margin:12px 0 18px;font-style:italic;color:var(--parch-soft);font-size:16px;cursor:pointer}
+.lock-show input{accent-color:var(--burgundy);width:16px;height:16px}
+.lock-err{min-height:1.6em;margin-top:14px;font-style:italic;color:var(--burgundy)}
+.lock-foot{margin-top:18px;font-size:14px;color:var(--parch-soft)}
+.forget{font-family:var(--book);font-style:italic;font-size:14px;color:#8C7C66;text-decoration:underline;text-underline-offset:3px;margin-top:14px}
+.env.loading-box{pointer-events:none}
+
+/* ---------- swandoku ---------- */
+.sd-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.62fr);gap:clamp(22px,4vw,48px);align-items:start}
+.sd-paper{padding:clamp(14px,2.4vw,26px)}
+.sd-board{--n:6;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:repeat(var(--n),minmax(0,1fr));width:100%;max-width:600px;margin:0 auto;aspect-ratio:1;border:2px solid var(--parch-ink);border-radius:3px;background:rgba(255,250,238,.35);transition:box-shadow .6s ease}
+.sd-board.won{box-shadow:0 0 0 4px rgba(201,165,95,.55),0 0 60px rgba(201,165,95,.35)}
+.sd-cell{position:relative;display:grid;place-items:center;border-right:1px solid rgba(51,36,26,.22);border-bottom:1px solid rgba(51,36,26,.22);color:var(--burgundy);transition:background-color .15s ease}
+.sd-cell{min-width:0;min-height:0;overflow:hidden}
+.sd-cell svg{width:64%;height:auto;aspect-ratio:1}
+.sd-board[data-n="9"] .sd-cell svg{width:72%}
+.sd-cell.given{color:var(--parch-ink)}
+.sd-cell.et{border-top:2px solid var(--parch-ink)}
+.sd-cell.el{border-left:2px solid var(--parch-ink)}
+.sd-cell.peer{background:rgba(51,36,26,.06)}
+.sd-cell.same{background:rgba(106,28,41,.12)}
+.sd-cell.sel{background:rgba(201,165,95,.42);box-shadow:inset 0 0 0 2px var(--burgundy)}
+.sd-cell.bad{color:#B3261E}
+.sd-cell.bad::after{content:"";position:absolute;right:12%;bottom:10%;width:14%;aspect-ratio:1;border-radius:50%;background:#B3261E}
+.sd-cell:focus-visible{outline:2px solid var(--burgundy);outline-offset:-3px}
+@media (hover:hover) and (pointer:fine){.sd-cell:not(.sel):hover{background:rgba(201,165,95,.2)}}
+.sd-side{display:grid;gap:18px}
+.sd-seg{display:flex;padding:4px;border-radius:999px;background:rgba(234,220,192,.06);border:1px solid rgba(201,165,95,.25);width:max-content;max-width:100%}
+.sd-seg button{padding:8px 16px;border-radius:999px;font-family:var(--display);font-weight:600;font-size:17px;color:var(--on-dark-2);transition:background-color .2s ease,color .2s ease}
+.sd-seg button[aria-pressed=true]{background:var(--parch);color:var(--parch-ink)}
+.sd-seg button small{display:block;font-family:var(--book);font-style:italic;font-weight:400;font-size:12px;line-height:1}
+.sd-clock{font-family:var(--display);font-size:clamp(46px,5vw,64px);line-height:1;color:var(--parch)}
+.sd-best{font-style:italic;color:var(--on-dark-2)}
+.sd-palette{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.sd-sym{display:grid;justify-items:center;gap:2px;padding:10px 4px 6px;border-radius:12px;color:var(--parch-ink);background:linear-gradient(180deg,var(--parch),var(--parch-2));box-shadow:0 6px 14px -8px #000;transition:transform .12s ease}
+.sd-sym svg{width:30px;height:30px;color:var(--burgundy)}
+.sd-sym small{font-style:italic;font-size:13px;color:var(--parch-soft)}
+.sd-sym.erase svg{color:var(--parch-soft)}
+.sd-sym:active{transform:scale(.94)}
+.sd-actions{display:flex;gap:10px;flex-wrap:wrap}
+.sd-actions .btn-quiet{color:var(--on-dark);border-color:rgba(234,220,192,.3)}
+@media (hover:hover) and (pointer:fine){.sd-actions .btn-quiet:hover{background:rgba(234,220,192,.08)}}
+.sd-status{font-style:italic;color:var(--on-dark-2);min-height:3.2em}
+.sd-rules{font-size:16px;color:var(--on-dark-2)}
+@media(max-width:900px){
+  .sd-wrap{grid-template-columns:1fr}
+  .sd-palette{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
 
 @media(max-width:900px){
   .verdict,.almanac,.letters{grid-template-columns:1fr}
@@ -687,9 +753,9 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
         </ul>
         <p class="desc" style="margin:14px 0 0">Um resultado que parece certo não prova nada. Confirma sempre com valores pequenos que consigas fazer de cabeça.</p>
       </div>
-      <div class="card" id="bibiNotesCard" hidden>
+      <div class="card" id="bibiNotesCard">
         <h2>Recadinhos da Bibi</h2>
-        <p class="desc">Deixados no Modo Bibi, neste navegador.</p>
+        <p class="desc" id="bibiNotesDesc">Encriptados com a vossa frase secreta. Sem ela, aparecem como letras baralhadas.</p>
         <div class="notes-bibi" id="bibiNotesMini"></div>
       </div>
     </div>
@@ -759,6 +825,22 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
   </section>
 </div>
 </main>
+
+<!-- cadeado do Modo Bibi -->
+<section class="lock" id="bibiLock" hidden aria-labelledby="lockTitle">
+  <div class="lock-bg" aria-hidden="true"></div>
+  <form class="parchment lock-card" id="lockForm">
+    <p class="script">só para a Bibi</p>
+    <h1 id="lockTitle">Este cantinho está fechado com lacre</h1>
+    <p class="lock-sub">Escreve a vossa frase secreta. Fica guardada neste navegador, para não teres de a escrever outra vez.</p>
+    <label class="sr" for="lockPhrase">Frase secreta</label>
+    <input id="lockPhrase" type="password" name="frase" autocomplete="off" spellcheck="false" placeholder="a vossa frase…">
+    <label class="lock-show"><input type="checkbox" id="lockShow"> mostrar a frase</label>
+    <div><button class="btn-wax" type="submit" id="lockBtn">Abrir</button></div>
+    <p class="lock-err" id="lockErr" role="alert"></p>
+    <p class="lock-foot">A frase nunca sai deste aparelho. Sem ela, as cartas são só letras baralhadas.</p>
+  </form>
+</section>
 
 <!-- =================== MODO BIBI =================== -->
 <main class="m-bibi" id="mBibi" hidden>
@@ -938,6 +1020,37 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
     </div>
   </section>
 
+  <!-- swandoku -->
+  <section class="sheet" aria-labelledby="sdTitle">
+    <div class="wrap">
+      <div class="sheet-head">
+        <h2 id="sdTitle">Swandoku</h2>
+        <p>Um sudoku com cisnes, cerejas e corações em vez de números. Cada símbolo aparece uma só vez em cada linha, cada coluna e cada caixa.</p>
+      </div>
+      <div class="sd-wrap">
+        <div class="parchment sd-paper">
+          <div class="sd-board" id="sdBoard" role="grid" aria-label="Tabuleiro do Swandoku"></div>
+        </div>
+        <div class="sd-side">
+          <div class="sd-seg" id="sdSize" role="group" aria-label="Tamanho do tabuleiro">
+            <button type="button" data-n="4" aria-pressed="false">4×4<small>fácil</small></button>
+            <button type="button" data-n="6" aria-pressed="true">6×6<small>médio</small></button>
+            <button type="button" data-n="9" aria-pressed="false">9×9<small>clássico</small></button>
+          </div>
+          <div><p class="sd-clock num" id="sdClock" aria-label="Tempo">0:00</p><p class="sd-best" id="sdBest"></p></div>
+          <div class="sd-palette" id="sdPalette" aria-label="Símbolos"></div>
+          <div class="sd-actions">
+            <button type="button" class="btn-quiet" id="sdUndo">Anular</button>
+            <button type="button" class="btn-quiet" id="sdHint">Pista</button>
+            <button type="button" class="btn-quiet" id="sdNew">Novo</button>
+          </div>
+          <p class="sd-status" id="sdStatus" aria-live="polite"></p>
+          <p class="sd-rules">Toca numa casa e depois num símbolo. No teclado: setas para andar, números para escolher, 0 para apagar. Os repetidos ficam marcados com um ponto vermelho.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- III · a carta -->
   <section class="chapter" id="chCarta" aria-labelledby="notesTitle">
     <div class="stage" data-film="carta" data-frames="96" data-focus="0.42">
@@ -959,7 +1072,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
     <div class="wrap letters">
       <form class="parchment letter-form" id="noteForm">
         <label for="noteText">Querido…</label>
-        <p class="sub">Ele vê as cartas quando abrir a página dele neste computador.</p>
+        <p class="sub">As cartas vão fechadas com a vossa frase secreta. Ele lê-as em qualquer aparelho onde tenha escrito a mesma frase.</p>
         <textarea id="noteText" name="recado" maxlength="240" autocomplete="off" placeholder="estou orgulhosa de ti…"></textarea>
         <div class="seals" role="group" aria-label="Escolhe o lacre">
           <button type="button" class="seal-btn" data-stk="swan" aria-pressed="true" aria-label="Lacre com cisne"><svg aria-hidden="true"><use href="#s-swan"/></svg></button>
@@ -980,11 +1093,21 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
   <footer class="b-foot">
     <p class="script">com carinho</p>
     <p>feito com cerejas, cisnes e muitas linhas de código</p>
+    <button type="button" class="forget" id="forgetPhrase">Esquecer a frase neste aparelho</button>
     <small>Gravuras: Cisne-trombeteiro, Robert Havell segundo John James Audubon, 1837 (National Gallery of Art, CC0) · Prunus cerasus, Köhler's Medizinal-Pflanzen, 1887 (domínio público). Cenas animadas geradas com IA a partir de pinturas criadas para esta página.</small>
   </footer>
 
   <!-- lacres: relevos simples, desenhados à mão -->
   <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="d-1" viewBox="0 0 32 32"><path d="M5 23c2-4 7-5 11-4 3 1 6 0 8-3 1 4-1 9-7 10-5 1-10 0-12-3Z M18 19c3-3-2-6 0-10 1-2 4-2 4 1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M22 10l3.5 1.2-3.5 1" fill="currentColor"/></symbol>
+    <symbol id="d-2" viewBox="0 0 32 32"><path d="M16 5c-1 6-4 10-6 14M16 5c1 6 4 10 6 14M16 5c3-2 7-2 9 1-3 2-6 1-9-1" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/><circle cx="10" cy="22" r="4.6" fill="currentColor"/><circle cx="22" cy="22" r="4.6" fill="currentColor"/></symbol>
+    <symbol id="d-3" viewBox="0 0 32 32"><path d="M16 26C8 20 5 16 5 12a5 5 0 0 1 11-2 5 5 0 0 1 11 2c0 4-3 8-11 14Z" fill="currentColor"/></symbol>
+    <symbol id="d-4" viewBox="0 0 32 32"><g fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="16" cy="9.2" r="4.6"/><circle cx="22.6" cy="14" r="4.6"/><circle cx="20.1" cy="21.7" r="4.6"/><circle cx="11.9" cy="21.7" r="4.6"/><circle cx="9.4" cy="14" r="4.6"/></g><circle cx="16" cy="16" r="2.3" fill="currentColor"/></symbol>
+    <symbol id="d-5" viewBox="0 0 32 32"><path d="M26 4C15 6 8 14 8 25l2 1c11 0 17-7 19-17-4 1-7 3-9 6 1-4 3-8 6-11Z M9 26l-4 3 M12 21l8-8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="d-6" viewBox="0 0 32 32"><path d="M12.5 14h7v13h-7Z M9 27h14 M16 14v-3" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round" stroke-linecap="round"/><path d="M16 3c2.6 2.6 2.6 5 0 7.4-2.6-2.4-2.6-4.8 0-7.4Z" fill="currentColor"/></symbol>
+    <symbol id="d-7" viewBox="0 0 32 32"><path d="M21 4a12 12 0 1 0 7 17A10 10 0 0 1 21 4Z" fill="currentColor"/></symbol>
+    <symbol id="d-8" viewBox="0 0 32 32"><path d="M5 8c4-1.5 7.5-.5 11 2 3.5-2.5 7-3.5 11-2v17c-4-1.5-7.5-.5-11 2-3.5-2.5-7-3.5-11-2Z M16 10v17" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"/></symbol>
+    <symbol id="d-9" viewBox="0 0 32 32"><circle cx="10" cy="16" r="5.5" fill="none" stroke="currentColor" stroke-width="1.9"/><path d="M15.5 16H28M24 16v5M28 16v4" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/></symbol>
     <symbol id="s-swan" viewBox="0 0 32 32"><path d="M6 23c2-4 7-5 11-4 3 1 6 0 8-3 1 4-1 9-7 10-5 1-10 0-12-3Z M18 19c3-3-2-6 0-10 1-2 4-2 4 1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M22 10l3 1-3 1" fill="currentColor"/></symbol>
     <symbol id="s-cherry" viewBox="0 0 32 32"><path d="M16 5c-1 6-4 10-6 14M16 5c1 6 4 10 6 14M16 5c3-2 7-2 9 1-3 2-6 1-9-1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="10" cy="22" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/><circle cx="22" cy="22" r="4.5" fill="none" stroke="currentColor" stroke-width="1.8"/></symbol>
     <symbol id="s-heart" viewBox="0 0 32 32"><path d="M16 26C8 20 5 16 5 12a5 5 0 0 1 11-2 5 5 0 0 1 11 2c0 4-3 8-11 14Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></symbol>
@@ -1001,7 +1124,7 @@ body[data-mode=bibi] .modes button[aria-pressed=true]{color:var(--parch)}
 const EXERCISES=[{"n": "Ola.java", "d": "Primeiro programa: classe, main e println.", "src": "cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"}, {"n": "Tipos.java", "d": "Tipos primitivos, divisão inteira, resto e cast.", "src": "cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="}, {"n": "Iva.java", "d": "Variáveis String/int e concatenação.", "src": "cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"}, {"n": "Saudacao.java", "d": "Scanner, hasNextInt, if/else if e validação.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="}, {"n": "Contagem.java", "d": "for crescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "ContagemR.java", "d": "for decrescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "Pares.java", "d": "Números pares alterando o passo do for.", "src": "cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="}, {"n": "Pares2.java", "d": "Números pares usando % e if.", "src": "cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"}, {"n": "Tabuada.java", "d": "Scanner + for + cálculo da tabuada.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="}, {"n": "Metodos.java", "d": "Métodos, parâmetros, return, void e boolean.", "src": "CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"}, {"n": "Pessoa.java", "d": "Classe, private, construtor, this, setter e métodos.", "src": "cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="}, {"n": "Programa.java", "d": "Criação e utilização de objetos Pessoa.", "src": "cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}, {"n": "aquecimento1.java", "d": "Validação de input com while: insistir até a idade fazer sentido.", "src": "Ly8gYXF1ZWNpbWVudG8xLmphdmEg4oCUIDEwIHNldGVtYnJvIDIwMjYsIDE4OjEyCmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBhcXVlY2ltZW50bzF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkKCQlpbnQgaWRhZGU7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIGEgc3VhIGlkYWRlPyIpOwoJCWlkYWRlID0gc2MubmV4dEludCgpOwoJCQoJCXdoaWxlKGlkYWRlIDwgMCl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiQSBpZGFkZSBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLCByZWludHJvZHV6YSBhIGlkYWRlLiIpOyAKCQkJaWRhZGUgPSBzYy5uZXh0SW50KCk7CgkJfQoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGVucyAiICsgaWRhZGUgKyAiIGFub3MuIik7Cgl9Cn0K"}, {"n": "exContagem.java", "d": "Validar com while e contar só os pares até ao número.", "src": "Ly8gZXhDb250YWdlbS5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMTowOQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3MgZXhDb250YWdlbXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCVNjYW5uZXIgc2MgPSAgbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCgkJaW50IG51bWVybzsKCQlpbnQgY29udGFnZW0gPSAwOwoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG51bWVybyBwb3NpdGl2byBwYXJhIGNvbWXDp2FyIGEgY29udGFnZW0uIik7CgkJbnVtZXJvID0gc2MubmV4dEludCgpOwoKCQl3aGlsZShudW1lcm8gPCAxKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKCJJbnRyb2R1emEgdW0gbnVtZXJvIHBvc2l0aXZvLiIpOwoJCQludW1lcm8gPSBzYy5uZXh0SW50KCk7CgkJfQoKCQl3aGlsZShjb250YWdlbSA8IG51bWVybyl7CgkJCWNvbnRhZ2VtKys7CgkJCQoJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oY29udGFnZW0pOwoJCQl9CgkJCQoJCX0KCX0KfQo="}, {"n": "somaPares.java", "d": "Acumulador: somar os pares até um número.", "src": "Ly8gc29tYVBhcmVzLmphdmEg4oCUIDEzIHNldGVtYnJvIDIwMjYsIDIxOjM1CmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBzb21hUGFyZXMJewoJCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkJCgkJCWludCBudW1lcm8gPSAwOwoJCQlpbnQgY29udGFnZW0gPSAxOwoJCQlpbnQgc29tYVBhcmVzID0gMDsKCQkJCgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG7Dum1lcm86Iik7CgkJCW51bWVybyA9IHNjLm5leHRJbnQoKTsKCgkJCXdoaWxlKG51bWVybyA8PSAwKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBuw7ptZXJvIG7Do28gcG9kZSBzZXIgbmVnYXRpdm8sIGludHJvZHV6YSB1bSBuw7ptZXJvIHBvc2l0aXZvLiIpOwoJCQkJbnVtZXJvID0gc2MubmV4dEludCgpOwoJCQl9CgkJCQoJCQkKCQkJd2hpbGUoY29udGFnZW0gPCBudW1lcm8pewoJCQkJY29udGFnZW0rKzsgCgkJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQkJc29tYVBhcmVzID0gY29udGFnZW0gKyBzb21hUGFyZXM7CgkJCQl9CgkJCQkKCQkJfQoJCQkKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgYXTDqSAiICsgbnVtZXJvICsgIiDDqSBkZSAiICsgc29tYVBhcmVzICsgIi4iKTsKCX0KfQoK"}, {"n": "somaIntervalo.java", "d": "Acumulador num intervalo, com validação do início e do fim.", "src": "Ly8gc29tYUludGVydmFsby5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMjo0MQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3Mgc29tYUludGVydmFsb3sKCQlwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgoJCQlpbnQgaW50ZXJ2YWxvSW5pY2lvID0gMDsKCQkJaW50IGludGVydmFsb0ZpbmFsID0gMDsKCQkJaW50IGNvbnRhZ2VtID0gMDsKCQkJaW50IHNvbWFQYXJlcyA9IDA7CgkJCQoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIGludGVydmFsbyBkZSBudW1lcm9zIGRvIHF1YWwgcXVlciBhIHNvbWE6ICIpOwoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIG51bWVybyBkbyBpbmljaW86ICIpOwoJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIG8gbnVtZXJvIGRvIGZpbmFsOiAiKTsKCQkJaW50ZXJ2YWxvRmluYWwgPSBzYy5uZXh0SW50KCk7CgkJCgkJCXdoaWxlKGludGVydmFsb0luaWNpbyA+IGludGVydmFsb0ZpbmFsKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBudW1lcm8gaW5pY2lhbCBuw6NvIHBvZGUgc2VyIHN1cGVyaW9yIGFvIG51bWVybyBmaW5hbC4iKTsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiUmVpbnRyb2R1emEgbyBudW1lcm8gaW5pY2lhbDogIik7CgkJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCX0KCQkJCgkJCWNvbnRhZ2VtID0gaW50ZXJ2YWxvSW5pY2lvOwoJCQkKCQkJd2hpbGUoY29udGFnZW0gPD0gaW50ZXJ2YWxvRmluYWwpewoJCQkJaWYoY29udGFnZW0gJSAyID09IDApewoJCQkJCXNvbWFQYXJlcyA9IGNvbnRhZ2VtICsgc29tYVBhcmVzOwoJCQkJfQoJCQkJY29udGFnZW0rKzsKCQkJfQoKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgbm8gaW50ZXJ2YWxvIGRlIG51bWVyb3MgZGUgIiArIGludGVydmFsb0luaWNpbyArICIgYSAiICsgaW50ZXJ2YWxvRmluYWwgKyAiIMOpIGRlOiAiICsgc29tYVBhcmVzKTsKCQl9CgoJCn0K"}];
 
 /* Histórico do Git. Não editar à mão: corre  python3 bibi-atualizar.py */
-const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "269e17f", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}]/*@COMMITS:END*/;
+const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "141627a", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}]/*@COMMITS:END*/;
 
 /* ---------- guiões de execução ----------
    Cada guião é um gerador: devolve um passo de cada vez.
@@ -1284,11 +1407,85 @@ const BIBI_KEY = "java-bibi-v1";
 const bibiStore = store(BIBI_KEY);
 let bibiInited = false;
 
+/* ---------- recadinhos encriptados (Supabase) ----------
+   A frase secreta nunca sai do navegador: gera uma chave AES-GCM com PBKDF2.
+   O Supabase só guarda texto encriptado; a chave publicável serve para isso. */
+const SUPA = {url:"https://kuahxuhkiiknvydiwfzu.supabase.co", key:"sb_publishable_oiTLyIpAxZH7oDwGI1NRMw_FsrbGV0l"};
+const Recados = (() => {
+  const KEY_STORE = "java-bibi-chave";
+  const enc = new TextEncoder(), dec = new TextDecoder();
+  const b64 = buf => { let s = ""; new Uint8Array(buf).forEach(c => s += String.fromCharCode(c)); return btoa(s); };
+  const unb64 = s => Uint8Array.from(atob(s), c => c.charCodeAt(0));
+  const headers = {apikey:SUPA.key, "Content-Type":"application/json"};
+  let key = null;
+
+  // minúsculas e espaços normalizados: "Cisne  Cereja" e "cisne cereja" dão a mesma chave
+  const normalize = p => p.normalize("NFKC").trim().toLowerCase().replace(/\s+/g, " ");
+  async function derive(phrase){
+    const base = await crypto.subtle.importKey("raw", enc.encode(normalize(phrase)), "PBKDF2", false, ["deriveBits"]);
+    return new Uint8Array(await crypto.subtle.deriveBits({name:"PBKDF2", hash:"SHA-256", salt:enc.encode("bibi-recados:kuahxuhkiiknvydiwfzu:v1"), iterations:600000}, base, 256));
+  }
+  const importRaw = raw => crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["encrypt", "decrypt"]);
+  async function tryDecrypt(k, s){
+    try{
+      const [v, iv, ct] = s.split(".");
+      if(v !== "v1") return null;
+      const pt = await crypto.subtle.decrypt({name:"AES-GCM", iv:unb64(iv)}, k, unb64(ct));
+      const m = JSON.parse(dec.decode(pt));
+      return m && typeof m === "object" ? m : null;
+    }catch(e){ return null; }
+  }
+  async function encrypt(obj){
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({name:"AES-GCM", iv}, key, enc.encode(JSON.stringify(obj)));
+    return "v1." + b64(iv) + "." + b64(ct);
+  }
+  async function list(){
+    const r = await fetch(SUPA.url + "/rest/v1/recados?select=id,criado,dados&order=id.asc&limit=1000", {headers});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  }
+  async function send(obj){
+    if(!key) throw new Error("sem chave");
+    const r = await fetch(SUPA.url + "/rest/v1/recados", {method:"POST", headers:{...headers, Prefer:"return=minimal"}, body:JSON.stringify({dados:await encrypt(obj)})});
+    if(!r.ok) throw new Error("HTTP " + r.status);
+  }
+  async function load(){
+    if(key) return key;
+    try{ const raw = localStorage.getItem(KEY_STORE); if(raw) key = await importRaw(unb64(raw)); }catch(e){ key = null; }
+    return key;
+  }
+  // "ok" se a frase abre as cartas que já existem (ou se ainda não há nenhuma); "wrong" se não abre
+  async function unlock(phrase){
+    const rows = await list();
+    const raw = await derive(phrase), k = await importRaw(raw);
+    if(rows.length){
+      let ok = false;
+      for(const row of rows.slice(-60).reverse()){ if(await tryDecrypt(k, row.dados)){ ok = true; break; } }
+      if(!ok) return "wrong";
+    }
+    key = k;
+    try{ localStorage.setItem(KEY_STORE, b64(raw)); }catch(e){}
+    // a primeira frase deixa um marco na caixa, para as frases seguintes poderem ser confirmadas
+    if(!rows.length) await send({k:"chave", t:Date.now()});
+    return "ok";
+  }
+  function forget(){ key = null; try{ localStorage.removeItem(KEY_STORE); }catch(e){} }
+  async function readAll(){
+    const rows = await list(), k = await load(), msgs = [];
+    if(k) for(const row of rows){ const m = await tryDecrypt(k, row.dados); if(m) msgs.push(Object.assign(m, {id:row.id, criado:row.criado})); }
+    return {rows, msgs, locked:!k};
+  }
+  return {load, unlock, forget, send, readAll, has:() => !!key};
+})();
+const phraseOk = p => { const s = p.trim(); return s.split(/\s+/).length >= 4 || s.length >= 24; };
+
 function setMode(mode, push){
   const bibi = mode === "bibi";
   document.body.dataset.mode = bibi ? "bibi" : "bancada";
   $("#mBancada").hidden = bibi;
-  $("#mBibi").hidden = !bibi;
+  $("#mBibi").hidden = true;
+  $("#bibiLock").hidden = true;
   $("#footBancada").hidden = bibi;
   document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
   document.title = bibi ? "Modo Bibi — o progresso dele" : "Java — bancada de trabalho";
@@ -1297,10 +1494,39 @@ function setMode(mode, push){
   if(push !== false){
     try{ history.replaceState(null, "", bibi ? "#bibi" : location.pathname + location.search); }catch(e){}
   }
-  if(bibi && !bibiInited){ bibiInited = true; initBibi(); }
-  else if(bibi) window.dispatchEvent(new Event("bibi:show"));
+  if(bibi) Recados.load().then(k => { if(document.body.dataset.mode === "bibi") k ? openBibi() : showLock(); });
   if(!bibi){ renderBibiPeek(); window.dispatchEvent(new Event("bancada:show")); }
 }
+function openBibi(){
+  $("#bibiLock").hidden = true;
+  $("#mBibi").hidden = false;
+  if(!bibiInited){ bibiInited = true; initBibi(); }
+  else window.dispatchEvent(new Event("bibi:show"));
+}
+function showLock(){
+  $("#mBibi").hidden = true;
+  $("#bibiLock").hidden = false;
+  setTimeout(() => $("#lockPhrase").focus(), 50);
+}
+$("#lockShow").addEventListener("change", e => { $("#lockPhrase").type = e.target.checked ? "text" : "password"; });
+$("#lockForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const input = $("#lockPhrase"), err = $("#lockErr"), btn = $("#lockBtn");
+  err.textContent = "";
+  if(!phraseOk(input.value)){ err.textContent = "A frase tem de ter pelo menos 4 palavras."; input.focus(); return; }
+  btn.disabled = true; btn.textContent = "A abrir…";
+  try{
+    const res = await Recados.unlock(input.value);
+    if(res === "wrong"){ err.textContent = "Esta frase não abre as cartas. Confirma a frase com ele."; input.select(); }
+    else { input.value = ""; openBibi(); }
+  }catch(x){ err.textContent = "Não foi possível falar com a caixa do correio. Verifica a internet e tenta outra vez."; }
+  finally{ btn.disabled = false; btn.textContent = "Abrir"; }
+});
+$("#forgetPhrase").addEventListener("click", () => {
+  if(!confirm("Esquecer a frase neste aparelho? Para voltar a entrar vais ter de a escrever outra vez.")) return;
+  Recados.forget();
+  location.reload();
+});
 document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => {
   setMode(b.dataset.mode);
   window.scrollTo({top:0, behavior: reduceMotion.matches ? "auto" : "smooth"});
@@ -1601,9 +1827,8 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
   $("#q").addEventListener("input", e => { query = e.target.value; renderList(); });
   $("#notes").addEventListener("input", e => { state.notes = e.target.value; save(); });
   $("#bibiPeek").addEventListener("click", () => {
-    const n = (bibiStore.get() || {}).notes || [];
-    if(n.length){ selectTab($("#t-agora")); $("#bibiNotesCard").scrollIntoView({behavior: reduceMotion.matches ? "auto" : "smooth", block:"center"}); }
-    else setMode("bibi");
+    selectTab($("#t-agora"));
+    $("#bibiNotesCard").scrollIntoView({behavior: reduceMotion.matches ? "auto" : "smooth", block:"center"});
   });
 
   function makeMd(){
@@ -1627,14 +1852,37 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
 })();
 
 /* recadinhos da Bibi vistos do lado dele */
-function renderBibiPeek(){
-  const data = bibiStore.get() || {};
-  const notes = data.notes || [];
-  $("#bibiCount").textContent = notes.length;
-  $("#bibiNotesCard").hidden = !notes.length;
-  $("#bibiNotesMini").innerHTML = notes.slice(-3).reverse().map(n =>
-    `<div class="nb">${esc(n.text)}<small>${esc(fmt.long.format(new Date(n.t)))}</small></div>`).join("") +
-    (data.hugs ? `<div class="nb">${data.hugs} ${data.hugs === 1 ? "abraço recebido" : "abraços recebidos"}</div>` : "");
+async function renderBibiPeek(){
+  const mini = $("#bibiNotesMini");
+  let r;
+  try{ r = await Recados.readAll(); }
+  catch(e){ $("#bibiCount").textContent = "—"; mini.innerHTML = `<div class="nb">Não foi possível ler a caixa do correio. Verifica a internet.</div>`; return; }
+  const letters = r.msgs.filter(m => m.k === "recado").sort((a, b) => b.t - a.t);
+  const hugs = r.msgs.filter(m => m.k === "abraco").length;
+  if(r.locked){
+    const rows = r.rows.slice(-3).reverse();
+    $("#bibiCount").textContent = r.rows.length ? r.rows.length : 0;
+    mini.innerHTML = (rows.length
+      ? rows.map(row => `<div class="nb enc">${esc(row.dados.slice(3, 90))}…<small>${esc(fmt.long.format(new Date(row.criado)))}</small></div>`).join("")
+      : `<div class="nb">Ainda não há cartas. Escreve a frase secreta primeiro, para ficar combinada.</div>`) +
+      `<form class="unlock" id="unlockForm"><input type="password" id="unlockPhrase" autocomplete="off" spellcheck="false" placeholder="Frase secreta…" aria-label="Frase secreta"><button type="submit">Desbloquear</button></form><p class="unlock-msg" id="unlockMsg" aria-live="polite"></p>`;
+    $("#unlockForm").addEventListener("submit", async e => {
+      e.preventDefault();
+      const v = $("#unlockPhrase").value, msg = $("#unlockMsg");
+      if(!phraseOk(v)){ msg.textContent = "A frase tem de ter pelo menos 4 palavras."; return; }
+      msg.textContent = "A abrir…";
+      try{ const res = await Recados.unlock(v); if(res === "wrong") msg.textContent = "Esta frase não abre as cartas."; else renderBibiPeek(); }
+      catch(x){ msg.textContent = "Não foi possível falar com a caixa do correio."; }
+    });
+    return;
+  }
+  $("#bibiCount").textContent = letters.length;
+  mini.innerHTML = (letters.length
+    ? letters.slice(0, 3).map(n => `<div class="nb">${esc(n.text)}<small>${esc(fmt.long.format(new Date(n.t)))}</small></div>`).join("")
+    : `<div class="nb">Ainda não há cartas da Bibi.</div>`) +
+    (hugs ? `<div class="nb">${hugs} ${hugs === 1 ? "abraço recebido" : "abraços recebidos"}</div>` : "") +
+    `<button type="button" class="nb-forget" id="peekForget">Esquecer a frase neste aparelho</button>`;
+  $("#peekForget").addEventListener("click", () => { if(confirm("Esquecer a frase neste aparelho?")){ Recados.forget(); renderBibiPeek(); } });
 }
 renderBibiPeek();
 </script>
@@ -1867,7 +2115,7 @@ function initBibi(){
       }
     });
     // cartões e fichas entram com a tinta, uma vez
-    ScrollTrigger.batch(".m-bibi .sheet-head, .m-bibi .verdict, .m-bibi .almanac, .m-bibi .shelf, .m-bibi .card-f, .m-bibi .game, .m-bibi .letter-form", {
+    ScrollTrigger.batch(".m-bibi .sheet-head, .m-bibi .verdict, .m-bibi .almanac, .m-bibi .shelf, .m-bibi .card-f, .m-bibi .game, .m-bibi .sd-wrap", {
       start:"top 85%", once:true,
       onEnter:els => gsap.fromTo(els, {autoAlpha:0, y:34}, {autoAlpha:1, y:0, duration:1.1, stagger:.08, ease:"power3.out", overwrite:true})
     });
@@ -2004,9 +2252,11 @@ function initBibi(){
     sticker = b.dataset.stk;
     document.querySelectorAll(".seal-btn").forEach(x => x.setAttribute("aria-pressed", x === b));
   }));
+  let letters = [], hugs = 0;
+  const board = $("#board"), formMsg = $("#hugCount");
   function renderBoard(){
-    $("#board").innerHTML = data.notes.length
-      ? data.notes.slice().reverse().map((n, ri) => `
+    board.innerHTML = letters.length
+      ? letters.map(n => `
           <button type="button" class="env" aria-expanded="false" aria-label="Carta de ${esc(fmt.long.format(new Date(n.t)))}: abrir">
             <span class="body"></span><span class="flap"></span>
             <span class="wax"><svg aria-hidden="true"><use href="#s-${sealOf(n.stk)}"/></svg></span>
@@ -2014,27 +2264,281 @@ function initBibi(){
             <span class="note">${esc(n.text)}<small>${esc(fmt.long.format(new Date(n.t)))}</small></span>
           </button>`).join("")
       : `<p class="empty-note">Ainda não há cartas. A primeira vai deixá-lo muito contente.</p>`;
-    $("#hugCount").textContent = data.hugs ? `Já lhe mandaste ${plural(data.hugs, "abraço", "abraços")}.` : "";
+    formMsg.textContent = hugs ? `Já lhe mandaste ${plural(hugs, "abraço", "abraços")}.` : "";
   }
-  $("#board").addEventListener("click", e => {
+  async function refreshBoard(){
+    try{
+      const r = await Recados.readAll();
+      letters = r.msgs.filter(m => m.k === "recado" && typeof m.text === "string").sort((a, b) => b.t - a.t);
+      hugs = r.msgs.filter(m => m.k === "abraco").length;
+      renderBoard();
+    }catch(e){
+      board.innerHTML = `<p class="empty-note">Não foi possível abrir a caixa do correio. <button type="button" class="forget" id="retryBoard">Tentar outra vez</button></p>`;
+      $("#retryBoard").addEventListener("click", refreshBoard);
+    }
+  }
+  // cartas antigas, guardadas só neste navegador: vão para a caixa encriptadas, uma vez
+  async function migrateLocal(){
+    if(!data.notes.length) return;
+    try{
+      for(const n of data.notes) await Recados.send({k:"recado", text:String(n.text).slice(0, 240), stk:sealOf(n.stk), t:n.t});
+      data.notes = []; saveData();
+    }catch(e){}
+  }
+  board.addEventListener("click", e => {
     const env = e.target.closest(".env"); if(!env) return;
     const open = env.getAttribute("aria-expanded") !== "true";
     env.setAttribute("aria-expanded", open);
     env.setAttribute("aria-label", env.getAttribute("aria-label").replace(/: (abrir|fechar)$/, open ? ": fechar" : ": abrir"));
   });
-  $("#noteForm").addEventListener("submit", e => {
+  $("#noteForm").addEventListener("submit", async e => {
     e.preventDefault();
-    const ta = $("#noteText"), msg = ta.value.trim();
-    if(!msg){ $("#hugCount").textContent = "Escreve alguma coisa primeiro, nem que seja só um olá."; ta.focus(); return; }
-    data.notes.push({t:Date.now(), text:msg, stk:sticker});
-    saveData(); ta.value = "";
-    renderBoard();
-    hearts(...centerOf(e.submitter || $("#noteForm button[type=submit]")), 12);
+    const ta = $("#noteText"), msg = ta.value.trim(), btn = $("#noteForm button[type=submit]");
+    if(!msg){ formMsg.textContent = "Escreve alguma coisa primeiro, nem que seja só um olá."; ta.focus(); return; }
+    btn.disabled = true; btn.textContent = "A selar…";
+    try{
+      await Recados.send({k:"recado", text:msg, stk:sticker, t:Date.now()});
+      ta.value = "";
+      hearts(...centerOf(btn), 12);
+      await refreshBoard();
+      formMsg.textContent = "Carta selada e enviada.";
+    }catch(x){ formMsg.textContent = /429|Demasiados/.test(x.message) ? "Muitas cartas seguidas. Espera um bocadinho." : "Não foi possível enviar. A carta continua escrita, tenta outra vez."; }
+    finally{ btn.disabled = false; btn.textContent = "Selar a carta"; }
   });
-  $("#hugBtn").addEventListener("click", e => { data.hugs++; saveData(); renderBoard(); hearts(...centerOf(e.currentTarget), 14); });
-  renderBoard();
+  $("#hugBtn").addEventListener("click", async e => {
+    const btn = e.currentTarget;
+    hearts(...centerOf(btn), 14);
+    try{ await Recados.send({k:"abraco", t:Date.now()}); hugs++; renderBoard(); }
+    catch(x){ formMsg.textContent = "O abraço não chegou. Tenta outra vez."; }
+  });
+  board.innerHTML = `<p class="empty-note">A abrir a caixa do correio…</p>`;
+  migrateLocal().then(refreshBoard);
 
+  initSwandoku(hearts, centerOf);
   initGame(data, saveData, hearts, centerOf);
+}
+</script>
+
+<script>
+/* =========================================================
+   Swandoku — sudoku com símbolos em vez de números
+   ========================================================= */
+function initSwandoku(hearts, centerOf){
+  const NAMES = ["cisne", "cereja", "coração", "flor", "pena", "vela", "lua", "livro", "chave"];
+  const ART = ["um", "uma", "um", "uma", "uma", "uma", "uma", "um", "uma"];
+  const KEY = "java-swandoku-v1";
+  const st = store(KEY);
+  const GIVENS = {4:6, 6:14, 9:30};
+  const dims = n => n === 4 ? [2, 2] : n === 6 ? [2, 3] : [3, 3];   // [linhas, colunas] de cada caixa
+  const boxOf = (n, r, c) => { const [br, bc] = dims(n); return Math.floor(r / br) * (n / bc) + Math.floor(c / bc); };
+  const shuffle = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+
+  /* ---------- gerador ---------- */
+  // conta soluções até "limit", sempre pela casa com menos hipóteses
+  function countSolutions(g, n, limit){
+    const rows = new Array(n).fill(0), cols = new Array(n).fill(0), boxes = new Array(n).fill(0);
+    for(let i = 0; i < n * n; i++) if(g[i]){ const r = Math.floor(i / n), c = i % n, bit = 1 << g[i]; rows[r] |= bit; cols[c] |= bit; boxes[boxOf(n, r, c)] |= bit; }
+    const full = ((1 << (n + 1)) - 2);
+    let count = 0;
+    (function rec(){
+      if(count >= limit) return;
+      let best = -1, bestMask = 0, bestN = 99;
+      for(let i = 0; i < n * n; i++){
+        if(g[i]) continue;
+        const r = Math.floor(i / n), c = i % n, mask = full & ~(rows[r] | cols[c] | boxes[boxOf(n, r, c)]);
+        let k = 0; for(let m = mask; m; m &= m - 1) k++;
+        if(k < bestN){ best = i; bestMask = mask; bestN = k; if(k <= 1) break; }
+      }
+      if(best < 0){ count++; return; }
+      const r = Math.floor(best / n), c = best % n, b = boxOf(n, r, c);
+      for(let v = 1; v <= n; v++){
+        if(!(bestMask & (1 << v))) continue;
+        g[best] = v; rows[r] |= 1 << v; cols[c] |= 1 << v; boxes[b] |= 1 << v;
+        rec();
+        g[best] = 0; rows[r] &= ~(1 << v); cols[c] &= ~(1 << v); boxes[b] &= ~(1 << v);
+        if(count >= limit) return;
+      }
+    })();
+    return count;
+  }
+  function fillGrid(n){
+    const g = new Array(n * n).fill(0);
+    (function rec(i){
+      if(i === n * n) return true;
+      const r = Math.floor(i / n), c = i % n;
+      for(const v of shuffle([...Array(n)].map((_, k) => k + 1))){
+        let ok = true;
+        for(let j = 0; j < n && ok; j++) if(g[r * n + j] === v || g[j * n + c] === v) ok = false;
+        const [br, bc] = dims(n), r0 = r - r % br, c0 = c - c % bc;
+        for(let a = 0; a < br && ok; a++) for(let b = 0; b < bc && ok; b++) if(g[(r0 + a) * n + c0 + b] === v) ok = false;
+        if(!ok) continue;
+        g[i] = v;
+        if(rec(i + 1)) return true;
+        g[i] = 0;
+      }
+      return false;
+    })(0);
+    return g;
+  }
+  function makePuzzle(n){
+    const sol = fillGrid(n), puz = sol.slice();
+    let givens = n * n;
+    for(const i of shuffle([...Array(n * n).keys()])){
+      if(givens <= GIVENS[n]) break;
+      const keep = puz[i]; puz[i] = 0;
+      if(countSolutions(puz.slice(), n, 2) !== 1) puz[i] = keep; else givens--;
+    }
+    return {n, sol, puz, cur:puz.slice(), elapsed:0, hints:0, done:false};
+  }
+
+  /* ---------- estado ---------- */
+  let saved = st.get() || {};
+  let game = saved.game && saved.game.sol ? saved.game : null;
+  let best = saved.best || {};
+  let sel = -1, history = [], tick = 0, startedAt = 0;
+  const save = () => st.set({game, best});
+  const time = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+  const elapsedNow = () => game.elapsed + (startedAt ? (Date.now() - startedAt) / 1000 : 0);
+
+  const board = $("#sdBoard"), pal = $("#sdPalette"), status = $("#sdStatus"), clock = $("#sdClock");
+
+  function newGame(n){
+    board.setAttribute("aria-busy", "true");
+    status.textContent = "A preparar um tabuleiro novo…";
+    // deixa o texto aparecer antes de gerar (o 9×9 pode demorar um instante)
+    setTimeout(() => {
+      game = makePuzzle(n); sel = -1; history = []; startedAt = Date.now();
+      save(); render(); board.removeAttribute("aria-busy");
+      status.textContent = "Cada símbolo aparece uma vez por linha, por coluna e por caixa.";
+    }, 30);
+  }
+
+  function conflicts(){
+    const n = game.n, bad = new Set();
+    for(let i = 0; i < n * n; i++){
+      const v = game.cur[i]; if(!v) continue;
+      const r = Math.floor(i / n), c = i % n, b = boxOf(n, r, c);
+      for(let j = i + 1; j < n * n; j++){
+        if(game.cur[j] !== v) continue;
+        const r2 = Math.floor(j / n), c2 = j % n;
+        if(r === r2 || c === c2 || b === boxOf(n, r2, c2)){ bad.add(i); bad.add(j); }
+      }
+    }
+    return bad;
+  }
+
+  function render(){
+    const n = game.n, [br, bc] = dims(n), bad = conflicts();
+    const sr = sel >= 0 ? Math.floor(sel / n) : -1, sc = sel >= 0 ? sel % n : -1, sb = sel >= 0 ? boxOf(n, sr, sc) : -1;
+    const sv = sel >= 0 ? game.cur[sel] : 0;
+    board.style.setProperty("--n", n);
+    board.dataset.n = n;
+    board.classList.toggle("won", game.done);
+    let html = "";
+    for(let i = 0; i < n * n; i++){
+      const r = Math.floor(i / n), c = i % n, v = game.cur[i], given = !!game.puz[i];
+      const cls = ["sd-cell"];
+      if(given) cls.push("given");
+      if(r % br === 0 && r) cls.push("et");
+      if(c % bc === 0 && c) cls.push("el");
+      if(i === sel) cls.push("sel");
+      else if(sel >= 0 && (r === sr || c === sc || boxOf(n, r, c) === sb)) cls.push("peer");
+      if(sv && v === sv && i !== sel) cls.push("same");
+      if(bad.has(i) && !given) cls.push("bad");
+      const label = `Linha ${r + 1}, coluna ${c + 1}: ${v ? NAMES[v - 1] : "vazia"}${given ? ", fixa" : ""}${bad.has(i) && !given ? ", repetida" : ""}`;
+      html += `<button type="button" role="gridcell" class="${cls.join(" ")}" data-i="${i}" aria-label="${label}" tabindex="${i === (sel >= 0 ? sel : 0) ? 0 : -1}">${v ? `<svg aria-hidden="true"><use href="#d-${v}"/></svg>` : ""}</button>`;
+    }
+    board.innerHTML = html;
+    pal.innerHTML = [...Array(n)].map((_, k) => `<button type="button" class="sd-sym" data-v="${k + 1}" aria-label="Pôr ${NAMES[k]} (tecla ${k + 1})"><svg aria-hidden="true"><use href="#d-${k + 1}"/></svg><small>${k + 1}</small></button>`).join("") +
+      `<button type="button" class="sd-sym erase" data-v="0" aria-label="Apagar (tecla 0)"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><small>apagar</small></button>`;
+    document.querySelectorAll("#sdSize button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === n));
+    $("#sdUndo").disabled = !history.length || game.done;
+    $("#sdHint").disabled = game.done;
+    $("#sdBest").textContent = best[n] ? `melhor tempo: ${time(best[n])}` : "ainda sem recorde";
+    updateClock();
+  }
+
+  function updateClock(){ clock.textContent = time(elapsedNow()); }
+
+  function place(v){
+    if(sel < 0 || game.done || game.puz[sel]) return;
+    if(game.cur[sel] === v) return;
+    history.push([sel, game.cur[sel]]);
+    game.cur[sel] = v;
+    if(!startedAt) startedAt = Date.now();
+    checkWin(); save(); render();
+    const cell = board.querySelector(`[data-i="${sel}"]`); if(cell) cell.focus({preventScroll:true});
+  }
+
+  function checkWin(){
+    if(game.cur.every((v, i) => v === game.sol[i])){
+      game.elapsed = elapsedNow(); startedAt = 0; game.done = true;
+      const t = Math.round(game.elapsed), n = game.n, record = !best[n] || t < best[n];
+      if(record && !game.hints) best[n] = t;
+      status.textContent = `Resolvido em ${time(t)}${game.hints ? ` com ${game.hints} ${game.hints === 1 ? "pista" : "pistas"}` : ""}! ${record && !game.hints ? "Novo recorde." : "Os cisnes estão orgulhosos."}`;
+      hearts(...centerOf(board), 18);
+    } else if(game.cur.every(v => v)){
+      status.textContent = "O tabuleiro está cheio, mas há algum símbolo repetido. Procura os que estão marcados.";
+    }
+  }
+
+  board.addEventListener("click", e => {
+    const c = e.target.closest(".sd-cell"); if(!c) return;
+    sel = +c.dataset.i; render();
+    board.querySelector(`[data-i="${sel}"]`).focus({preventScroll:true});
+  });
+  pal.addEventListener("click", e => { const b = e.target.closest(".sd-sym"); if(b) place(+b.dataset.v); });
+  board.addEventListener("keydown", e => {
+    const n = game.n;
+    if(sel < 0) sel = 0;
+    const r = Math.floor(sel / n), c = sel % n;
+    const moves = {ArrowUp:[-1, 0], ArrowDown:[1, 0], ArrowLeft:[0, -1], ArrowRight:[0, 1]};
+    if(moves[e.key]){
+      e.preventDefault();
+      const [dr, dc] = moves[e.key];
+      sel = ((r + dr + n) % n) * n + (c + dc + n) % n; render();
+      board.querySelector(`[data-i="${sel}"]`).focus({preventScroll:true});
+    } else if(/^[1-9]$/.test(e.key) && +e.key <= n){ e.preventDefault(); place(+e.key); }
+    else if(["0", "Backspace", "Delete"].includes(e.key)){ e.preventDefault(); place(0); }
+  });
+  $("#sdSize").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    const n = +b.dataset.n;
+    if(game && !game.done && game.n !== n && game.cur.some((v, i) => v && !game.puz[i]) && !confirm("Começar um tabuleiro novo? Perdes o que já preencheste.")) return;
+    newGame(n);
+  });
+  $("#sdNew").addEventListener("click", () => {
+    if(game && !game.done && game.cur.some((v, i) => v && !game.puz[i]) && !confirm("Começar um tabuleiro novo? Perdes o que já preencheste.")) return;
+    newGame(game ? game.n : 6);
+  });
+  $("#sdUndo").addEventListener("click", () => {
+    const h = history.pop(); if(!h) return;
+    game.cur[h[0]] = h[1]; sel = h[0]; save(); render();
+  });
+  $("#sdHint").addEventListener("click", () => {
+    if(game.done) return;
+    const n = game.n;
+    let i = sel >= 0 && !game.puz[sel] && game.cur[sel] !== game.sol[sel] ? sel : -1;
+    if(i < 0){ const empty = [...Array(n * n).keys()].filter(k => game.cur[k] !== game.sol[k]); i = empty[Math.floor(Math.random() * empty.length)]; }
+    if(i === undefined || i < 0) return;
+    history.push([i, game.cur[i]]);
+    game.cur[i] = game.sol[i]; game.hints++; sel = i;
+    status.textContent = `Pista: ali vai ${ART[game.sol[i] - 1]} ${NAMES[game.sol[i] - 1]}.`;
+    checkWin(); save(); render();
+  });
+
+  // o relógio só conta com o tabuleiro à vista
+  const io = new IntersectionObserver(([en]) => {
+    if(!game || game.done) return;
+    if(en.isIntersecting && !$("#mBibi").hidden){ if(!startedAt) startedAt = Date.now(); }
+    else if(startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); }
+  });
+  io.observe(board);
+  tick = setInterval(() => { if(game && startedAt && !game.done) updateClock(); }, 1000);
+  window.addEventListener("pagehide", () => { if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); } });
+
+  if(game){ startedAt = 0; render(); status.textContent = game.done ? "Este já está resolvido. Carrega em «Novo» para outro." : "Continua de onde ficaste."; }
+  else newGame(6);
 }
 </script>
 
