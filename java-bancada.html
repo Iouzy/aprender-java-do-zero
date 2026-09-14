@@ -2,231 +2,625 @@
 <html lang="pt-PT">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0E1016" id="themeColor">
+<meta name="color-scheme" content="dark light">
 <title>Java — bancada de trabalho</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Fredoka:wght@400;500;600&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
+/* =========================================================
+   Tokens — modo bancada (escuro, moderno)
+   ========================================================= */
 :root{
-  --bg:#0F1A1E; --surface:#15242A; --surface2:#1B2F36; --raise:#223A43;
-  --line:#26404A; --line-soft:#1D323A;
-  --text:#E7F0F2; --muted:#8DA6AE; --dim:#5F7982;
-  --amber:#F0A93B; --amber-ink:#3A2A0E; --green:#5FC79B; --red:#F0736F;
-  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
-  --sans:"IBM Plex Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
-  --r:8px;
+  --bg:#0E1016; --bg2:#12151D; --surface:#161A23; --surface2:#1C212C; --raise:#252B38;
+  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.13);
+  --text:#ECEEF4; --muted:#9AA1B2; --dim:#687084;
+  --accent:#A3B0FF; --accent-2:#7C8CF5; --accent-ink:#141833;
+  --mint:#74E0B5; --amber:#F7C07A; --red:#FF8D8D;
+  --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"Geist Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
+  --ease-out:cubic-bezier(.23,1,.32,1);
+  --ease-io:cubic-bezier(.77,0,.175,1);
+  --r-shell:22px; --r-card:16px; --r-ctl:10px;
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--text);font:16px/1.55 var(--sans);-webkit-font-smoothing:antialiased}
+html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:dark}
+html:has(body[data-mode=bibi]){color-scheme:light}
+button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.skip{position:absolute;left:12px;top:-60px;z-index:100;padding:10px 14px;border-radius:10px;background:var(--text);color:var(--bg);font-weight:600;text-decoration:none}
+.skip:focus{top:12px}
+section,[id]{scroll-margin-top:96px}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;min-height:100dvh}
 button,input,select,textarea{font:inherit;color:inherit}
-button{cursor:pointer;background:none;border:none}
-h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.015em}
+button{cursor:pointer;background:none;border:none;padding:0}
+h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
 p{margin:0}
-.wrap{width:min(1200px,calc(100% - 40px));margin:0 auto}
+::selection{background:var(--accent);color:var(--accent-ink)}
+.wrap{width:min(1180px,calc(100% - 40px));margin:0 auto}
+.num{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 
-/* ---------- topo ---------- */
-.topbar{position:sticky;top:0;z-index:20;background:rgba(15,26,30,.9);backdrop-filter:blur(12px);border-bottom:1px solid var(--line-soft)}
-.topbar .wrap{display:flex;align-items:center;gap:16px;height:58px}
-.mark{font:500 14px/1 var(--mono);color:var(--muted);display:flex;align-items:center;gap:9px}
-.mark b{color:var(--text);font-weight:600}
-.mark i{width:7px;height:7px;border-radius:50%;background:var(--amber);font-style:normal}
-.topbar .spacer{flex:1}
-.ghost{font:500 13px/1 var(--sans);color:var(--muted);border:1px solid var(--line);border-radius:6px;padding:8px 11px}
-.ghost:hover{color:var(--text);border-color:var(--raise);background:var(--surface)}
+/* ---------- barra de topo partilhada ---------- */
+.topbar{position:sticky;top:0;z-index:40;padding:12px 0}
+.topbar .wrap{display:flex;align-items:center;gap:12px;padding:6px 6px 6px 16px;border-radius:999px;
+  background:rgba(22,26,35,.72);backdrop-filter:blur(16px) saturate(140%);-webkit-backdrop-filter:blur(16px) saturate(140%);
+  border:1px solid var(--line);box-shadow:0 10px 30px -12px rgba(0,0,0,.5)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}
+.brand svg{width:22px;height:22px}
+.brand small{font:400 13px var(--mono);color:var(--dim)}
+.spacer{flex:1}
 
-/* ---------- hero / build status ---------- */
-.build{padding:44px 0 32px;border-bottom:1px solid var(--line-soft)}
-.build h1{font-size:clamp(26px,4vw,40px);line-height:1.1;max-width:16ch}
-.build .sub{color:var(--muted);margin-top:10px;max-width:56ch;font-size:15px}
-.gauge{margin-top:30px;display:flex;align-items:flex-end;gap:26px;flex-wrap:wrap}
-.gauge .big{font:600 clamp(44px,8vw,74px)/1 var(--mono);letter-spacing:-.04em;color:var(--amber)}
-.gauge .big span{font-size:.38em;color:var(--muted);margin-left:6px;letter-spacing:0}
-.ticks{display:flex;gap:5px;flex:1;min-width:200px;padding-bottom:10px}
-.tick{flex:1;height:26px;border-radius:3px;background:var(--surface2);border:1px solid var(--line-soft);position:relative}
-.tick.on{background:var(--amber);border-color:var(--amber)}
-.tick:hover{outline:1px solid var(--raise)}
-.legend{display:flex;gap:20px;margin-top:16px;flex-wrap:wrap;font:400 13px/1 var(--mono);color:var(--dim)}
-.legend b{color:var(--text);font-weight:500}
+/* interruptor de modo — a "aba lá em cima" */
+.modes{position:relative;display:grid;grid-template-columns:1fr 1fr;padding:4px;border-radius:999px;background:rgba(255,255,255,.05);border:1px solid var(--line)}
+.modes .thumb{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:999px;background:var(--text);
+  transition:transform .42s var(--ease-drawer,cubic-bezier(.32,.72,0,1)),background-color .3s ease}
+.modes button{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:7px;padding:8px 16px;border-radius:999px;
+  font-weight:600;font-size:14px;color:var(--muted);white-space:nowrap;transition:color .25s ease}
+.modes button svg{width:16px;height:16px;flex:none}
+.modes button[aria-pressed=true]{color:#10131A}
+body[data-mode=bibi] .modes .thumb{transform:translateX(100%)}
+.modes button:active{transform:scale(.97)}
 
-/* ---------- tabs ---------- */
-.tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:1px solid var(--line-soft);position:sticky;top:58px;background:var(--bg);z-index:15}
-.tab{padding:14px 16px;font:500 14px/1 var(--sans);color:var(--muted);border-bottom:2px solid transparent;white-space:nowrap}
-.tab:hover{color:var(--text)}
-.tab[aria-selected=true]{color:var(--text);border-bottom-color:var(--amber)}
-.pane{padding:34px 0 80px}
+.menu{position:relative}
+.icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);transition:background-color .2s ease,color .2s ease}
+.icon-btn svg{width:18px;height:18px}
+@media (hover:hover) and (pointer:fine){.icon-btn:hover{background:rgba(255,255,255,.07);color:var(--text)}}
+.menu-list{position:absolute;right:0;top:calc(100% + 10px);min-width:220px;padding:6px;border-radius:14px;background:var(--surface2);border:1px solid var(--line2);
+  box-shadow:0 20px 40px -12px rgba(0,0,0,.6);transform-origin:top right;transition:opacity .18s var(--ease-out),transform .18s var(--ease-out)}
+.menu-list[data-open=false]{opacity:0;transform:scale(.96) translateY(-4px);pointer-events:none}
+.menu-list button{display:block;width:100%;text-align:left;padding:9px 12px;border-radius:9px;font-size:14px;color:var(--text)}
+.menu-list button:hover,.menu-list button:focus-visible{background:rgba(255,255,255,.06)}
+.menu-list .danger{color:var(--red)}
+body[data-mode=bibi] .menu{display:none}
+
+/* =========================================================
+   Modo bancada
+   ========================================================= */
+.m-bancada[hidden],.m-bibi[hidden]{display:none!important}
+.hero{padding:34px 0 26px}
+.hero h1{font-size:clamp(28px,4.4vw,46px);line-height:1.05;max-width:18ch}
+.hero .sub{color:var(--muted);margin-top:12px;max-width:58ch;font-size:16px}
+
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;margin-top:28px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:var(--r-card);padding:20px;position:relative;min-width:0}
+.card h2{font-size:15px;font-weight:600;color:var(--text)}
+.card .hint{color:var(--dim);font-size:13px;margin-top:2px}
+.c-progress{grid-column:span 5;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.c-activity{grid-column:span 7}
+.c-stat{grid-column:span 3}
+.c-bibi{grid-column:span 3;cursor:pointer;text-align:left;transition:border-color .2s ease}
+@media (hover:hover) and (pointer:fine){.c-bibi:hover{border-color:rgba(255,160,190,.35)}}
+
+.ring{position:relative;width:132px;height:132px}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .track{stroke:rgba(255,255,255,.07)}
+.ring .bar{stroke:url(#ringGrad);stroke-linecap:round;transition:stroke-dashoffset .9s var(--ease-out)}
+.ring .val{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .val b{font-size:34px;font-weight:600;letter-spacing:-.04em;line-height:1}
+.ring .val small{display:block;color:var(--dim);font-size:12px;margin-top:2px}
+.ticks{display:flex;gap:4px;margin-top:14px;flex-wrap:wrap}
+.tick{width:14px;height:22px;border-radius:4px;background:rgba(255,255,255,.06);transition:background-color .3s ease}
+.tick.on{background:var(--accent)}
+
+.heat-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.heat-meta{display:flex;gap:18px;flex-wrap:wrap;color:var(--muted);font-size:13px}
+.heat-meta b{color:var(--text);font-weight:600}
+.heat-scroll{overflow-x:auto;margin-top:16px;padding-bottom:4px}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);gap:4px;width:max-content}
+.heat i{width:14px;height:14px;border-radius:4px;background:rgba(255,255,255,.05);display:block}
+.heat i[data-l="1"]{background:#3B4380}.heat i[data-l="2"]{background:#5E6BD6}.heat i[data-l="3"]{background:var(--accent)}
+.heat i.today{outline:1px solid var(--line2);outline-offset:1px}
+.heat-legend{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:12px;margin-top:10px}
+.heat-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+
+.stat b{display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;margin-top:6px}
+.stat span{color:var(--muted);font-size:13px}
+
+/* separadores com indicador deslizante */
+.tabs{position:sticky;top:74px;z-index:30;margin-top:26px;display:flex;gap:2px;padding:4px;border-radius:14px;background:rgba(22,26,35,.8);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);overflow-x:auto;scrollbar-width:none;width:max-content;max-width:100%}
+.tabs::-webkit-scrollbar{display:none}
+.tab-ind{position:absolute;top:4px;bottom:4px;left:0;border-radius:10px;background:rgba(255,255,255,.08);transition:transform .35s var(--ease-out),width .35s var(--ease-out)}
+.tab{position:relative;z-index:1;padding:9px 15px;border-radius:10px;font-weight:500;font-size:14px;color:var(--muted);white-space:nowrap;transition:color .2s ease}
+.tab[aria-selected=true]{color:var(--text)}
+.pane{padding:26px 0 70px}
 .pane[hidden]{display:none}
 
-/* ---------- blocos ---------- */
-.cols{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.block{border:1px solid var(--line-soft);border-radius:var(--r);background:var(--surface);padding:22px}
-.block h2{font-size:17px;margin-bottom:4px}
-.block .desc{color:var(--muted);font-size:14px;margin-bottom:18px;max-width:60ch}
-.skill{display:flex;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line-soft)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.card .desc{color:var(--muted);font-size:14px;margin:4px 0 16px;max-width:62ch}
+.skill{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
 .skill:last-child{border-bottom:none}
 .skill code{font:500 14px var(--mono);flex:1}
-.pill{font:500 11px/1 var(--mono);padding:5px 8px;border-radius:4px;border:1px solid var(--line);color:var(--muted)}
-.pill.g{color:var(--green);border-color:#2C5A47;background:#132720}
-.pill.y{color:var(--amber);border-color:#5A4620;background:#2A2011}
-.callout{border-left:2px solid var(--amber);padding:2px 0 2px 16px;margin-bottom:18px}
+.pill{font-size:12px;font-weight:500;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,.06);color:var(--muted)}
+.pill.g{color:var(--mint);background:rgba(116,224,181,.1)}
+.pill.y{color:var(--amber);background:rgba(247,192,122,.1)}
+.callout{border-radius:12px;background:rgba(163,176,255,.07);padding:14px 16px;margin-bottom:16px}
 .callout b{display:block;margin-bottom:3px}
 .callout p{color:var(--muted);font-size:14px}
-.checks{list-style:none;padding:0;margin:0;font:400 14px/1.8 var(--mono)}
-.checks li{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line-soft);padding:6px 0}
-.checks b{color:var(--amber);font-weight:500}
+.checks{list-style:none;padding:0;margin:0}
+.checks li{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding:9px 0;font:400 14px var(--mono)}
+.checks b{color:var(--accent);font-weight:500}
 .rules{margin:0;padding-left:1.4em;color:var(--muted);font-size:15px}
-.rules li{margin:7px 0}
-.rules li::marker{color:var(--dim);font:500 13px var(--mono)}
+.rules li{margin:8px 0}
+.rules li::marker{color:var(--dim)}
+.notes-bibi{display:grid;gap:8px;margin-top:4px}
+.notes-bibi .nb{padding:12px 14px;border-radius:12px;background:rgba(255,160,190,.08);color:#F6D5E0;font-size:14px}
+.notes-bibi .nb small{display:block;color:var(--dim);font-size:12px;margin-top:4px}
 
-/* ---------- exercícios ---------- */
-.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
-input[type=search]{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:9px 12px;font-size:14px;min-width:210px;flex:1;max-width:320px}
-input[type=search]::placeholder{color:var(--dim)}
-.seg{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
-.seg button{padding:9px 13px;font:500 13px/1 var(--sans);color:var(--muted);border-right:1px solid var(--line)}
-.seg button:last-child{border-right:none}
-.seg button[aria-pressed=true]{background:var(--surface2);color:var(--text)}
+/* exercícios */
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.search{position:relative;flex:1;max-width:340px;min-width:200px}
+.search input{width:100%;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-ctl);padding:10px 40px 10px 14px;font-size:14px}
+.search input::placeholder{color:var(--dim)}
+.search kbd{position:absolute;right:10px;top:50%;transform:translateY(-50%);font:500 11px var(--mono);color:var(--dim);border:1px solid var(--line2);border-radius:5px;padding:2px 6px}
+.seg{display:flex;padding:3px;border-radius:var(--r-ctl);background:var(--surface);border:1px solid var(--line)}
+.seg button{padding:7px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--muted)}
+.seg button[aria-pressed=true]{background:rgba(255,255,255,.08);color:var(--text)}
 .count{margin-left:auto;font:400 13px var(--mono);color:var(--dim)}
 
-.ex{border:1px solid var(--line-soft);border-radius:var(--r);background:var(--surface);margin-bottom:9px;overflow:hidden}
-.ex.open{border-color:var(--line)}
-.ex-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 16px}
-.ex-head input[type=checkbox]{width:17px;height:17px;accent-color:var(--amber);cursor:pointer}
+.ex{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:8px;overflow:hidden;transition:border-color .2s ease}
+.ex.open{border-color:var(--line2)}
+.ex-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 16px}
+.check{appearance:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line2);display:grid;place-items:center;cursor:pointer;transition:background-color .2s ease,border-color .2s ease,transform .12s ease}
+.check:active{transform:scale(.9)}
+.check:checked{background:var(--accent);border-color:var(--accent)}
+.check:checked::after{content:"";width:10px;height:6px;border:2px solid var(--accent-ink);border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
 .ex-name{font:500 14px var(--mono);display:block}
-.ex.done .ex-name{color:var(--muted);text-decoration:line-through}
+.ex.done .ex-name{color:var(--muted)}
 .ex-desc{color:var(--muted);font-size:13px;display:block;margin-top:2px}
-.open-btn{font:500 12px/1 var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:8px 11px;white-space:nowrap}
-.open-btn:hover{color:var(--amber);border-color:var(--amber-ink)}
-.ex-body{border-top:1px solid var(--line-soft);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr)}
+.ex-folder{font:400 11px var(--mono);color:var(--dim);margin-left:8px}
+.open-btn{font-size:13px;font-weight:500;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;white-space:nowrap;transition:color .2s ease,border-color .2s ease}
+@media (hover:hover) and (pointer:fine){.open-btn:hover{color:var(--text);border-color:rgba(255,255,255,.25)}}
+.open-btn:active{transform:scale(.97)}
+.ex-body{border-top:1px solid var(--line);display:grid;grid-template-columns:minmax(0,1.1fr) minmax(300px,.9fr)}
 .ex-body[hidden]{display:none}
 
-/* ---------- código ---------- */
-.src{border-right:1px solid var(--line-soft);min-width:0;display:flex;flex-direction:column}
-.bar{height:36px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line-soft);font:400 12px var(--mono);color:var(--dim);background:var(--surface2)}
-.code{overflow:auto;max-height:440px;padding:10px 0;font:400 13px/1.65 var(--mono)}
+/* código + terminal */
+.src{border-right:1px solid var(--line);min-width:0;display:flex;flex-direction:column}
+.bar{height:38px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-bottom:1px solid var(--line);font:400 12px var(--mono);color:var(--dim);background:var(--bg2)}
+.code{overflow:auto;max-height:440px;padding:10px 0;font:400 13px/1.7 var(--mono)}
 .cl{display:grid;grid-template-columns:44px 1fr;white-space:pre;border-left:2px solid transparent}
-.cl .no{color:#41626D;text-align:right;padding-right:12px;user-select:none}
-.cl .tx{padding-right:14px;color:#CFE0E4}
-.cl.hit{background:#1E3A44;border-left-color:var(--amber)}
-.cl.hit .no{color:var(--amber)}
-
-/* ---------- terminal ---------- */
-.term{display:flex;flex-direction:column;min-width:0;background:#0B1418}
+.cl .no{color:#4A5266;text-align:right;padding-right:12px;user-select:none}
+.cl .tx{padding-right:14px;color:#D5DAE6}
+.cl.hit{background:rgba(163,176,255,.1);border-left-color:var(--accent)}
+.cl.hit .no{color:var(--accent)}
+.term{display:flex;flex-direction:column;min-width:0;background:#0A0C11}
 .term-out{flex:1;overflow:auto;padding:14px;font:400 13px/1.7 var(--mono);min-height:270px;max-height:440px}
 .ln{white-space:pre-wrap;word-break:break-word}
-.ln.sys{color:var(--dim)}
-.ln.note{color:#7FA7B3;font-style:italic}
-.ln.in{color:var(--amber)}
-.ln.err{color:var(--red)}
-.ln.ok{color:var(--green)}
+.ln.sys{color:var(--dim)} .ln.note{color:#8E9BD8;font-style:italic} .ln.in{color:var(--amber)} .ln.err{color:var(--red)} .ln.ok{color:var(--mint)}
 .vars{display:flex;gap:6px;flex-wrap:wrap;padding:0 14px 12px}
-.var{font:400 11px/1 var(--mono);border:1px solid var(--line-soft);background:var(--surface);border-radius:4px;padding:5px 7px;color:var(--muted)}
+.var{font:400 11px/1 var(--mono);background:var(--surface2);border-radius:6px;padding:6px 8px;color:var(--muted)}
 .var b{color:var(--text);font-weight:500}
-.ask{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line-soft);background:#0E1B20}
+.ask{display:flex;gap:8px;padding:10px 14px;border-top:1px solid var(--line)}
 .ask[hidden]{display:none}
-.ask input{flex:1;min-width:0;background:#060D10;border:1px solid var(--line);border-radius:5px;padding:8px 10px;font:400 13px var(--mono)}
-.ask button{background:var(--amber);color:var(--amber-ink);font:600 13px/1 var(--sans);border-radius:5px;padding:0 14px}
-.ctrl{display:flex;gap:8px;align-items:center;padding:10px 14px;border-top:1px solid var(--line-soft);flex-wrap:wrap}
-.ctrl .run{background:var(--amber);color:var(--amber-ink);font:600 13px/1 var(--sans);border-radius:5px;padding:9px 13px}
+.ask input{flex:1;min-width:0;background:#05070A;border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font:400 13px var(--mono)}
+.ask button,.ctrl .run{background:var(--accent);color:var(--accent-ink);font-weight:600;font-size:13px;border-radius:999px;padding:9px 15px;transition:transform .12s ease}
+.ask button:active,.ctrl .run:active,.ctrl .alt:active{transform:scale(.97)}
+.ctrl{display:flex;gap:8px;align-items:center;padding:10px 14px;border-top:1px solid var(--line);flex-wrap:wrap}
 .ctrl .run:disabled{background:var(--surface2);color:var(--dim);cursor:not-allowed}
-.ctrl .alt{font:500 13px/1 var(--sans);color:var(--muted);border:1px solid var(--line);border-radius:5px;padding:9px 12px}
-.ctrl .alt:hover{color:var(--text)}
+.ctrl .alt{font-size:13px;font-weight:500;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:8px 13px}
+.ctrl .alt:disabled{opacity:.45;cursor:not-allowed}
 .ctrl .pos{margin-left:auto;font:400 12px var(--mono);color:var(--dim)}
 
-/* ---------- roadmap ---------- */
-.road{border-left:1px solid var(--line);padding-left:0;list-style:none;margin:0}
-.ph{position:relative;padding:0 0 22px 28px}
-.ph::before{content:"";position:absolute;left:-5px;top:6px;width:9px;height:9px;border-radius:50%;background:var(--bg);border:1px solid var(--line)}
-.ph.now::before{background:var(--amber);border-color:var(--amber)}
-.ph.now{padding-bottom:26px}
+/* percurso */
+.road{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.ph{padding:14px 16px;border-radius:14px;background:var(--surface2);border:1px solid transparent}
+.ph.now{border-color:rgba(163,176,255,.45);background:rgba(163,176,255,.08)}
 .ph .n{font:500 12px var(--mono);color:var(--dim)}
-.ph h3{font-size:16px;margin:1px 0 3px}
-.ph p{color:var(--muted);font-size:14px;max-width:62ch}
-.ph .tag{font:500 11px var(--mono);color:var(--amber);margin-left:8px}
+.ph h3{font-size:15px;margin:4px 0}
+.ph p{color:var(--muted);font-size:13px}
+.ph .tag{font-size:11px;font-weight:600;color:var(--accent);margin-left:8px}
 
-textarea{width:100%;min-height:190px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:13px;font:400 14px/1.7 var(--mono);resize:vertical}
-textarea:focus,input:focus,button:focus-visible,.tab:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
-footer{border-top:1px solid var(--line-soft);padding:22px 0 40px;font:400 12px var(--mono);color:var(--dim)}
+textarea.nb-area{width:100%;min-height:200px;background:var(--bg2);border:1px solid var(--line);border-radius:12px;padding:14px;font:400 14px/1.7 var(--mono);resize:vertical}
+footer{padding:26px 0 44px;color:var(--dim);font-size:12px}
 
-@media(max-width:900px){
+@media(max-width:980px){
+  .c-progress,.c-activity{grid-column:span 12}
+  .c-stat,.c-bibi{grid-column:span 6}
   .cols{grid-template-columns:1fr}
   .ex-body{grid-template-columns:1fr}
-  .src{border-right:none;border-bottom:1px solid var(--line-soft)}
+  .src{border-right:none;border-bottom:1px solid var(--line)}
   .code{max-height:300px}
 }
-@media(max-width:560px){
-  .wrap{width:calc(100% - 26px)}
+@media(max-width:620px){
+  .wrap{width:calc(100% - 28px)}
+  .brand small,.brand .bt{display:none}
+  .modes button{padding:8px 11px;font-size:13px}
+  .c-progress{grid-template-columns:1fr;justify-items:start}
   .ex-head{grid-template-columns:auto minmax(0,1fr);row-gap:10px}
-  .open-btn{grid-column:2}
-  .gauge{gap:16px}
+  .open-btn{grid-column:2;justify-self:start}
+  .search kbd{display:none}
+  .tabs{top:70px}
 }
-@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;scroll-behavior:auto}}
+</style>
+<style>
+/* =========================================================
+   Modo Bibi — lago ao amanhecer, cisnes e cerejas
+   ========================================================= */
+body[data-mode=bibi]{
+  --b-sky:#FCEEF1; --b-sky2:#EAF4F7; --b-paper:#FFFBFC; --b-blush:#F9DDE4; --b-blush2:#F3C4D0;
+  --b-cherry:#C9243F; --b-cherry-d:#8A1230; --b-leaf:#5B8F4E; --b-water:#8CC4D2; --b-water-d:#5E9FB3;
+  --b-ink:#3B2233; --b-ink2:#76596A; --b-beak:#F08B35;
+  --round:"Fredoka","Nunito",ui-rounded,system-ui,sans-serif;
+  --soft:"Nunito",ui-rounded,system-ui,sans-serif;
+  background:linear-gradient(180deg,var(--b-sky) 0,#FFF7F9 520px,var(--b-paper) 100%);
+  color:var(--b-ink);font-family:var(--soft);font-size:16px;
+}
+body[data-mode=bibi] ::selection{background:var(--b-cherry);color:#fff}
+body[data-mode=bibi] :focus-visible{outline-color:var(--b-cherry)}
+body[data-mode=bibi] .topbar .wrap{background:rgba(255,255,255,.7);border-color:rgba(201,36,63,.12);box-shadow:0 12px 30px -16px rgba(138,18,48,.25)}
+body[data-mode=bibi] .brand{font-family:var(--round);font-weight:600;color:var(--b-ink)}
+body[data-mode=bibi] .brand small{color:var(--b-ink2);font-family:var(--soft)}
+body[data-mode=bibi] .modes{background:rgba(201,36,63,.06);border-color:rgba(201,36,63,.12)}
+body[data-mode=bibi] .modes .thumb{background:var(--b-cherry)}
+body[data-mode=bibi] .modes button{color:var(--b-ink2);font-family:var(--round);font-weight:500}
+body[data-mode=bibi] .modes button[aria-pressed=true]{color:#fff}
+
+.m-bibi{padding-bottom:40px}
+.m-bibi h2{font-family:var(--round);font-weight:600;font-size:clamp(24px,3vw,32px);letter-spacing:-.01em;color:var(--b-ink)}
+.m-bibi .lead{color:var(--b-ink2);font-size:17px;margin-top:6px;max-width:56ch}
+.b-sec{margin-top:64px}
+.b-card{background:#fff;border-radius:28px;padding:26px;box-shadow:0 1px 0 rgba(201,36,63,.06),0 18px 40px -26px rgba(138,18,48,.28)}
+.b-btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--round);font-weight:500;font-size:16px;padding:12px 20px;border-radius:999px;
+  background:var(--b-cherry);color:#fff;transition:transform .14s var(--ease-out),background-color .2s ease;box-shadow:0 8px 18px -10px rgba(201,36,63,.7)}
+.b-btn svg{width:18px;height:18px}
+.b-btn:active{transform:scale(.96)}
+@media (hover:hover) and (pointer:fine){.b-btn:hover{background:#B81E38}}
+.b-btn.soft{background:var(--b-blush);color:var(--b-cherry-d);box-shadow:none}
+@media (hover:hover) and (pointer:fine){.b-btn.soft:hover{background:var(--b-blush2)}}
+.b-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ---------- herói: o lago ---------- */
+.pond{position:relative;margin-top:8px;border-radius:36px;overflow:hidden;background:var(--b-sky2);box-shadow:0 30px 60px -40px rgba(94,159,179,.8)}
+.pond svg.scene{display:block;width:100%;height:auto;aspect-ratio:1000/520;touch-action:manipulation;cursor:pointer;user-select:none}
+.pond-text{position:absolute;left:clamp(20px,4vw,48px);top:clamp(20px,4vw,44px);max-width:min(430px,44%)}
+.pond-text h1{font-family:var(--round);font-weight:600;font-size:clamp(34px,5.4vw,64px);line-height:1;letter-spacing:-.02em;color:var(--b-ink)}
+.pond-text p{margin-top:12px;font-size:clamp(15px,1.6vw,18px);color:var(--b-ink2)}
+.pond-hint{position:absolute;right:18px;bottom:16px;font-size:13px;font-weight:700;color:#fff;background:rgba(59,34,51,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);padding:6px 12px;border-radius:999px}
+.bubble{position:absolute;z-index:3;transform:translate(-50%,-100%);padding:10px 14px;border-radius:16px;background:#fff;color:var(--b-ink);font-weight:700;font-size:14px;width:max-content;max-width:240px;text-align:center;
+  box-shadow:0 12px 24px -12px rgba(59,34,51,.35);pointer-events:none;transition:opacity .2s var(--ease-out),transform .2s var(--ease-out)}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-6px;width:12px;height:12px;background:#fff;transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.bubble[data-show=false]{opacity:0;transform:translate(-50%,-90%) scale(.96)}
+.swan-g{transition:transform 1.1s cubic-bezier(.32,.72,0,1)}
+.swan-bob{animation:bob 4.2s ease-in-out infinite}
+.swan-bob.b2{animation-delay:-2.1s}
+@keyframes bob{50%{transform:translateY(5px) rotate(-.6deg)}}
+.scene g[tabindex]{outline:none}
+.scene g[tabindex]:focus-visible use{filter:drop-shadow(0 0 3px #C9243F) drop-shadow(0 0 3px #C9243F)}
+.cherry-hang{transform-box:fill-box;transform-origin:50% 0;animation:sway 5s ease-in-out infinite;cursor:pointer}
+@keyframes sway{50%{transform:rotate(3deg)}}
+.float-heart{position:fixed;z-index:80;pointer-events:none;width:26px;height:26px;margin:-13px 0 0 -13px}
+
+/* ---------- veredicto ---------- */
+.verdict{display:grid;grid-template-columns:auto 1fr;gap:26px;align-items:center;margin-top:18px}
+.v-swan{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 50% 70%,#DDEFF4 0 58%,var(--b-sky2) 59%);display:grid;place-items:center;cursor:pointer;transition:transform .15s var(--ease-out)}
+.v-swan:active{transform:scale(.95)}
+.v-swan svg{width:120px;height:120px}
+.v-title{font-family:var(--round);font-weight:600;font-size:clamp(24px,3.2vw,34px);line-height:1.1;color:var(--b-ink)}
+.v-text{color:var(--b-ink2);margin-top:8px;font-size:17px;max-width:52ch}
+.meter{margin-top:18px;max-width:520px}
+.meter-track{position:relative;height:14px;border-radius:999px;background:linear-gradient(90deg,#DCE6EA,#F6C9D4 55%,var(--b-cherry))}
+.meter-dot{position:absolute;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#fff;box-shadow:0 4px 10px -2px rgba(59,34,51,.35);display:grid;place-items:center;transition:left 1s var(--ease-out)}
+.meter-dot svg{width:16px;height:16px}
+.meter-labels{display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--b-ink2);margin-top:8px}
+.week{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.wday{width:44px;text-align:center;font-size:12px;font-weight:700;color:var(--b-ink2)}
+.wday i{display:grid;place-items:center;width:44px;height:44px;border-radius:14px;background:var(--b-sky2);margin-bottom:4px}
+.wday.on i{background:var(--b-blush)}
+.wday i svg{width:26px;height:26px}
+.wday.today i{box-shadow:inset 0 0 0 2px var(--b-cherry)}
+.facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:22px}
+.fact{background:var(--b-sky);border-radius:20px;padding:14px 16px}
+.fact b{display:block;font-family:var(--round);font-weight:600;font-size:30px;line-height:1;color:var(--b-cherry-d)}
+.fact span{font-size:14px;font-weight:600;color:var(--b-ink2)}
+
+/* ---------- calendário das cerejas ---------- */
+.cal-wrap{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);gap:18px;margin-top:22px;align-items:start}
+.cal-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-head h3{font-family:var(--round);font-weight:600;font-size:22px}
+.nav-btn{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--b-sky);color:var(--b-cherry-d);transition:transform .12s ease,background-color .2s ease}
+.nav-btn svg{width:18px;height:18px}
+.nav-btn:active{transform:scale(.92)}
+.nav-btn:disabled{opacity:.35;cursor:not-allowed}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.cal .dow{text-align:center;font-size:12px;font-weight:800;color:var(--b-ink2);padding-bottom:4px}
+.day{position:relative;aspect-ratio:1;border-radius:16px;background:#FBF4F6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-weight:700;font-size:14px;color:var(--b-ink2);
+  transition:transform .14s var(--ease-out),background-color .2s ease,box-shadow .2s ease}
+.day:disabled{background:transparent;cursor:default}
+.day.has{background:var(--b-blush);color:var(--b-cherry-d)}
+.day.tidy{background:#E9F2EA;color:#3F6B38}
+.day svg{width:clamp(16px,45%,28px);height:clamp(16px,45%,28px);flex:none}
+.day.today{box-shadow:inset 0 0 0 2px var(--b-ink2)}
+.day[aria-pressed=true]{background:#fff;color:var(--b-cherry-d);box-shadow:inset 0 0 0 3px var(--b-cherry),0 10px 18px -10px rgba(201,36,63,.7)}
+.day:not(:disabled):active{transform:scale(.94)}
+.day .n-x{position:absolute;top:4px;right:6px;font-size:10px;font-weight:800}
+.cal-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:14px;font-size:13px;font-weight:600;color:var(--b-ink2)}
+.cal-legend span{display:inline-flex;align-items:center;gap:6px}
+.cal-legend i{width:14px;height:14px;border-radius:5px;display:inline-block}
+
+.diary{position:sticky;top:96px}
+.diary-date{font-family:var(--round);font-weight:600;font-size:22px;line-height:1.15}
+.diary-sum{color:var(--b-ink2);margin-top:4px}
+.diary-list{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.d-item{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start;padding:12px;border-radius:18px;background:#FBF4F6;animation:pop .35s var(--ease-out) both}
+.d-item.tidy{background:#F1F7F1}
+.d-item svg{width:40px;height:40px}
+.d-item b{display:block;font-family:var(--round);font-weight:600;font-size:17px;color:var(--b-ink)}
+.d-item p{font-size:15px;color:var(--b-ink2);margin-top:2px}
+.d-item time{font-size:12px;font-weight:800;color:var(--b-cherry);letter-spacing:.01em}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}}
+.diary-nav{display:flex;gap:8px;margin-top:16px}
+.empty{padding:18px;border-radius:18px;background:var(--b-sky2);color:var(--b-ink2);font-weight:600;margin-top:16px}
+
+/* ---------- caminho de pedras ---------- */
+.path{position:relative;margin-top:22px;padding:26px;border-radius:32px;background:linear-gradient(180deg,#D8ECF1,#BFDDE6)}
+.stones{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:12px 10px}
+.stone{position:relative;width:100%;aspect-ratio:1.25;border-radius:48% 52% 46% 54%/58% 52% 48% 42%;background:#EEF3EE;box-shadow:inset 0 -6px 0 rgba(0,0,0,.07),0 6px 12px -8px rgba(40,80,90,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--round);color:var(--b-ink2);transition:transform .15s var(--ease-out)}
+.stone b{font-weight:600;font-size:18px;line-height:1}
+.stone small{font-family:var(--soft);font-weight:700;font-size:11px;margin-top:2px;text-align:center;line-height:1.1;padding:0 4px}
+.stone.done{background:#FCE3E9;color:var(--b-cherry-d)}
+.stone.now{background:#fff;color:var(--b-cherry-d)}
+.stone[aria-pressed=true]{box-shadow:inset 0 -6px 0 rgba(0,0,0,.07),0 0 0 3px var(--b-cherry)}
+.stone:active{transform:scale(.94)}
+.stone .on-top{position:absolute;left:50%;top:-30px;width:46px;height:46px;transform:translateX(-50%);pointer-events:none}
+.stone-info{margin-top:22px;background:rgba(255,255,255,.8);border-radius:22px;padding:18px 20px;display:grid;grid-template-columns:auto 1fr;gap:16px;align-items:center}
+.stone-info .big{font-family:var(--round);font-weight:600;font-size:40px;color:var(--b-cherry);line-height:1;min-width:1.4em;text-align:center}
+.stone-info h3{font-family:var(--round);font-weight:600;font-size:20px}
+.stone-info p{color:var(--b-ink2);margin-top:2px}
+
+/* ---------- dicionário ---------- */
+.flips{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;margin-top:22px;perspective:1200px}
+.flip{position:relative;height:190px;border-radius:24px;text-align:left}
+.flip .in{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .6s cubic-bezier(.32,.72,0,1)}
+.flip[aria-pressed=true] .in{transform:rotateY(180deg)}
+.flip .face{position:absolute;inset:0;border-radius:24px;padding:20px;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column}
+.flip .front{background:#fff;box-shadow:0 16px 30px -24px rgba(138,18,48,.5)}
+.flip .back{background:var(--b-cherry);color:#fff;transform:rotateY(180deg)}
+.flip .word{font-family:var(--round);font-weight:600;font-size:24px;color:var(--b-ink);margin-top:auto}
+.flip .tech{font:500 13px var(--mono);color:var(--b-ink2)}
+.flip .tap{font-size:13px;font-weight:700;color:var(--b-cherry)}
+.flip .back .bp{font-size:16px;line-height:1.45;font-weight:600}
+.flip .back small{margin-top:auto;font-size:13px;opacity:.85}
+.flip svg.ic{width:52px;height:52px;padding:6px;border-radius:50%;background:var(--b-sky2)}
+
+/* ---------- jogo ---------- */
+.game{position:relative;margin-top:22px;border-radius:32px;overflow:hidden;background:#CFE7EE}
+.game canvas{display:block;width:100%;height:auto;aspect-ratio:16/8;touch-action:none;cursor:grab}
+.game-ui{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:20px;background:rgba(252,238,241,.72);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);transition:opacity .25s ease}
+.game-ui[data-show=false]{opacity:0;pointer-events:none}
+.game-ui h3{font-family:var(--round);font-weight:600;font-size:clamp(22px,3vw,30px)}
+.game-ui p{color:var(--b-ink2);margin:6px 0 16px}
+.hud{position:absolute;top:14px;left:16px;right:16px;display:flex;justify-content:space-between;pointer-events:none;font-family:var(--round);font-weight:600;font-size:18px;color:var(--b-ink)}
+.hud span{background:rgba(255,255,255,.8);padding:6px 14px;border-radius:999px}
+
+/* ---------- recadinhos ---------- */
+.notes-wrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:18px;margin-top:22px;align-items:start}
+.note-form label{font-family:var(--round);font-weight:600;font-size:18px;display:block;margin-bottom:10px}
+.note-form textarea{width:100%;min-height:120px;border-radius:18px;border:2px solid var(--b-blush);background:#FFFBFC;padding:14px;font:600 16px/1.5 var(--soft);color:var(--b-ink);resize:vertical}
+.note-form textarea:focus{outline:none;border-color:var(--b-cherry)}
+.stickers{display:flex;gap:8px;margin:12px 0 16px}
+.stk{width:52px;height:52px;border-radius:16px;background:#DCEEF3;display:grid;place-items:center;transition:transform .12s ease,box-shadow .2s ease}
+.stk svg{width:34px;height:34px}
+.stk[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--b-cherry);background:#fff}
+.stk:active{transform:scale(.92)}
+.form-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hugs{font-weight:700;color:var(--b-ink2);font-size:14px}
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:14px}
+.sticky{position:relative;padding:18px 16px 14px;border-radius:6px 6px 22px 6px;background:#FFF1B8;color:#4A3A10;box-shadow:0 14px 20px -16px rgba(0,0,0,.45);animation:pop .4s var(--ease-out) both}
+.sticky:nth-child(3n+2){background:#FAD3DE;color:#5A1E33}
+.sticky:nth-child(3n){background:#D6EDF2;color:#1F4450}
+.sticky p{font-weight:700;font-size:15px;line-height:1.4;word-wrap:break-word}
+.sticky small{display:block;margin-top:10px;font-size:12px;font-weight:700;opacity:.7}
+.sticky svg.s{position:absolute;right:10px;top:-14px;width:34px;height:34px}
+.sticky .del{position:absolute;left:8px;top:6px;font-size:12px;font-weight:800;opacity:0;padding:2px 6px;border-radius:6px;transition:opacity .2s ease}
+.sticky:hover .del,.sticky .del:focus-visible{opacity:.7}
+.board .empty{grid-column:1/-1;margin:0}
+.b-foot{margin-top:60px;text-align:center;color:var(--b-ink2);font-weight:600;font-size:14px}
+.b-foot svg{width:40px;height:40px;display:block;margin:0 auto 6px}
+
+@media(max-width:900px){
+  .pond-text{position:static;max-width:none;padding:22px 22px 0}
+  .cal-wrap,.notes-wrap{grid-template-columns:1fr}
+  .diary{position:static}
+  .stones{grid-template-columns:repeat(4,minmax(0,1fr));gap:34px 10px;padding-top:20px}
+}
+@media(max-width:620px){
+  .verdict{grid-template-columns:1fr;justify-items:start}
+  .v-swan{width:120px;height:120px}.v-swan svg{width:96px;height:96px}
+  .facts{grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .fact{padding:12px}.fact b{font-size:24px}.fact span{font-size:12px}
+  .b-card{padding:20px;border-radius:24px}
+  .b-sec{margin-top:48px}
+  .wday{width:36px}.wday i{width:36px;height:36px;border-radius:12px}
+  .day{border-radius:12px;font-size:12px}
+  .day .n-x{display:none}
+  .path{padding:18px}
+  .pond-hint{display:none}
+  .flips{grid-template-columns:1fr 1fr;gap:10px}
+  .flip{height:200px}
+  .flip .face{padding:14px;border-radius:20px}
+  .flip .word{font-size:19px}
+  .flip .tech{font-size:11px}
+  .flip .back .bp{font-size:14px}
+  .flip .back small{font-size:12px}
+  .flip svg.ic{width:42px;height:42px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
+}
 </style>
 </head>
-<body>
+<body data-mode="bancada">
+<a class="skip" href="#conteudo">Saltar para o conteúdo</a>
+
+<!-- Ícones desenhados à mão (SVG), reutilizados com <use> -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C7CEFF"/><stop offset="1" stop-color="#7C8CF5"/></linearGradient>
+    <radialGradient id="cherryShine" cx=".35" cy=".3" r=".75"><stop offset="0" stop-color="#FF6B7F"/><stop offset=".55" stop-color="var(--cf,#C9243F)"/><stop offset="1" stop-color="#7E0F28"/></radialGradient>
+  </defs>
+  <symbol id="i-cherry" viewBox="0 0 48 48">
+    <path d="M24 6 C 22 16 16 22 13 29 M24 6 C 27 16 31 22 34 30" fill="none" stroke="var(--cs,#4F7D43)" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M24 6 C 30 2 38 3 42 8 C 36 12 29 11 24 6 Z" fill="var(--cl,#6FA35E)"/>
+    <circle cx="13" cy="34" r="9" fill="url(#cherryShine)"/>
+    <circle cx="34" cy="35" r="9" fill="url(#cherryShine)"/>
+    <ellipse cx="10" cy="30.5" rx="2.6" ry="1.6" fill="#fff" opacity=".7" transform="rotate(-30 10 30.5)"/>
+    <ellipse cx="31" cy="31.5" rx="2.6" ry="1.6" fill="#fff" opacity=".7" transform="rotate(-30 31 31.5)"/>
+  </symbol>
+  <symbol id="i-cherry1" viewBox="0 0 48 48">
+    <path d="M26 6 C 24 16 22 22 22 28" fill="none" stroke="var(--cs,#4F7D43)" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M26 6 C 32 2 40 4 43 9 C 37 12 31 11 26 6 Z" fill="var(--cl,#6FA35E)"/>
+    <circle cx="22" cy="35" r="10" fill="url(#cherryShine)"/>
+    <ellipse cx="18.5" cy="31" rx="3" ry="1.8" fill="#fff" opacity=".7" transform="rotate(-30 18.5 31)"/>
+  </symbol>
+  <symbol id="i-swan" viewBox="0 0 120 120">
+    <path d="M8 88 C 14 66 44 60 70 68 C 84 72 96 70 106 60 C 112 76 106 96 80 102 C 52 108 18 106 8 88 Z" fill="#fff"/>
+    <path d="M26 84 C 42 68 70 70 88 82 C 70 88 48 94 26 84 Z" fill="#E9EEF3"/>
+    <path d="M36 88 C 50 80 66 80 80 86" fill="none" stroke="#DCE3EA" stroke-width="2" stroke-linecap="round"/>
+    <path d="M80 74 C 98 58 64 44 74 26" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="79" cy="22" r="10" fill="#fff"/>
+    <path d="M86 17 L104 23 L86 29 Z" fill="var(--beak,#F08B35)"/>
+    <path d="M84 16 C 90 18 90 28 84 29 Z" fill="#2B2230"/>
+    <circle cx="78" cy="19" r="1.9" fill="#2B2230"/>
+    <path d="M4 94 C 30 100 80 104 112 92" fill="none" stroke="#fff" stroke-width="2" opacity=".6" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-swan-sleep" viewBox="0 0 120 120">
+    <path d="M8 88 C 14 66 44 60 70 68 C 84 72 96 70 106 60 C 112 76 106 96 80 102 C 52 108 18 106 8 88 Z" fill="#fff"/>
+    <path d="M26 84 C 42 68 70 70 88 82 C 70 88 48 94 26 84 Z" fill="#E9EEF3"/>
+    <path d="M82 76 C 94 68 90 58 78 60" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="72" cy="62" r="10" fill="#fff"/>
+    <path d="M64 60 L50 66 L64 70 Z" fill="var(--beak,#F08B35)"/>
+    <path d="M69 59 C 72 62 76 62 78 59" fill="none" stroke="#2B2230" stroke-width="1.8" stroke-linecap="round"/>
+    <text x="84" y="40" font-family="Fredoka,sans-serif" font-size="16" font-weight="600" fill="#76596A">z</text>
+    <text x="96" y="26" font-family="Fredoka,sans-serif" font-size="12" font-weight="600" fill="#76596A">z</text>
+  </symbol>
+  <symbol id="i-heart" viewBox="0 0 32 32">
+    <path d="M16 28 C 6 21 2 15 2 10 C 2 5.6 5.4 3 9 3 C 12 3 14.4 4.8 16 7.4 C 17.6 4.8 20 3 23 3 C 26.6 3 30 5.6 30 10 C 30 15 26 21 16 28 Z" fill="var(--hf,#E8476A)"/>
+    <ellipse cx="9" cy="9" rx="3" ry="2" fill="#fff" opacity=".45" transform="rotate(-30 9 9)"/>
+  </symbol>
+  <symbol id="i-leaf" viewBox="0 0 48 48">
+    <path d="M8 40 C 8 20 22 8 42 8 C 42 28 30 40 8 40 Z" fill="#8CBF7A"/>
+    <path d="M10 38 C 20 28 28 20 38 12" fill="none" stroke="#5B8F4E" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-blossom" viewBox="0 0 40 40">
+    <g fill="#F7C3D1"><circle cx="20" cy="9" r="8"/><circle cx="30.5" cy="16.5" r="8"/><circle cx="26.5" cy="29" r="8"/><circle cx="13.5" cy="29" r="8"/><circle cx="9.5" cy="16.5" r="8"/></g>
+    <circle cx="20" cy="20" r="4.5" fill="#F29BB2"/><circle cx="20" cy="20" r="2" fill="#FFE08A"/>
+  </symbol>
+</svg>
 
 <div class="topbar"><div class="wrap">
-  <span class="mark"><i></i>~/java <b>bancada</b></span>
+  <span class="brand">
+    <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 10h11v4a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-4Z" stroke="currentColor" stroke-width="1.7"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16" stroke="currentColor" stroke-width="1.7"/><path d="M9 3.5c-.8 1 .8 2 0 3M12.5 3.5c-.8 1 .8 2 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span class="bt">Java</span><small id="brandSub">~/java</small>
+  </span>
   <span class="spacer"></span>
-  <button class="ghost" id="expMd">Guardar resumo .md</button>
-  <button class="ghost" id="expJson">Cópia .json</button>
-  <button class="ghost" id="reset">Limpar marcações</button>
+  <div class="modes" role="group" aria-label="Modo da página">
+    <span class="thumb" aria-hidden="true"></span>
+    <button type="button" data-mode="bancada" aria-pressed="true">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m8 8-4 4 4 4M16 8l4 4-4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>Bancada</button>
+    <button type="button" data-mode="bibi" aria-pressed="false">
+      <svg aria-hidden="true"><use href="#i-cherry"/></svg>Modo Bibi</button>
+  </div>
+  <span class="spacer"></span>
+  <div class="menu">
+    <button type="button" class="icon-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Mais opções">
+      <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
+    </button>
+    <div class="menu-list" id="menuList" data-open="false" role="menu">
+      <button type="button" role="menuitem" id="expMd">Guardar resumo .md</button>
+      <button type="button" role="menuitem" id="expJson">Cópia de segurança .json</button>
+      <button type="button" role="menuitem" class="danger" id="reset">Limpar marcações</button>
+    </div>
+  </div>
 </div></div>
 
-<div class="build"><div class="wrap">
-  <h1>Onde é que o teu Java está hoje</h1>
-  <p class="sub">Marca o que já consegues repetir sozinho. Abre qualquer ficheiro para correr o teu próprio código linha a linha, com o terminal ao lado.</p>
-  <div class="gauge">
-    <div class="big" id="pct">0<span>%</span></div>
-    <div class="ticks" id="ticks"></div>
-  </div>
-  <div class="legend">
-    <span><b id="doneN">0</b> de <b id="totN">0</b> exercícios marcados</span>
-    <span><b id="greenN">0</b> competências sólidas</span>
-    <span><b id="yellowN">0</b> por automatizar</span>
-    <span>fase atual <b>02 · POO</b></span>
-  </div>
-</div></div>
-
+<!-- =================== MODO BANCADA =================== -->
+<main class="m-bancada" id="mBancada">
+<span id="conteudo"></span>
 <div class="wrap">
-  <div class="tabs" role="tablist">
+  <section class="hero">
+    <h1 id="heroTitle">Onde é que o teu Java está hoje</h1>
+    <p class="sub">Marca o que já consegues repetir sozinho. Abre qualquer ficheiro para correr o teu código linha a linha, com o terminal ao lado.</p>
+
+    <div class="bento">
+      <div class="card c-progress">
+        <div class="ring">
+          <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="track" cx="60" cy="60" r="52" fill="none" stroke-width="10"/><circle class="bar" id="ringBar" cx="60" cy="60" r="52" fill="none" stroke-width="10" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg>
+          <div class="val"><div><b class="num" id="pct">0%</b><small>marcados</small></div></div>
+        </div>
+        <div>
+          <h2><span class="num" id="doneN">0</span> de <span class="num" id="totN">0</span> exercícios</h2>
+          <p class="hint">Cada barra é um ficheiro. Passa o rato para ver qual.</p>
+          <div class="ticks" id="ticks"></div>
+        </div>
+      </div>
+
+      <div class="card c-activity">
+        <div class="heat-head">
+          <h2>Atividade no Git</h2>
+          <div class="heat-meta">
+            <span><b class="num" id="hDays">0</b> dias com exercícios</span>
+            <span><b class="num" id="hStreak">0</b> seguidos</span>
+            <span>último <b id="hLast">—</b></span>
+          </div>
+        </div>
+        <div class="heat-scroll"><div class="heat" id="heat" role="img" aria-label="Mapa de atividade das últimas semanas"></div></div>
+        <div class="heat-legend">menos <i style="background:rgba(255,255,255,.05)"></i><i style="background:#3B4380"></i><i style="background:#5E6BD6"></i><i style="background:var(--accent)"></i> mais</div>
+      </div>
+
+      <div class="card c-stat stat"><span>Competências sólidas</span><b class="num" id="greenN">0</b></div>
+      <div class="card c-stat stat"><span>Por automatizar</span><b class="num" id="yellowN">0</b></div>
+      <div class="card c-stat stat"><span>Fase atual</span><b id="phaseNow">—</b></div>
+      <button type="button" class="card c-bibi stat" id="bibiPeek"><span>Recadinhos da Bibi</span><b class="num" id="bibiCount">0</b></button>
+    </div>
+  </section>
+
+  <div class="tabs" role="tablist" aria-label="Secções">
+    <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
     <button class="tab" role="tab" id="t-agora" aria-controls="p-agora" aria-selected="true">Agora</button>
-    <button class="tab" role="tab" id="t-ex" aria-controls="p-ex" aria-selected="false">Exercícios</button>
-    <button class="tab" role="tab" id="t-road" aria-controls="p-road" aria-selected="false">Percurso</button>
-    <button class="tab" role="tab" id="t-reg" aria-controls="p-reg" aria-selected="false">Regras</button>
-    <button class="tab" role="tab" id="t-notas" aria-controls="p-notas" aria-selected="false">Notas</button>
+    <button class="tab" role="tab" id="t-ex" aria-controls="p-ex" aria-selected="false" tabindex="-1">Exercícios</button>
+    <button class="tab" role="tab" id="t-road" aria-controls="p-road" aria-selected="false" tabindex="-1">Percurso</button>
+    <button class="tab" role="tab" id="t-reg" aria-controls="p-reg" aria-selected="false" tabindex="-1">Regras</button>
+    <button class="tab" role="tab" id="t-notas" aria-controls="p-notas" aria-selected="false" tabindex="-1">Notas</button>
   </div>
 
-  <!-- AGORA -->
   <section class="pane" id="p-agora" role="tabpanel" aria-labelledby="t-agora">
     <div class="cols">
-      <div class="block">
+      <div class="card">
         <h2>Diagnóstico</h2>
-        <p class="desc">Sólido = resolves um problema parecido sem ajuda. Por automatizar = percebes quando vês, mas ainda paras para pensar.</p>
+        <p class="desc">Sólido: resolves um problema parecido sem ajuda. Por automatizar: percebes quando vês, mas ainda paras para pensar.</p>
         <div id="skills"></div>
       </div>
-      <div class="block">
+      <div class="card">
         <h2>O ponto fraco de agora</h2>
+        <p class="desc">O que merece a próxima hora de estudo.</p>
         <div class="callout">
           <b>Limites de ciclos</b>
           <p>Decidir sozinho se o início e o fim do intervalo entram na conta. É aqui que os erros aparecem sem dar erro de compilação.</p>
         </div>
-        <h3 style="font-size:14px;margin-bottom:8px">Testes de controlo — soma dos pares</h3>
+        <h3 style="font-size:14px;margin-bottom:4px">Testes de controlo da soma dos pares</h3>
         <ul class="checks">
           <li><span>2 → 6</span><b>12</b></li>
           <li><span>3 → 6</span><b>10</b></li>
           <li><span>200 → 300</span><b>12750</b></li>
         </ul>
-        <p class="desc" style="margin:16px 0 0">Um resultado que "parece certo" não prova nada. Confirma sempre com valores pequenos que consigas fazer de cabeça.</p>
+        <p class="desc" style="margin:14px 0 0">Um resultado que parece certo não prova nada. Confirma sempre com valores pequenos que consigas fazer de cabeça.</p>
+      </div>
+      <div class="card" id="bibiNotesCard" hidden>
+        <h2>Recadinhos da Bibi</h2>
+        <p class="desc">Deixados no Modo Bibi, neste navegador.</p>
+        <div class="notes-bibi" id="bibiNotesMini"></div>
       </div>
     </div>
   </section>
 
-  <!-- EXERCÍCIOS -->
   <section class="pane" id="p-ex" role="tabpanel" aria-labelledby="t-ex" hidden>
     <div class="toolbar">
-      <input type="search" id="q" placeholder="Filtrar por nome ou tema…">
+      <div class="search"><input type="search" id="q" placeholder="Filtrar por nome ou tema…" autocomplete="off" name="filtro" aria-label="Filtrar exercícios"><kbd>/</kbd></div>
       <div class="seg" id="filters">
         <button data-f="all" aria-pressed="true">Todos</button>
         <button data-f="done" aria-pressed="false">Feitos</button>
@@ -237,23 +631,21 @@ footer{border-top:1px solid var(--line-soft);padding:22px 0 40px;font:400 12px v
     <div id="list"></div>
   </section>
 
-  <!-- PERCURSO -->
   <section class="pane" id="p-road" role="tabpanel" aria-labelledby="t-road" hidden>
-    <div class="block">
+    <div class="card">
       <h2>Percurso até Junior Java Backend</h2>
-      <p class="desc">A ordem importa; as datas não. Só avanças de fase quando consegues resolver um problema novo dessa fase sem consultar nada.</p>
+      <p class="desc">A ordem importa; as datas não. Só avanças de fase quando resolves um problema novo dessa fase sem consultar nada.</p>
       <ol class="road" id="road"></ol>
     </div>
   </section>
 
-  <!-- REGRAS -->
   <section class="pane" id="p-reg" role="tabpanel" aria-labelledby="t-reg" hidden>
     <div class="cols">
-      <div class="block">
+      <div class="card">
         <h2>Regras para qualquer IA que te ajude</h2>
         <ol class="rules">
           <li>Nunca dar a solução final de um exercício.</li>
-          <li>Dar explicações, analogias, pistas e pseudocódigo — a implementação é minha.</li>
+          <li>Dar explicações, analogias, pistas e pseudocódigo. A implementação é minha.</li>
           <li>Testar a compreensão com um problema novo, não com o mesmo.</li>
           <li>Mandar compilar e executar antes de comentar.</li>
           <li>Ao corrigir, separar quatro coisas: compilação, lógica, resultado e casos-limite.</li>
@@ -262,52 +654,222 @@ footer{border-top:1px solid var(--line-soft);padding:22px 0 40px;font:400 12px v
           <li>Se eu estiver a perguntar em vez de programar, dizer-me isso na cara.</li>
         </ol>
       </div>
-      <div class="block">
+      <div class="card">
         <h2>Como usar o simulador</h2>
         <p class="desc">Antes de carregares em "Próxima linha", diz em voz alta o que achas que vai sair. Só depois avanças.</p>
-        <p class="desc">Se o que sai for diferente do que disseste, encontraste exatamente a lacuna que interessa estudar. Se acertares dez vezes seguidas, esse exercício está feito — marca-o.</p>
+        <p class="desc">Se o que sai for diferente do que disseste, encontraste exatamente a lacuna que interessa estudar. Se acertares dez vezes seguidas, esse exercício está feito: marca-o.</p>
         <p class="desc" style="margin-bottom:0">O simulador segue o teu código, mas não é a JVM. Compila e corre sempre no terminal a seguir.</p>
       </div>
     </div>
   </section>
 
-  <!-- NOTAS -->
   <section class="pane" id="p-notas" role="tabpanel" aria-labelledby="t-notas" hidden>
     <div class="cols">
-      <div class="block">
+      <div class="card">
         <h2>Erro registado</h2>
-        <div class="callout">
-          <b>12550 dado como certo — o valor é 12750</b>
+        <div class="callout" style="margin-top:12px">
+          <b>12550 dado como certo, mas o valor é 12750</b>
           <p>Soma dos pares de 200 a 300. Fica aqui para lembrar que validar é recalcular por outro caminho, não olhar e concordar.</p>
         </div>
         <p class="desc" style="margin-bottom:0">Quando apanhares outro erro destes, escreve-o ao lado com a data. A lista de erros vale mais do que a lista de acertos.</p>
       </div>
-      <div class="block">
+      <div class="card">
         <h2>Caderno</h2>
-        <textarea id="notes" placeholder="Dúvidas, decisões, o que fica para a próxima sessão…"></textarea>
-        <p class="desc" style="margin:10px 0 0">Guardado neste navegador. Usa "Cópia .json" para o levar para outro computador.</p>
+        <p class="desc">Guardado neste navegador. Usa a cópia de segurança .json para o levar para outro computador.</p>
+        <textarea class="nb-area" id="notes" placeholder="Dúvidas, decisões, o que fica para a próxima sessão…" name="caderno"></textarea>
       </div>
     </div>
   </section>
 </div>
+</main>
 
-<footer><div class="wrap">bancada local · o estado fica neste navegador · JDK 25 · Ubuntu · nano</div></footer>
+<!-- =================== MODO BIBI =================== -->
+<main class="m-bibi" id="mBibi" hidden>
+<div class="wrap">
+
+  <section class="pond" aria-labelledby="bibiHello">
+    <div class="pond-text">
+      <h1 id="bibiHello">Olá, Bibi</h1>
+      <p>Aqui podes espreitar o que ele anda a aprender. Sem palavras difíceis, prometido.</p>
+    </div>
+    <svg class="scene" id="scene" viewBox="0 0 1000 520" role="img" aria-label="Um lago com dois cisnes e um ramo de cerejeira. Cada cereja do ramo é um exercício feito.">
+      <defs>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FBE1E8"/><stop offset=".55" stop-color="#F6EEF3"/><stop offset="1" stop-color="#E3F0F4"/></linearGradient>
+        <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#A6D4DF"/><stop offset="1" stop-color="#6BAABD"/></linearGradient>
+        <radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFF6DF"/><stop offset=".6" stop-color="#FFEBD0" stop-opacity=".9"/><stop offset="1" stop-color="#FFE3D6" stop-opacity="0"/></radialGradient>
+        <linearGradient id="reflect" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".45"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      </defs>
+      <rect width="1000" height="520" fill="url(#sky)"/>
+      <circle cx="700" cy="190" r="120" fill="url(#sun)"/>
+      <path d="M0 330 C 140 290 280 300 420 318 C 560 296 760 276 1000 312 L1000 372 L0 372 Z" fill="#DAE9DF"/>
+      <path d="M0 352 C 180 322 360 334 520 346 C 700 326 860 318 1000 340 L1000 380 L0 380 Z" fill="#C4DDCB"/>
+      <rect y="366" width="1000" height="154" fill="url(#water)"/>
+      <ellipse cx="700" cy="378" rx="120" ry="7" fill="url(#reflect)"/>
+      <g stroke="#fff" stroke-linecap="round" stroke-width="3" opacity=".45">
+        <path d="M90 410h60M640 470h90M300 488h40M820 430h50M160 466h36M470 420h44"/>
+      </g>
+      <!-- nenúfares -->
+      <g>
+        <path d="M150 440 a44 13 0 1 0 8 -12 L150 440 Z" fill="#7FB36C"/>
+        <path d="M250 486 a34 10 0 1 0 6 -9 L250 486 Z" fill="#6FA35E"/>
+        <use href="#i-blossom" x="138" y="418" width="26" height="26"/>
+      </g>
+      <!-- juncos -->
+      <g fill="none" stroke="#6E9A5E" stroke-width="5" stroke-linecap="round">
+        <path d="M40 520 C 44 450 36 410 50 360"/><path d="M62 520 C 60 470 70 430 66 390"/><path d="M22 520 C 26 480 14 450 20 410"/>
+      </g>
+      <g fill="#8A5A3C"><rect x="44" y="352" width="10" height="34" rx="5"/><rect x="60" y="382" width="9" height="28" rx="4.5"/></g>
+      <!-- ondas de toque -->
+      <g id="ripples"></g>
+      <!-- cisnes -->
+      <g id="swanL" class="swan-g"><g transform="translate(470 318)"><g class="swan-bob"><rect x="0" y="20" width="180" height="150" rx="40" fill="transparent"/><use href="#i-swan" width="180" height="180"/></g></g></g>
+      <g id="swanR" class="swan-g"><g transform="translate(900 318) scale(-1 1)"><g class="swan-bob b2"><rect x="0" y="20" width="180" height="150" rx="40" fill="transparent"/><use href="#i-swan" width="180" height="180"/></g></g></g>
+      <!-- ramo de cerejeira -->
+      <g>
+        <path d="M1010 -6 C 900 40 820 30 720 70 C 650 98 600 92 540 118" fill="none" stroke="#6B4636" stroke-width="16" stroke-linecap="round"/>
+        <path d="M860 36 C 850 80 870 110 850 140" fill="none" stroke="#6B4636" stroke-width="8" stroke-linecap="round"/>
+        <path d="M700 78 C 690 110 660 130 640 150" fill="none" stroke="#6B4636" stroke-width="7" stroke-linecap="round"/>
+        <use href="#i-leaf" x="900" y="30" width="46" height="46"/>
+        <use href="#i-leaf" x="760" y="60" width="40" height="40" transform="rotate(40 780 80)"/>
+        <use href="#i-leaf" x="560" y="100" width="42" height="42" transform="rotate(-20 580 120)"/>
+        <use href="#i-leaf" x="840" y="120" width="38" height="38"/>
+        <use href="#i-blossom" x="960" y="4" width="40" height="40"/>
+        <use href="#i-blossom" x="800" y="28" width="34" height="34"/>
+        <use href="#i-blossom" x="620" y="80" width="30" height="30"/>
+        <use href="#i-blossom" x="518" y="104" width="34" height="34"/>
+      </g>
+      <g id="cherries"></g>
+      <g id="hearts"></g>
+    </svg>
+    <div class="bubble" id="bubble" data-show="false" role="status" aria-live="polite"></div>
+    <span class="pond-hint">Toca nos cisnes e nas cerejas</span>
+  </section>
+
+  <section class="b-sec" aria-labelledby="nowTitle">
+    <h2 id="nowTitle">Ele está mesmo a estudar?</h2>
+    <p class="lead">Contas feitas a partir das datas reais em que ele guardou cada exercício.</p>
+    <div class="b-card" style="margin-top:22px">
+      <div class="verdict">
+        <button type="button" class="v-swan" id="vSwan" aria-label="Fazer festinhas ao cisne"><svg aria-hidden="true"><use id="vSwanUse" href="#i-swan"/></svg></button>
+        <div aria-live="polite">
+          <p class="v-title" id="vTitle">A contar cerejas…</p>
+          <p class="v-text" id="vText"></p>
+        </div>
+      </div>
+      <div class="meter" aria-hidden="true">
+        <div class="meter-track"><span class="meter-dot" id="meterDot" style="left:0%"><svg><use href="#i-heart"/></svg></span></div>
+        <div class="meter-labels"><span>a dormir</span><span>a arrasar</span></div>
+      </div>
+      <div class="week" id="week" aria-label="Últimos 7 dias"></div>
+      <div class="facts">
+        <div class="fact"><b class="num" id="fTotal">0</b><span>cerejas no total</span></div>
+        <div class="fact"><b class="num" id="fDays">0</b><span>dias de estudo</span></div>
+        <div class="fact"><b class="num" id="fStreak">0</b><span>dias seguidos</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b-sec" aria-labelledby="calTitle">
+    <h2 id="calTitle">O calendário das cerejas</h2>
+    <p class="lead">Cada cereja é um exercício que ele terminou. Toca num dia para ver o que fez.</p>
+    <div class="cal-wrap">
+      <div class="b-card">
+        <div class="cal-head">
+          <button type="button" class="nav-btn" id="calPrev" aria-label="Mês anterior"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m15 5-7 7 7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <h3 id="calMonth" aria-live="polite"></h3>
+          <button type="button" class="nav-btn" id="calNext" aria-label="Mês seguinte"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m9 5 7 7-7 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+        <div class="cal" id="cal"></div>
+        <div class="cal-legend">
+          <span><i style="background:var(--b-blush)"></i>estudou</span>
+          <span><i style="background:#E9F2EA"></i>só arrumou as coisas</span>
+          <span><i style="box-shadow:inset 0 0 0 2px var(--b-ink2)"></i>hoje</span>
+        </div>
+      </div>
+      <div class="b-card diary" aria-live="polite">
+        <p class="diary-date" id="dDate"></p>
+        <p class="diary-sum" id="dSum"></p>
+        <ul class="diary-list" id="dList"></ul>
+        <div class="diary-nav">
+          <button type="button" class="b-btn soft" id="dPrev">Dia anterior</button>
+          <button type="button" class="b-btn soft" id="dNext">Dia seguinte</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b-sec" aria-labelledby="pathTitle">
+    <h2 id="pathTitle">O caminho até ao primeiro emprego</h2>
+    <p class="lead">São 16 pedras até ele ser programador. O cisne mostra onde ele está agora. Toca numa pedra para saber o que é.</p>
+    <div class="path">
+      <ol class="stones" id="stones"></ol>
+      <div class="stone-info" aria-live="polite">
+        <span class="big num" id="sNum"></span>
+        <div><h3 id="sTitle"></h3><p id="sText"></p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b-sec" aria-labelledby="dictTitle">
+    <h2 id="dictTitle">Palavras esquisitas, explicadas</h2>
+    <p class="lead">Quando ele falar disto ao jantar, já sabes o que é. Toca nas cartas para as virar.</p>
+    <div class="flips" id="flips"></div>
+  </section>
+
+  <section class="b-sec" aria-labelledby="gameTitle">
+    <h2 id="gameTitle">Apanha as cerejas</h2>
+    <p class="lead">Enquanto ele estuda, o cisne também trabalha. Arrasta o dedo ou usa as setas do teclado.</p>
+    <div class="game">
+      <canvas id="game" width="960" height="480" tabindex="0" aria-label="Jogo: move o cisne para apanhar cerejas"></canvas>
+      <div class="hud" aria-live="polite"><span id="gScore">0 cerejas</span><span id="gTime">30 s</span></div>
+      <div class="game-ui" id="gameUi" data-show="true">
+        <div>
+          <h3 id="gTitle">Pronta?</h3>
+          <p id="gText">Tens 30 segundos. O teu recorde fica guardado.</p>
+          <button type="button" class="b-btn" id="gStart"><svg aria-hidden="true"><use href="#i-cherry"/></svg>Começar a apanhar</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="b-sec" aria-labelledby="notesTitle">
+    <h2 id="notesTitle">Recadinhos para ele</h2>
+    <p class="lead">Ele vê os recadinhos quando abrir a página dele neste computador.</p>
+    <div class="notes-wrap">
+      <form class="b-card note-form" id="noteForm">
+        <label for="noteText">Escreve uma coisa fofa</label>
+        <textarea id="noteText" name="recado" maxlength="240" autocomplete="off" placeholder="Por exemplo: estou orgulhosa de ti…"></textarea>
+        <div class="stickers" role="group" aria-label="Escolhe um autocolante">
+          <button type="button" class="stk" data-stk="i-heart" aria-pressed="true" aria-label="Coração"><svg aria-hidden="true"><use href="#i-heart"/></svg></button>
+          <button type="button" class="stk" data-stk="i-cherry" aria-pressed="false" aria-label="Cerejas"><svg aria-hidden="true"><use href="#i-cherry"/></svg></button>
+          <button type="button" class="stk" data-stk="i-swan" aria-pressed="false" aria-label="Cisne"><svg aria-hidden="true"><use href="#i-swan"/></svg></button>
+          <button type="button" class="stk" data-stk="i-blossom" aria-pressed="false" aria-label="Flor"><svg aria-hidden="true"><use href="#i-blossom"/></svg></button>
+        </div>
+        <div class="form-row">
+          <button type="submit" class="b-btn">Deixar recadinho</button>
+          <button type="button" class="b-btn soft" id="hugBtn"><svg aria-hidden="true"><use href="#i-heart"/></svg>Mandar um abraço</button>
+        </div>
+        <p class="hugs" id="hugCount" aria-live="polite" style="margin-top:12px"></p>
+      </form>
+      <div class="board" id="board" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <footer class="b-foot">
+    <svg aria-hidden="true"><use href="#i-cherry"/></svg>
+    Feito com cerejas, cisnes e muitas linhas de código
+  </footer>
+</div>
+</main>
+
+<footer class="wrap" id="footBancada">bancada local · o estado fica neste navegador · JDK 25 · Ubuntu · nano</footer>
 
 <script>
-const EXERCISES=[
-{n:"Ola.java",d:"Primeiro programa: classe, main e println.",src:"cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"},
-{n:"Tipos.java",d:"Tipos primitivos, divisão inteira, resto e cast.",src:"cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="},
-{n:"Iva.java",d:"Variáveis String/int e concatenação.",src:"cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"},
-{n:"Saudacao.java",d:"Scanner, hasNextInt, if/else if e validação.",src:"aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="},
-{n:"Contagem.java",d:"for crescente.",src:"cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="},
-{n:"ContagemR.java",d:"for decrescente.",src:"cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="},
-{n:"Pares.java",d:"Números pares alterando o passo do for.",src:"cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="},
-{n:"Pares2.java",d:"Números pares usando % e if.",src:"cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"},
-{n:"Tabuada.java",d:"Scanner + for + cálculo da tabuada.",src:"aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="},
-{n:"Metodos.java",d:"Métodos, parâmetros, return, void e boolean.",src:"CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"},
-{n:"Pessoa.java",d:"Classe, private, construtor, this, setter e métodos.",src:"cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="},
-{n:"Programa.java",d:"Criação e utilização de objetos Pessoa.",src:"cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}
-];
+/* Código dos exercícios (base64) — o simulador descodifica e mostra-o. */
+const EXERCISES=[{"n": "Ola.java", "d": "Primeiro programa: classe, main e println.", "src": "cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"}, {"n": "Tipos.java", "d": "Tipos primitivos, divisão inteira, resto e cast.", "src": "cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="}, {"n": "Iva.java", "d": "Variáveis String/int e concatenação.", "src": "cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"}, {"n": "Saudacao.java", "d": "Scanner, hasNextInt, if/else if e validação.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="}, {"n": "Contagem.java", "d": "for crescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "ContagemR.java", "d": "for decrescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "Pares.java", "d": "Números pares alterando o passo do for.", "src": "cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="}, {"n": "Pares2.java", "d": "Números pares usando % e if.", "src": "cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"}, {"n": "Tabuada.java", "d": "Scanner + for + cálculo da tabuada.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="}, {"n": "Metodos.java", "d": "Métodos, parâmetros, return, void e boolean.", "src": "CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"}, {"n": "Pessoa.java", "d": "Classe, private, construtor, this, setter e métodos.", "src": "cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="}, {"n": "Programa.java", "d": "Criação e utilização de objetos Pessoa.", "src": "cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}, {"n": "aquecimento1.java", "d": "Validação de input com while: insistir até a idade fazer sentido.", "src": "Ly8gYXF1ZWNpbWVudG8xLmphdmEg4oCUIDEwIHNldGVtYnJvIDIwMjYsIDE4OjEyCmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBhcXVlY2ltZW50bzF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkKCQlpbnQgaWRhZGU7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIGEgc3VhIGlkYWRlPyIpOwoJCWlkYWRlID0gc2MubmV4dEludCgpOwoJCQoJCXdoaWxlKGlkYWRlIDwgMCl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiQSBpZGFkZSBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLCByZWludHJvZHV6YSBhIGlkYWRlLiIpOyAKCQkJaWRhZGUgPSBzYy5uZXh0SW50KCk7CgkJfQoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGVucyAiICsgaWRhZGUgKyAiIGFub3MuIik7Cgl9Cn0K"}, {"n": "exContagem.java", "d": "Validar com while e contar só os pares até ao número.", "src": "Ly8gZXhDb250YWdlbS5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMTowOQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3MgZXhDb250YWdlbXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCVNjYW5uZXIgc2MgPSAgbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCgkJaW50IG51bWVybzsKCQlpbnQgY29udGFnZW0gPSAwOwoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG51bWVybyBwb3NpdGl2byBwYXJhIGNvbWXDp2FyIGEgY29udGFnZW0uIik7CgkJbnVtZXJvID0gc2MubmV4dEludCgpOwoKCQl3aGlsZShudW1lcm8gPCAxKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKCJJbnRyb2R1emEgdW0gbnVtZXJvIHBvc2l0aXZvLiIpOwoJCQludW1lcm8gPSBzYy5uZXh0SW50KCk7CgkJfQoKCQl3aGlsZShjb250YWdlbSA8IG51bWVybyl7CgkJCWNvbnRhZ2VtKys7CgkJCQoJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oY29udGFnZW0pOwoJCQl9CgkJCQoJCX0KCX0KfQo="}, {"n": "somaPares.java", "d": "Acumulador: somar os pares até um número.", "src": "Ly8gc29tYVBhcmVzLmphdmEg4oCUIDEzIHNldGVtYnJvIDIwMjYsIDIxOjM1CmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBzb21hUGFyZXMJewoJCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkJCgkJCWludCBudW1lcm8gPSAwOwoJCQlpbnQgY29udGFnZW0gPSAxOwoJCQlpbnQgc29tYVBhcmVzID0gMDsKCQkJCgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG7Dum1lcm86Iik7CgkJCW51bWVybyA9IHNjLm5leHRJbnQoKTsKCgkJCXdoaWxlKG51bWVybyA8PSAwKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBuw7ptZXJvIG7Do28gcG9kZSBzZXIgbmVnYXRpdm8sIGludHJvZHV6YSB1bSBuw7ptZXJvIHBvc2l0aXZvLiIpOwoJCQkJbnVtZXJvID0gc2MubmV4dEludCgpOwoJCQl9CgkJCQoJCQkKCQkJd2hpbGUoY29udGFnZW0gPCBudW1lcm8pewoJCQkJY29udGFnZW0rKzsgCgkJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQkJc29tYVBhcmVzID0gY29udGFnZW0gKyBzb21hUGFyZXM7CgkJCQl9CgkJCQkKCQkJfQoJCQkKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgYXTDqSAiICsgbnVtZXJvICsgIiDDqSBkZSAiICsgc29tYVBhcmVzICsgIi4iKTsKCX0KfQoK"}, {"n": "somaIntervalo.java", "d": "Acumulador num intervalo, com validação do início e do fim.", "src": "Ly8gc29tYUludGVydmFsby5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMjo0MQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3Mgc29tYUludGVydmFsb3sKCQlwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgoJCQlpbnQgaW50ZXJ2YWxvSW5pY2lvID0gMDsKCQkJaW50IGludGVydmFsb0ZpbmFsID0gMDsKCQkJaW50IGNvbnRhZ2VtID0gMDsKCQkJaW50IHNvbWFQYXJlcyA9IDA7CgkJCQoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIGludGVydmFsbyBkZSBudW1lcm9zIGRvIHF1YWwgcXVlciBhIHNvbWE6ICIpOwoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIG51bWVybyBkbyBpbmljaW86ICIpOwoJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIG8gbnVtZXJvIGRvIGZpbmFsOiAiKTsKCQkJaW50ZXJ2YWxvRmluYWwgPSBzYy5uZXh0SW50KCk7CgkJCgkJCXdoaWxlKGludGVydmFsb0luaWNpbyA+IGludGVydmFsb0ZpbmFsKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBudW1lcm8gaW5pY2lhbCBuw6NvIHBvZGUgc2VyIHN1cGVyaW9yIGFvIG51bWVybyBmaW5hbC4iKTsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiUmVpbnRyb2R1emEgbyBudW1lcm8gaW5pY2lhbDogIik7CgkJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCX0KCQkJCgkJCWNvbnRhZ2VtID0gaW50ZXJ2YWxvSW5pY2lvOwoJCQkKCQkJd2hpbGUoY29udGFnZW0gPD0gaW50ZXJ2YWxvRmluYWwpewoJCQkJaWYoY29udGFnZW0gJSAyID09IDApewoJCQkJCXNvbWFQYXJlcyA9IGNvbnRhZ2VtICsgc29tYVBhcmVzOwoJCQkJfQoJCQkJY29udGFnZW0rKzsKCQkJfQoKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgbm8gaW50ZXJ2YWxvIGRlIG51bWVyb3MgZGUgIiArIGludGVydmFsb0luaWNpbyArICIgYSAiICsgaW50ZXJ2YWxvRmluYWwgKyAiIMOpIGRlOiAiICsgc29tYVBhcmVzKTsKCQl9CgoJCn0K"}];
+
+/* Histórico do Git. Não editar à mão: corre  python3 bibi-atualizar.py */
+const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "1fe2033", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}]/*@COMMITS:END*/;
 
 /* ---------- guiões de execução ----------
    Cada guião é um gerador: devolve um passo de cada vez.
@@ -477,120 +1039,260 @@ const RUNNERS = {
 }
 };
 
+
+const SKILLS = [
+  ["if","g"],["%","g"],["contador","g"],["acumulador","g"],["validação de input","g"],["while","y"],
+  ["limites de ciclos","y"],["for vs while","y"],["casos-limite","y"],["sintaxe sem consultar","y"]
+];
+/* [número, título, etiqueta, descrição técnica, título fofo, explicação fofa] */
+const PHASES = [
+  ["01","Fundamentos","A fechar","Consolidar while, do-while, break/continue e arrays.","As letras do Java","Aprender a escrever as primeiras frases que o computador percebe: contar, repetir e decidir."],
+  ["02","POO","Onde estás","Classes, construtores, encapsulamento e composição.","Moldes e bolos","Criar moldes (como uma forma de bolo) e fazer muitas coisas parecidas a partir deles."],
+  ["03","Core Java","","Collections, Strings, exceções, ficheiros.","Caixas e listas","Guardar muitas coisas arrumadas e saber o que fazer quando algo corre mal."],
+  ["04","Git, Maven, IntelliJ","","Sair do nano e trabalhar como uma equipa trabalha.","Ferramentas a sério","Trocar o bloco de notas pelas ferramentas que as empresas usam todos os dias."],
+  ["05","Testes","","JUnit: provar que funciona em vez de achar.","Provar que funciona","Escrever pequenos testes que confirmam sozinhos que está tudo certo."],
+  ["06","Clean Code e SOLID","","Escrever código que outra pessoa consegue ler.","Letra bonita","Escrever código arrumado, que outra pessoa consegue ler sem dor de cabeça."],
+  ["07","SQL e PostgreSQL","","Modelar dados e consultá-los sem medo.","Arquivos gigantes","Guardar e procurar milhares de dados, como um arquivo muito bem organizado."],
+  ["08","Spring Boot","","O salto para backend a sério.","A cozinha do restaurante","Construir a parte escondida das aplicações, onde tudo é preparado."],
+  ["09","APIs REST","","Desenhar endpoints e estados de resposta.","Os empregados de mesa","Fazer as aplicações conversarem umas com as outras, pedido e resposta."],
+  ["10","JPA e Hibernate","","Ligar objetos a tabelas.","Ligar tudo","Ligar o que o programa sabe ao arquivo onde os dados ficam guardados."],
+  ["11","Spring Security","","Autenticação, autorização, tokens.","Fechaduras e chaves","Garantir que só entra quem tem a chave certa."],
+  ["12","Arquitetura","","Camadas, responsabilidades, decisões.","A planta da casa","Decidir onde fica cada coisa para a aplicação não virar uma confusão."],
+  ["13","Docker e deployment","","Pôr uma aplicação a correr fora do teu portátil.","Pôr no mundo","Tirar a aplicação do computador dele e pô-la a funcionar na internet."],
+  ["14","Portefólio","Em paralelo","Dois projetos reais, com README e testes.","A montra","Construir projetos a sério para mostrar às empresas."],
+  ["15","Algoritmos","Baixa prioridade","O suficiente para entrevistas, não mais.","Charadas","Treinar problemas tipo quebra-cabeças que às vezes aparecem nas entrevistas."],
+  ["16","Entrevistas","","Praticar explicar o que construíste.","O grande dia","Treinar entrevistas até conseguir o primeiro emprego como programador."]
+];
+const PHASE_NOW = PHASES.findIndex(p => p[2] === "Onde estás");
+
+/* Explicações fofas de cada exercício, pela ordem dos ficheiros */
+const CUTE = {
+  "ola.java":["O primeiro programa de sempre","Pôs o computador a dizer «Bora». Toda a gente começa assim."],
+  "tipos.java":["Números inteiros e com vírgula","Descobriu que o computador trata o 7 e o 3,5 de maneira diferente."],
+  "iva.java":["Caixinhas com etiqueta","Ensinou o computador a guardar um nome, uma idade e uma cidade."],
+  "saudacao.java":["Um programa bem-educado","Pergunta o nome e a idade e responde com simpatia. Se lhe escreverem disparates, não se deixa enganar."],
+  "contagem.java":["Contar até 10","Pôs o computador a contar de 1 até 10 sozinho."],
+  "contagemr.java":["Contagem decrescente","De 10 até 1, como na passagem de ano."],
+  "tabuada.java":["A tabuada instantânea","Escreves um número e aparece a tabuada inteira. Adeus, decorar na escola."],
+  "pares.java":["Só os números pares","Saltou de dois em dois para mostrar só os pares."],
+  "pares2.java":["Pares por outro caminho","O mesmo resultado, mas a olhar número a número e a escolher só os pares."],
+  "metodos.java":["Tarefas com nome","Aprendeu a dar nome a tarefas para as usar muitas vezes, como uma receita."],
+  "pessoa.java":["O molde de uma pessoa","Criou a «forma» de uma pessoa, com nome e idade. Até recusa idades negativas."],
+  "programa.java":["Pessoas feitas no molde","Usou o molde para criar duas pessoas e pô-las a apresentar-se."],
+  "aquecimento1.java":["Aquecimento","O programa insiste até lhe darem uma idade que faça sentido."],
+  "excontagem.java":["Contar com paciência","Pede um número e conta até lá, mostrando só os pares."],
+  "somapares.java":["Somar os pares","Soma todos os números pares até um número. Contas de cabeça? Já não é com ele."],
+  "somaintervalo.java":["Somar entre dois números","Soma os pares entre dois números. Este deu luta, mas ele ganhou."]
+};
+
+/* ---------- utilidades partilhadas ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const store = key => ({
+  get(){ try{ return JSON.parse(localStorage.getItem(key)) }catch(e){ return null } },
+  set(v){ try{ localStorage.setItem(key, JSON.stringify(v)) }catch(e){} }
+});
+const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
+const dayKey = d => d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+const startOfDay = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const daysBetween = (a, b) => Math.round((startOfDay(b) - startOfDay(a)) / 864e5);
+const fmt = {
+  long: new Intl.DateTimeFormat("pt-PT", {weekday:"long", day:"numeric", month:"long"}),
+  month: new Intl.DateTimeFormat("pt-PT", {month:"long", year:"numeric"}),
+  short: new Intl.DateTimeFormat("pt-PT", {day:"numeric", month:"long"}),
+  time: d => String(d.getHours()).padStart(2,"0") + "h" + String(d.getMinutes()).padStart(2,"0")
+};
+
+/* ---------- história: cada ficheiro de exercício vira uma cereja ----------
+   Uma cereja conta no dia do commit que tem o nome do ficheiro na mensagem
+   ("Contagem: for crescente"). Sem esse commit, conta no primeiro commit
+   que tocou no ficheiro. Commits sem cereja são "arrumações". */
+const HISTORY = (() => {
+  const touches = new Map();
+  COMMITS.forEach(c => c.f.forEach(p => {
+    if(!/^exercicios\/.+\.java$/i.test(p)) return;
+    const b = p.split("/").pop().toLowerCase();
+    if(!touches.has(b)) touches.set(b, []);
+    touches.get(b).push(c);
+  }));
+  const items = [], used = new Set();
+  touches.forEach((cs, b) => {
+    const stem = b.replace(/\.java$/, "");
+    const named = cs.find(c => c.s.split(":")[0].toLowerCase().split(/\s+e\s+|,\s*/).map(s => s.trim()).includes(stem));
+    const c = named || cs[0];
+    used.add(c.h);
+    items.push({kind:"ex", file:b, at:new Date(c.t), commit:c});
+  });
+  COMMITS.forEach(c => { if(!used.has(c.h)) items.push({kind:"tidy", at:new Date(c.t), commit:c}); });
+  items.sort((a, b) => a.at - b.at);
+
+  const days = new Map();
+  items.forEach(it => {
+    const k = dayKey(it.at);
+    if(!days.has(k)) days.set(k, {ex:[], tidy:[]});
+    days.get(k)[it.kind].push(it);
+  });
+  const exDays = [...days.entries()].filter(([, v]) => v.ex.length).map(([k]) => k).sort();
+  const lastEx = items.filter(i => i.kind === "ex").pop() || null;
+
+  // dias seguidos a acabar hoje ou ontem
+  let streak = 0;
+  const today = new Date();
+  for(let i = 0; ; i++){
+    const d = new Date(today.getFullYear(), today.getMonth(), today.getDate() - i);
+    const v = days.get(dayKey(d));
+    if(v && v.ex.length) streak++;
+    else if(i > 0 || streak > 0) break;
+  }
+  return {items, days, exDays, lastEx, streak, total: items.filter(i => i.kind === "ex").length};
+})();
+
+/* ---------- troca de modo ---------- */
+const BIBI_KEY = "java-bibi-v1";
+const bibiStore = store(BIBI_KEY);
+let bibiInited = false;
+
+function setMode(mode, push){
+  const bibi = mode === "bibi";
+  document.body.dataset.mode = bibi ? "bibi" : "bancada";
+  $("#mBancada").hidden = bibi;
+  $("#mBibi").hidden = !bibi;
+  $("#footBancada").hidden = bibi;
+  document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
+  document.title = bibi ? "Modo Bibi — o progresso dele" : "Java — bancada de trabalho";
+  $("#themeColor").setAttribute("content", bibi ? "#FCEEF1" : "#0E1016");
+  $("#brandSub").textContent = bibi ? "para a Bibi" : "~/java";
+  if(push !== false){
+    try{ history.replaceState(null, "", bibi ? "#bibi" : location.pathname + location.search); }catch(e){}
+  }
+  if(bibi && !bibiInited){ bibiInited = true; initBibi(); }
+  if(!bibi){ renderBibiPeek(); window.dispatchEvent(new Event("bancada:show")); }
+}
+document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => {
+  setMode(b.dataset.mode);
+  window.scrollTo({top:0, behavior: reduceMotion.matches ? "auto" : "smooth"});
+}));
+window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? "bibi" : "bancada", false));
+</script>
+
+<script>
+/* =========================================================
+   Modo bancada
+   ========================================================= */
 (() => {
   "use strict";
+  const KEY = "java-bancada-v3";
+  const OLD_KEY = "java-bancada-v2";
+  // ordem dos 12 exercícios da versão anterior, para migrar as marcações
+  const OLD_ORDER = ["Ola.java","Tipos.java","Iva.java","Saudacao.java","Contagem.java","ContagemR.java","Pares.java","Pares2.java","Tabuada.java","Metodos.java","Pessoa.java","Programa.java"];
+  const FOLDER = n => { const f = n.toLowerCase(); const hit = COMMITS.flatMap(c => c.f).find(p => p.toLowerCase().endsWith("/" + f)); return hit ? hit.split("/")[1] : ""; };
+  const st = store(KEY);
 
-  const KEY = "java-bancada-v2";
-  const SKILLS = [
-    ["if","g"],["%","g"],["contador","g"],["acumulador","g"],["validação de input","g"],["while","y"],
-    ["limites de ciclos","y"],["for vs while","y"],["casos-limite","y"],["sintaxe sem consultar","y"]
-  ];
-  const PHASES = [
-    ["01","Fundamentos","A fechar","Consolidar while, do-while, break/continue e arrays."],
-    ["02","POO","Onde estás","Classes, construtores, encapsulamento e composição."],
-    ["03","Core Java","","Collections, Strings, exceções, ficheiros."],
-    ["04","Git, Maven, IntelliJ","","Sair do nano e trabalhar como uma equipa trabalha."],
-    ["05","Testes","","JUnit: provar que funciona em vez de achar."],
-    ["06","Clean Code e SOLID","","Escrever código que outra pessoa consegue ler."],
-    ["07","SQL e PostgreSQL","","Modelar dados e consultá-los sem medo."],
-    ["08","Spring Boot","","O salto para backend a sério."],
-    ["09","APIs REST","","Desenhar endpoints e estados de resposta."],
-    ["10","JPA e Hibernate","","Ligar objetos a tabelas."],
-    ["11","Spring Security","","Autenticação, autorização, tokens."],
-    ["12","Arquitetura","","Camadas, responsabilidades, decisões."],
-    ["13","Docker e deployment","","Pôr uma aplicação a correr fora do teu portátil."],
-    ["14","Portefólio","Em paralelo","Dois projetos reais, com README e testes."],
-    ["15","Algoritmos","Baixa prioridade","O suficiente para entrevistas, não mais."],
-    ["16","Entrevistas","","Praticar explicar o que construíste."]
-  ];
-
-  const $ = s => document.querySelector(s);
-  const esc = s => String(s).replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
-
-  // localStorage pode estar bloqueado (ficheiro local, modo privado) — nunca deve partir a página
-  const store = {
-    get(){ try{ return JSON.parse(localStorage.getItem(KEY)) || null }catch(e){ return null } },
-    set(v){ try{ localStorage.setItem(KEY, JSON.stringify(v)) }catch(e){} }
-  };
-
-  let state = store.get();
-  if(!state || !Array.isArray(state.done) || state.done.length !== EXERCISES.length){
-    state = { done: EXERCISES.map(() => false), notes: (state && state.notes) || "" };
+  let state = st.get();
+  if(!state || typeof state.done !== "object" || Array.isArray(state.done)){
+    const old = store(OLD_KEY).get();
+    state = {done:{}, notes:(old && old.notes) || ""};
+    if(old && Array.isArray(old.done)) old.done.forEach((v, i) => { if(v && OLD_ORDER[i]) state.done[OLD_ORDER[i]] = true; });
   }
-  const save = () => store.set(state);
-
+  const save = () => st.set(state);
+  const isDone = e => !!state.done[e.n];
   const decode = b64 => new TextDecoder("utf-8").decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0)));
-
   let filter = "all", query = "";
   const openSet = new Set();
 
   /* ---------- topo ---------- */
   function renderTop(){
-    const done = state.done.filter(Boolean).length;
-    $("#pct").innerHTML = Math.round(done / EXERCISES.length * 100) + "<span>%</span>";
+    const done = EXERCISES.filter(isDone).length, tot = EXERCISES.length;
+    const pct = Math.round(done / tot * 100);
+    $("#pct").textContent = pct + "%";
+    $("#ringBar").style.strokeDashoffset = 326.7 * (1 - done / tot);
     $("#doneN").textContent = done;
-    $("#totN").textContent = EXERCISES.length;
-    $("#ticks").innerHTML = EXERCISES.map((e,i) =>
-      `<span class="tick ${state.done[i]?"on":""}" title="${esc(e.n)}"></span>`).join("");
-    $("#greenN").textContent = SKILLS.filter(s => s[1]==="g").length;
-    $("#yellowN").textContent = SKILLS.filter(s => s[1]==="y").length;
+    $("#totN").textContent = tot;
+    $("#ticks").innerHTML = EXERCISES.map(e => `<span class="tick ${isDone(e) ? "on" : ""}" title="${esc(e.n)}"></span>`).join("");
+    $("#greenN").textContent = SKILLS.filter(s => s[1] === "g").length;
+    $("#yellowN").textContent = SKILLS.filter(s => s[1] === "y").length;
+    $("#phaseNow").textContent = PHASE_NOW >= 0 ? PHASES[PHASE_NOW][0] + " " + PHASES[PHASE_NOW][1] : "—";
+  }
+
+  function renderHeat(){
+    const today = startOfDay(new Date());
+    const weeks = 32;
+    // começa numa segunda-feira
+    const start = new Date(today); start.setDate(start.getDate() - ((today.getDay() + 6) % 7) - (weeks - 1) * 7);
+    const cells = [];
+    for(let d = new Date(start); d <= today; d.setDate(d.getDate() + 1)){
+      const v = HISTORY.days.get(dayKey(d));
+      const n = v ? v.ex.length : 0;
+      const l = n === 0 ? 0 : n === 1 ? 1 : n <= 3 ? 2 : 3;
+      const label = fmt.short.format(d) + ": " + (n ? n + (n === 1 ? " exercício" : " exercícios") : "sem exercícios");
+      cells.push(`<i data-l="${l}" title="${esc(label)}" class="${+d === +today ? "today" : ""}"></i>`);
+    }
+    $("#heat").innerHTML = cells.join("");
+    $("#heat").parentElement.scrollLeft = 1e4;
+    $("#hDays").textContent = HISTORY.exDays.length;
+    $("#hStreak").textContent = HISTORY.streak;
+    const last = HISTORY.lastEx;
+    if(last){
+      const d = daysBetween(last.at, new Date());
+      $("#hLast").textContent = d === 0 ? "hoje, " + fmt.time(last.at) : d === 1 ? "ontem, " + fmt.time(last.at) : "há " + d + " dias";
+    }
   }
 
   function renderStatic(){
-    $("#skills").innerHTML = SKILLS.map(([n,k]) =>
-      `<div class="skill"><code>${esc(n)}</code><span class="pill ${k}">${k==="g"?"sólido":"por automatizar"}</span></div>`).join("");
-    $("#road").innerHTML = PHASES.map(([n,t,tag,d]) =>
-      `<li class="ph ${tag==="Onde estás"?"now":""}"><span class="n">${n}</span>${tag?`<span class="tag">${esc(tag)}</span>`:""}
+    $("#skills").innerHTML = SKILLS.map(([n, k]) =>
+      `<div class="skill"><code>${esc(n)}</code><span class="pill ${k}">${k === "g" ? "sólido" : "por automatizar"}</span></div>`).join("");
+    $("#road").innerHTML = PHASES.map(([n, t, tag, d]) =>
+      `<li class="ph ${tag === "Onde estás" ? "now" : ""}"><span class="n">${n}</span>${tag ? `<span class="tag">${esc(tag)}</span>` : ""}
         <h3>${esc(t)}</h3><p>${esc(d)}</p></li>`).join("");
     $("#notes").value = state.notes || "";
   }
 
-  /* ---------- lista de exercícios ---------- */
+  /* ---------- lista ---------- */
   function visible(){
     const q = query.trim().toLowerCase();
-    return EXERCISES.map((e,i) => ({e,i})).filter(({e,i}) =>
+    return EXERCISES.map((e, i) => ({e, i})).filter(({e}) =>
       (!q || e.n.toLowerCase().includes(q) || e.d.toLowerCase().includes(q)) &&
-      (filter === "all" || (filter === "done") === !!state.done[i]));
+      (filter === "all" || (filter === "done") === isDone(e)));
   }
 
   function renderList(){
     const items = visible();
     $("#listCount").textContent = items.length + "/" + EXERCISES.length;
     if(!items.length){
-      $("#list").innerHTML = `<div class="block"><p class="desc" style="margin:0">Nada com esse filtro. Limpa a caixa de pesquisa ou volta a "Todos".</p></div>`;
+      $("#list").innerHTML = `<div class="card"><p class="desc" style="margin:0">Nada com esse filtro. Limpa a pesquisa ou volta a "Todos".</p></div>`;
       return;
     }
-    $("#list").innerHTML = items.map(({e,i}) => `
-      <article class="ex ${state.done[i]?"done":""} ${openSet.has(i)?"open":""}" data-i="${i}">
+    $("#list").innerHTML = items.map(({e, i}) => `
+      <article class="ex ${isDone(e) ? "done" : ""} ${openSet.has(i) ? "open" : ""}">
         <div class="ex-head">
-          <input type="checkbox" data-check="${i}" ${state.done[i]?"checked":""} aria-label="Marcar ${esc(e.n)} como feito">
-          <span><span class="ex-name">${esc(e.n)}</span><span class="ex-desc">${esc(e.d)}</span></span>
-          <button class="open-btn" data-toggle="${i}" aria-expanded="${openSet.has(i)}">${openSet.has(i)?"fechar":"abrir código"}</button>
+          <input type="checkbox" class="check" data-check="${i}" ${isDone(e) ? "checked" : ""} aria-label="Marcar ${esc(e.n)} como feito">
+          <span style="min-width:0"><span class="ex-name" translate="no">${esc(e.n)}<span class="ex-folder">${esc(FOLDER(e.n))}</span></span><span class="ex-desc">${esc(e.d)}</span></span>
+          <button type="button" class="open-btn" data-toggle="${i}" aria-expanded="${openSet.has(i)}">${openSet.has(i) ? "Fechar" : "Abrir código"}</button>
         </div>
-        <div class="ex-body" ${openSet.has(i)?"":"hidden"} id="body-${i}"></div>
+        <div class="ex-body" ${openSet.has(i) ? "" : "hidden"} id="body-${i}"></div>
       </article>`).join("");
-    openSet.forEach(i => { const b = document.getElementById("body-"+i); if(b) mount(b, i); });
+    openSet.forEach(i => { const b = document.getElementById("body-" + i); if(b) mount(b, i); });
   }
 
   /* ---------- simulador ---------- */
   function mount(box, i){
     const ex = EXERCISES[i];
     let code;
-    try { code = decode(ex.src); }
-    catch(err){ box.innerHTML = `<div class="term"><div class="term-out"><div class="ln err">Não foi possível descodificar ${ex.n}: ${err.message}</div></div></div>`; return; }
+    try{ code = decode(ex.src); }
+    catch(err){ box.innerHTML = `<div class="term"><div class="term-out"><div class="ln err">Não foi possível descodificar ${esc(ex.n)}: ${esc(err.message)}</div></div></div>`; return; }
 
     const lines = code.split("\n");
     box.innerHTML = `
       <div class="src">
-        <div class="bar"><span>${esc(ex.n)}</span><span>${lines.length} linhas</span></div>
-        <div class="code">${lines.map((l,n) =>
-          `<div class="cl" data-l="${n+1}"><span class="no">${n+1}</span><span class="tx">${esc(l) || " "}</span></div>`).join("")}</div>
+        <div class="bar"><span translate="no">${esc(ex.n)}</span><span>${lines.length} linhas</span></div>
+        <div class="code" translate="no">${lines.map((l, n) =>
+          `<div class="cl"><span class="no">${n + 1}</span><span class="tx">${esc(l) || " "}</span></div>`).join("")}</div>
       </div>
       <div class="term">
-        <div class="bar"><span>$ java ${esc(ex.n.replace(".java",""))}</span><span id="st-${i}">parado</span></div>
-        <div class="term-out"></div>
+        <div class="bar"><span translate="no">$ java ${esc(ex.n.replace(".java", ""))}</span><span class="st">parado</span></div>
+        <div class="term-out" aria-live="polite"></div>
         <div class="vars"></div>
-        <div class="ask" hidden><input type="text" autocomplete="off" spellcheck="false" placeholder="escreve e carrega Enter"><button type="button">Enter</button></div>
+        <div class="ask" hidden><input type="text" autocomplete="off" spellcheck="false" aria-label="Input do programa" placeholder="Escreve e carrega Enter…"><button type="button">Enter</button></div>
         <div class="ctrl">
           <button type="button" class="run">Próxima linha</button>
           <button type="button" class="alt auto">Correr tudo</button>
@@ -602,14 +1304,12 @@ const RUNNERS = {
     const out = box.querySelector(".term-out"), varsBox = box.querySelector(".vars");
     const ask = box.querySelector(".ask"), askIn = ask.querySelector("input"), askBtn = ask.querySelector("button");
     const runBtn = box.querySelector(".run"), autoBtn = box.querySelector(".auto"), againBtn = box.querySelector(".again");
-    const pos = box.querySelector(".pos"), status = box.querySelector("#st-"+i);
+    const pos = box.querySelector(".pos"), status = box.querySelector(".st");
     const rows = [...box.querySelectorAll(".cl")];
-
     let gen, count, vars, waiting, finished, auto;
 
-    const print = (t, cls) => { const d = document.createElement("div"); d.className = "ln " + (cls||""); d.textContent = t; out.appendChild(d); out.scrollTop = out.scrollHeight; };
-    const mark = l => { rows.forEach(r => r.classList.remove("hit"));
-      const r = rows[l-1]; if(r){ r.classList.add("hit"); r.scrollIntoView({block:"nearest"}); } };
+    const print = (t, cls) => { const d = document.createElement("div"); d.className = "ln " + (cls || ""); d.textContent = t; out.appendChild(d); out.scrollTop = out.scrollHeight; };
+    const mark = l => { rows.forEach(r => r.classList.remove("hit")); const r = rows[l - 1]; if(r){ r.classList.add("hit"); r.scrollIntoView({block:"nearest"}); } };
     const showVars = () => { varsBox.innerHTML = Object.keys(vars).map(k => `<span class="var"><b>${esc(k)}</b> = ${esc(vars[k])}</span>`).join(""); };
 
     function reset(){
@@ -620,17 +1320,16 @@ const RUNNERS = {
       runBtn.disabled = false; autoBtn.disabled = false;
       pos.textContent = "0 passos"; status.textContent = "parado";
       rows.forEach(r => r.classList.remove("hit"));
-      if(!gen){ print("Este ficheiro ainda não tem guião de execução.", "sys"); runBtn.disabled = true; autoBtn.disabled = true; return; }
+      if(!gen){ print("Este ficheiro ainda não tem guião de execução. Compila e corre no terminal.", "sys"); runBtn.disabled = true; autoBtn.disabled = true; return; }
       print("$ javac " + ex.n, "sys");
-      print("$ java " + ex.n.replace(".java",""), "sys");
+      print("$ java " + ex.n.replace(".java", ""), "sys");
     }
 
     function step(value){
       if(finished || waiting) return;
       let r;
-      try { r = gen.next(value); }
+      try{ r = gen.next(value); }
       catch(err){ print("O simulador falhou: " + err.message, "err"); finished = true; runBtn.disabled = true; autoBtn.disabled = true; return; }
-
       if(r.done){
         finished = true; auto = false;
         rows.forEach(x => x.classList.remove("hit"));
@@ -653,7 +1352,6 @@ const RUNNERS = {
         askIn.value = ""; askIn.focus();
       }
     }
-
     function submit(){
       if(!waiting) return;
       const v = askIn.value;
@@ -662,7 +1360,6 @@ const RUNNERS = {
       waiting = false; ask.hidden = true; runBtn.disabled = false; autoBtn.disabled = false;
       step(v);
     }
-
     function runAll(){
       auto = true;
       (function tick(){
@@ -671,87 +1368,116 @@ const RUNNERS = {
         if(auto && !finished && !waiting) setTimeout(tick, 90);
       })();
     }
-
     runBtn.addEventListener("click", () => step());
     autoBtn.addEventListener("click", runAll);
     againBtn.addEventListener("click", reset);
     askBtn.addEventListener("click", submit);
     askIn.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); submit(); } });
-
     reset();
   }
 
+  /* ---------- separadores ---------- */
+  const tabs = [...document.querySelectorAll(".tab")];
+  const ind = $("#tabInd");
+  function moveInd(tab){ ind.style.width = tab.offsetWidth + "px"; ind.style.transform = `translateX(${tab.offsetLeft}px)`; }
+  function selectTab(tab, focus, silent){
+    tabs.forEach(t => {
+      const on = t === tab;
+      t.setAttribute("aria-selected", on);
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
+    });
+    moveInd(tab);
+    if(focus) tab.focus();
+    if(!silent) try{ history.replaceState(null, "", "#" + tab.id.slice(2)); }catch(e){}
+  }
+  tabs.forEach(t => t.addEventListener("click", () => selectTab(t)));
+  $(".tabs").addEventListener("keydown", e => {
+    const i = tabs.indexOf(document.activeElement);
+    if(i < 0) return;
+    let j = null;
+    if(e.key === "ArrowRight") j = (i + 1) % tabs.length;
+    if(e.key === "ArrowLeft") j = (i - 1 + tabs.length) % tabs.length;
+    if(e.key === "Home") j = 0;
+    if(e.key === "End") j = tabs.length - 1;
+    if(j !== null){ e.preventDefault(); selectTab(tabs[j], true); }
+  });
+  window.addEventListener("bancada:show", () => moveInd(tabs.find(t => t.getAttribute("aria-selected") === "true")));
+  window.addEventListener("resize", () => moveInd(tabs.find(t => t.getAttribute("aria-selected") === "true")));
+  document.fonts && document.fonts.ready.then(() => moveInd(tabs.find(t => t.getAttribute("aria-selected") === "true")));
+
+  /* ---------- menu ---------- */
+  const menuBtn = $("#menuBtn"), menuList = $("#menuList");
+  const setMenu = open => { menuList.dataset.open = open; menuBtn.setAttribute("aria-expanded", open); if(open) menuList.querySelector("button").focus(); };
+  menuBtn.addEventListener("click", e => { e.stopPropagation(); setMenu(menuList.dataset.open !== "true"); });
+  document.addEventListener("click", e => { if(!e.target.closest(".menu")) setMenu(false); });
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && menuList.dataset.open === "true"){ setMenu(false); menuBtn.focus(); } });
+
   /* ---------- eventos ---------- */
   document.addEventListener("click", e => {
-    const tab = e.target.closest(".tab");
-    if(tab){
-      document.querySelectorAll(".tab").forEach(t => {
-        const on = t === tab;
-        t.setAttribute("aria-selected", on);
-        document.getElementById(t.getAttribute("aria-controls")).hidden = !on;
-      });
-      return;
-    }
     const f = e.target.closest("#filters button");
-    if(f){ filter = f.dataset.f;
+    if(f){
+      filter = f.dataset.f;
       document.querySelectorAll("#filters button").forEach(b => b.setAttribute("aria-pressed", b === f));
-      renderList(); return; }
-
+      renderList(); return;
+    }
     const t = e.target.closest("[data-toggle]");
     if(t){
       const i = +t.dataset.toggle, art = t.closest(".ex"), body = art.querySelector(".ex-body");
       if(openSet.has(i)){
         openSet.delete(i); body.hidden = true; body.innerHTML = ""; art.classList.remove("open");
-        t.textContent = "abrir código"; t.setAttribute("aria-expanded", "false");
+        t.textContent = "Abrir código"; t.setAttribute("aria-expanded", "false");
       } else {
         openSet.add(i); body.hidden = false; art.classList.add("open");
-        t.textContent = "fechar"; t.setAttribute("aria-expanded", "true");
+        t.textContent = "Fechar"; t.setAttribute("aria-expanded", "true");
         mount(body, i);
       }
       return;
     }
-
     if(e.target.id === "reset"){
-      if(confirm("Desmarcar todos os exercícios? As notas ficam.")){
-        state.done = EXERCISES.map(() => false); save(); renderTop(); renderList();
-      } return;
+      setMenu(false);
+      if(confirm("Desmarcar todos os exercícios? As notas ficam.")){ state.done = {}; save(); renderTop(); renderList(); }
+      return;
     }
-    if(e.target.id === "expJson") download("bancada-java.json", JSON.stringify(state, null, 2), "application/json");
-    if(e.target.id === "expMd") download("java-estado.md", makeMd(), "text/markdown");
+    if(e.target.id === "expJson"){ setMenu(false); download("bancada-java.json", JSON.stringify(state, null, 2), "application/json"); }
+    if(e.target.id === "expMd"){ setMenu(false); download("java-estado.md", makeMd(), "text/markdown"); }
   });
 
   document.addEventListener("change", e => {
     const c = e.target.closest("[data-check]");
     if(!c) return;
-    const i = +c.dataset.check;
-    state.done[i] = c.checked; save();
+    const ex = EXERCISES[+c.dataset.check];
+    if(c.checked) state.done[ex.n] = true; else delete state.done[ex.n];
+    save();
     c.closest(".ex").classList.toggle("done", c.checked);
     renderTop();
-    if(filter !== "all") renderList();   // só reconstrói a lista se o filtro a mudar
+    if(filter !== "all") renderList();
   });
 
   document.addEventListener("keydown", e => {
-    if(!e.target.classList.contains("tab")) return;
-    const tabs = [...document.querySelectorAll(".tab")];
-    const i = tabs.indexOf(e.target);
-    let j = null;
-    if(e.key === "ArrowRight") j = (i + 1) % tabs.length;
-    if(e.key === "ArrowLeft") j = (i - 1 + tabs.length) % tabs.length;
-    if(j !== null){ e.preventDefault(); tabs[j].focus(); tabs[j].click(); }
+    if(e.key !== "/" || document.body.dataset.mode !== "bancada") return;
+    if(/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
+    e.preventDefault();
+    selectTab($("#t-ex"));
+    $("#q").focus();
   });
 
   $("#q").addEventListener("input", e => { query = e.target.value; renderList(); });
   $("#notes").addEventListener("input", e => { state.notes = e.target.value; save(); });
+  $("#bibiPeek").addEventListener("click", () => {
+    const n = (bibiStore.get() || {}).notes || [];
+    if(n.length){ selectTab($("#t-agora")); $("#bibiNotesCard").scrollIntoView({behavior: reduceMotion.matches ? "auto" : "smooth", block:"center"}); }
+    else setMode("bibi");
+  });
 
   function makeMd(){
     const L = ["# Java — estado atual", "", "## Exercícios"];
-    EXERCISES.forEach((e,i) => L.push(`- [${state.done[i]?"x":" "}] \`${e.n}\` — ${e.d}`));
+    EXERCISES.forEach(e => L.push(`- [${isDone(e) ? "x" : " "}] \`${e.n}\` — ${e.d}`));
     L.push("", "## Competências");
-    SKILLS.forEach(([n,k]) => L.push(`- ${n} — ${k === "g" ? "sólido" : "por automatizar"}`));
+    SKILLS.forEach(([n, k]) => L.push(`- ${n} — ${k === "g" ? "sólido" : "por automatizar"}`));
     L.push("", "## Notas", state.notes || "Sem notas.");
     return L.join("\n") + "\n";
   }
-
   function download(name, text, type){
     const url = URL.createObjectURL(new Blob([text], {type}));
     const a = document.createElement("a");
@@ -759,8 +1485,432 @@ const RUNNERS = {
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
 
-  renderTop(); renderStatic(); renderList();
+  renderTop(); renderHeat(); renderStatic(); renderList();
+  const startTab = tabs.find(t => location.hash === "#" + t.id.slice(2)) || tabs[0];
+  selectTab(startTab, false, true);
 })();
+
+/* recadinhos da Bibi vistos do lado dele */
+function renderBibiPeek(){
+  const data = bibiStore.get() || {};
+  const notes = data.notes || [];
+  $("#bibiCount").textContent = notes.length;
+  $("#bibiNotesCard").hidden = !notes.length;
+  $("#bibiNotesMini").innerHTML = notes.slice(-3).reverse().map(n =>
+    `<div class="nb">${esc(n.text)}<small>${esc(fmt.long.format(new Date(n.t)))}</small></div>`).join("") +
+    (data.hugs ? `<div class="nb">${data.hugs} ${data.hugs === 1 ? "abraço recebido" : "abraços recebidos"}</div>` : "");
+}
+renderBibiPeek();
+</script>
+
+<script>
+/* =========================================================
+   Modo Bibi
+   ========================================================= */
+function initBibi(){
+  "use strict";
+  const data = Object.assign({notes:[], hugs:0, best:0}, bibiStore.get() || {});
+  const saveData = () => bibiStore.set(data);
+  const now = new Date();
+  const plural = (n, one, many) => n + " " + (n === 1 ? one : many);
+  const cuteOf = it => CUTE[it.file] || [it.file, it.commit.s];
+  const tidyText = s => /readme/i.test(s) ? "Escreveu a apresentação do projeto."
+    : /roadmap|bancada/i.test(s) ? "Organizou o plano de estudo e esta página."
+    : /pessoa|dados pessoais/i.test(s) ? "Tirou informações pessoais dos ficheiros, por segurança."
+    : "Arrumou e organizou os ficheiros.";
+
+  /* ---------- corações a voar ---------- */
+  function hearts(x, y, n = 8){
+    if(reduceMotion.matches) return;
+    for(let i = 0; i < n; i++){
+      const s = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      s.setAttribute("class", "float-heart"); s.setAttribute("aria-hidden", "true");
+      s.innerHTML = '<use href="#i-heart"/>';
+      s.style.left = x + "px"; s.style.top = y + "px";
+      document.body.appendChild(s);
+      const dx = (Math.random() - .5) * 160, dy = 70 + Math.random() * 110, sc = .6 + Math.random() * .7, r = (Math.random() - .5) * 50;
+      s.animate([
+        {transform:"translate(0,0) scale(.3)", opacity:0},
+        {transform:`translate(${dx * .4}px,${-dy * .4}px) scale(${sc})`, opacity:1, offset:.25},
+        {transform:`translate(${dx}px,${-dy}px) scale(${sc * .8}) rotate(${r}deg)`, opacity:0}
+      ], {duration:900 + Math.random() * 400, easing:"cubic-bezier(.23,1,.32,1)"}).onfinish = () => s.remove();
+    }
+  }
+  const centerOf = el => { const r = el.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; };
+
+  /* ---------- o lago ---------- */
+  const scene = $("#scene"), pond = scene.closest(".pond"), bubble = $("#bubble");
+  let bubbleTimer;
+  function say(text, sx, sy){
+    // SVG não tem offsetLeft/offsetTop: medir as caixas
+    const pr = pond.getBoundingClientRect(), sr = scene.getBoundingClientRect(), k = sr.width / 1000;
+    bubble.textContent = text;
+    bubble.style.left = Math.min(Math.max(sr.left - pr.left + sx * k, 130), pr.width - 130) + "px";
+    bubble.style.top = Math.max(sr.top - pr.top + sy * k, 60) + "px";
+    bubble.dataset.show = "true";
+    clearTimeout(bubbleTimer);
+    bubbleTimer = setTimeout(() => bubble.dataset.show = "false", 3600);
+  }
+  const toSvg = e => { const p = scene.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(scene.getScreenCTM().inverse()); };
+  function ripple(x, y){
+    const g = $("#ripples");
+    for(let i = 0; i < 2; i++){
+      const c = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      c.setAttribute("cx", x); c.setAttribute("cy", y); c.setAttribute("rx", 40); c.setAttribute("ry", 10);
+      c.setAttribute("fill", "none"); c.setAttribute("stroke", "#fff"); c.setAttribute("stroke-width", "3");
+      c.style.transformBox = "fill-box"; c.style.transformOrigin = "center";
+      g.appendChild(c);
+      c.animate([{transform:"scale(.2)", opacity:.9}, {transform:"scale(1.8)", opacity:0}],
+        {duration:1100, delay:i * 180, easing:"cubic-bezier(.23,1,.32,1)", fill:"backwards"}).onfinish = () => c.remove();
+    }
+  }
+
+  // uma cereja no ramo por exercício (até 16)
+  const ANCHORS = [[960,14],[925,26],[888,40],[856,72],[852,108],[846,138],[808,46],[770,58],[734,70],[700,82],[684,110],[662,132],[640,152],[618,98],[588,106],[552,120]];
+  const exItems = HISTORY.items.filter(i => i.kind === "ex");
+  $("#cherries").innerHTML = exItems.slice(0, ANCHORS.length).map((it, i) => {
+    const [x, y] = ANCHORS[i], [t] = cuteOf(it);
+    return `<g class="cherry-hang" data-i="${i}" tabindex="0" role="button" aria-label="${esc(t)}" style="animation-delay:${-i * .4}s">
+      <rect x="${x - 22}" y="${y - 6}" width="44" height="44" fill="transparent"/><use href="#i-cherry1" x="${x - 17}" y="${y - 4}" width="34" height="34"/></g>`;
+  }).join("");
+
+  let together = false;
+  function toggleSwans(){
+    together = !together;
+    $("#swanL").style.transform = together ? "translateX(55px)" : "";
+    $("#swanR").style.transform = together ? "translateX(-55px)" : "";
+    if(together){
+      setTimeout(() => {
+        const h = document.createElementNS("http://www.w3.org/2000/svg", "use");
+        h.setAttribute("href", "#i-heart"); h.setAttribute("x", 666); h.setAttribute("y", 250); h.setAttribute("width", 48); h.setAttribute("height", 48);
+        $("#hearts").appendChild(h);
+        if(reduceMotion.matches){ setTimeout(() => h.remove(), 1500); return; }
+        h.animate([{transform:"translateY(20px) scale(.4)", opacity:0}, {transform:"translateY(0) scale(1)", opacity:1, offset:.3}, {transform:"translateY(-80px) scale(1.1)", opacity:0}],
+          {duration:1800, easing:"cubic-bezier(.23,1,.32,1)"}).onfinish = () => h.remove();
+      }, reduceMotion.matches ? 0 : 700);
+      say(`Os dois cisnes estão orgulhosos dele: ${plural(HISTORY.total, "cereja", "cerejas")} até agora!`, 690, 250);
+    } else say("Vão dar mais uma voltinha pelo lago.", 690, 280);
+  }
+
+  function dropCherry(g){
+    const it = exItems[+g.dataset.i], [t] = cuteOf(it);
+    const [x, y] = ANCHORS[+g.dataset.i];
+    say(`${t} · ${fmt.short.format(it.at)}`, x, y + 10);
+    if(reduceMotion.matches || g.dataset.busy) return;
+    g.dataset.busy = "1";
+    const use = g.querySelector("use"), dy = 400 - y;
+    use.animate([{transform:"translateY(0)", opacity:1}, {transform:`translateY(${dy}px)`, opacity:1, offset:.85}, {transform:`translateY(${dy + 14}px)`, opacity:0}],
+      {duration:900, easing:"cubic-bezier(.55,0,1,.45)", fill:"forwards"}).onfinish = () => {
+        ripple(x, 404);
+        setTimeout(() => {
+          use.animate([{transform:"scale(.2)", opacity:0}, {transform:"scale(1)", opacity:1}],
+            {duration:500, easing:"cubic-bezier(.23,1,.32,1)", fill:"forwards"}).onfinish = () => { delete g.dataset.busy; };
+          use.style.transformBox = "fill-box"; use.style.transformOrigin = "50% 0";
+        }, 900);
+      };
+  }
+
+  scene.addEventListener("click", e => {
+    const ch = e.target.closest(".cherry-hang");
+    if(ch) return dropCherry(ch);
+    if(e.target.closest("#swanL, #swanR")) return toggleSwans();
+    const p = toSvg(e);
+    if(p.y > 370) ripple(p.x, p.y);
+  });
+  scene.addEventListener("keydown", e => {
+    const ch = e.target.closest(".cherry-hang");
+    if(ch && (e.key === "Enter" || e.key === " ")){ e.preventDefault(); dropCherry(ch); }
+  });
+  // os cisnes também respondem ao teclado
+  ["swanL", "swanR"].forEach(id => {
+    const g = document.getElementById(id);
+    g.setAttribute("tabindex", "0"); g.setAttribute("role", "button"); g.setAttribute("aria-label", "Juntar os cisnes");
+    g.style.cursor = "pointer";
+    g.addEventListener("keydown", e => { if(e.key === "Enter" || e.key === " "){ e.preventDefault(); toggleSwans(); } });
+  });
+
+  /* ---------- está mesmo a estudar? ---------- */
+  const last = HISTORY.lastEx;
+  const since = last ? daysBetween(last.at, now) : null;
+  const dayCount = k => (HISTORY.days.get(k) || {ex:[]}).ex.length;
+  let title, text, meter, sleepy = false;
+  if(!last){ title = "Ainda não há cerejas"; text = "Quando ele guardar o primeiro exercício, aparece aqui."; meter = 0; sleepy = true; }
+  else if(since === 0){ const n = dayCount(dayKey(now)); title = "Sim! Estudou hoje"; text = `Hoje já apanhou ${plural(n, "cereja", "cerejas")}. A última foi às ${fmt.time(last.at)}.`; meter = 96; }
+  else if(since === 1){ const n = dayCount(dayKey(last.at)); title = "Sim, estudou ontem"; text = `Ontem fez ${plural(n, "exercício", "exercícios")}, o último às ${fmt.time(last.at)}. Hoje ainda vai a tempo de mais.`; meter = 80; }
+  else if(since <= 3){ title = "Está a descansar um bocadinho"; text = `A última cereja foi no dia ${fmt.long.format(last.at)}. Um ou dois dias de pausa é normal.`; meter = 55; }
+  else if(since <= 7){ title = `Hmm, já lá vão ${since} dias`; text = `A última cereja foi no dia ${fmt.long.format(last.at)}. Talvez precise de um empurrãozinho carinhoso.`; meter = 28; sleepy = true; }
+  else { title = "O cisne adormeceu"; text = `Há ${since} dias que não aparece nenhuma cereja. Hora de o acordar, com carinho.`; meter = 8; sleepy = true; }
+  $("#vTitle").textContent = title;
+  $("#vText").textContent = text;
+  $("#vSwanUse").setAttribute("href", sleepy ? "#i-swan-sleep" : "#i-swan");
+  requestAnimationFrame(() => requestAnimationFrame(() => $("#meterDot").style.left = meter + "%"));
+  $("#vSwan").addEventListener("click", e => {
+    hearts(...centerOf(e.currentTarget), 10);
+    if(sleepy){
+      $("#vSwanUse").setAttribute("href", "#i-swan");
+      $("#vTitle").textContent = "Acordou com as festinhas!";
+      setTimeout(() => { $("#vSwanUse").setAttribute("href", "#i-swan-sleep"); $("#vTitle").textContent = title; }, 2400);
+    }
+  });
+
+  const wdFmt = new Intl.DateTimeFormat("pt-PT", {weekday:"short"});
+  const week = [];
+  for(let i = 6; i >= 0; i--){
+    const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - i);
+    const n = dayCount(dayKey(d));
+    week.push(`<span class="wday ${n ? "on" : ""} ${i === 0 ? "today" : ""}" title="${esc(fmt.long.format(d))}: ${plural(n, "cereja", "cerejas")}">
+      <i>${n ? `<svg aria-hidden="true"><use href="${n > 1 ? "#i-cherry" : "#i-cherry1"}"/></svg>` : ""}</i>${esc(wdFmt.format(d).replace(".", "").slice(0, 3))}</span>`);
+  }
+  $("#week").innerHTML = week.join("");
+  $("#fTotal").textContent = HISTORY.total;
+  $("#fDays").textContent = HISTORY.exDays.length;
+  $("#fStreak").textContent = HISTORY.streak;
+
+  /* ---------- calendário ---------- */
+  const activeDays = [...HISTORY.days.keys()].sort();
+  const firstAt = HISTORY.items.length ? HISTORY.items[0].at : now;
+  const minMonth = new Date(firstAt.getFullYear(), firstAt.getMonth(), 1);
+  const maxMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  let month = new Date(maxMonth);
+  let selected = activeDays[activeDays.length - 1] || null;
+  const dows = ["seg", "ter", "qua", "qui", "sex", "sáb", "dom"];
+
+  function renderCal(){
+    const mt = fmt.month.format(month); $("#calMonth").textContent = mt.charAt(0).toUpperCase() + mt.slice(1);
+    $("#calPrev").disabled = month <= minMonth;
+    $("#calNext").disabled = month >= maxMonth;
+    const first = new Date(month), lead = (first.getDay() + 6) % 7;
+    const dim = new Date(month.getFullYear(), month.getMonth() + 1, 0).getDate();
+    const cells = dows.map(d => `<span class="dow" aria-hidden="true">${d}</span>`);
+    for(let i = 0; i < lead; i++) cells.push(`<span></span>`);
+    for(let day = 1; day <= dim; day++){
+      const d = new Date(month.getFullYear(), month.getMonth(), day), k = dayKey(d), v = HISTORY.days.get(k);
+      const n = v ? v.ex.length : 0, tidy = v && !n;
+      const label = fmt.long.format(d) + (n ? ", " + plural(n, "cereja", "cerejas") : tidy ? ", arrumações" : ", sem atividade");
+      const icon = n ? `<svg aria-hidden="true"><use href="${n > 1 ? "#i-cherry" : "#i-cherry1"}"/></svg>` : tidy ? `<svg aria-hidden="true"><use href="#i-leaf"/></svg>` : "";
+      cells.push(`<button type="button" class="day ${n ? "has" : ""} ${tidy ? "tidy" : ""} ${k === dayKey(now) ? "today" : ""}" data-k="${k}"
+        aria-pressed="${k === selected}" aria-label="${esc(label)}" ${v ? "" : "disabled"}>
+        ${n > 2 ? `<span class="n-x">×${n}</span>` : ""}<span>${day}</span>${icon}</button>`);
+    }
+    $("#cal").innerHTML = cells.join("");
+  }
+
+  function renderDiary(){
+    const idx = activeDays.indexOf(selected);
+    $("#dPrev").disabled = idx <= 0;
+    $("#dNext").disabled = idx < 0 || idx >= activeDays.length - 1;
+    if(!selected){ $("#dDate").textContent = "Ainda sem dias"; $("#dSum").textContent = ""; $("#dList").innerHTML = ""; return; }
+    const [y, m, d] = selected.split("-").map(Number), date = new Date(y, m - 1, d), v = HISTORY.days.get(selected);
+    const rel = daysBetween(date, now);
+    $("#dDate").textContent = (rel === 0 ? "Hoje, " : rel === 1 ? "Ontem, " : "") + fmt.long.format(date);
+    $("#dSum").textContent = v.ex.length
+      ? `Apanhou ${plural(v.ex.length, "cereja", "cerejas")}${v.tidy.length ? " e ainda arrumou as coisas" : ""}.`
+      : "Não fez exercícios novos, mas arrumou as coisas.";
+    $("#dList").innerHTML = v.ex.map(it => { const [t, x] = cuteOf(it); return `
+      <li class="d-item"><svg aria-hidden="true"><use href="#i-cherry1"/></svg><div><time>às ${fmt.time(it.at)}</time><b>${esc(t)}</b><p>${esc(x)}</p></div></li>`; }).join("") +
+      v.tidy.map(it => `
+      <li class="d-item tidy"><svg aria-hidden="true"><use href="#i-leaf"/></svg><div><time>às ${fmt.time(it.at)}</time><b>Arrumações</b><p>${esc(tidyText(it.commit.s))}</p></div></li>`).join("");
+  }
+  function select(k){
+    selected = k;
+    const [y, m] = k.split("-").map(Number);
+    month = new Date(y, m - 1, 1);
+    renderCal(); renderDiary();
+  }
+  $("#cal").addEventListener("click", e => { const b = e.target.closest(".day:not(:disabled)"); if(b) select(b.dataset.k); });
+  $("#calPrev").addEventListener("click", () => { month = new Date(month.getFullYear(), month.getMonth() - 1, 1); renderCal(); });
+  $("#calNext").addEventListener("click", () => { month = new Date(month.getFullYear(), month.getMonth() + 1, 1); renderCal(); });
+  $("#dPrev").addEventListener("click", () => { const i = activeDays.indexOf(selected); if(i > 0) select(activeDays[i - 1]); });
+  $("#dNext").addEventListener("click", () => { const i = activeDays.indexOf(selected); if(i < activeDays.length - 1) select(activeDays[i + 1]); });
+  if(selected) select(selected); else { renderCal(); renderDiary(); }
+
+  /* ---------- caminho de pedras ---------- */
+  let stoneSel = Math.max(PHASE_NOW, 0);
+  function renderStones(){
+    $("#stones").innerHTML = PHASES.map((p, i) => `
+      <li><button type="button" class="stone ${i < PHASE_NOW ? "done" : ""} ${i === PHASE_NOW ? "now" : ""}" data-i="${i}" aria-pressed="${i === stoneSel}" aria-label="Pedra ${i + 1}: ${esc(p[4])}">
+        ${i === PHASE_NOW ? `<svg class="on-top" aria-hidden="true"><use href="#i-swan"/></svg>` : ""}
+        <b>${i + 1}</b><small>${esc(p[4])}</small></button></li>`).join("");
+    const p = PHASES[stoneSel];
+    $("#sNum").textContent = stoneSel + 1;
+    $("#sTitle").textContent = p[4];
+    const status = stoneSel < PHASE_NOW ? "Já passou por aqui." : stoneSel === PHASE_NOW ? "O cisne está aqui agora." : "Ainda está para vir.";
+    $("#sText").textContent = p[5] + " " + status;
+  }
+  $("#stones").addEventListener("click", e => { const b = e.target.closest(".stone"); if(!b) return; stoneSel = +b.dataset.i; renderStones(); document.querySelector(`.stone[data-i="${stoneSel}"]`).focus(); });
+  renderStones();
+
+  /* ---------- dicionário ---------- */
+  const WORDS = [
+    ["Variável", "int idade = 25;", "i-cherry1", "Uma caixinha com etiqueta onde o computador guarda uma coisa, como a idade de alguém.", "Como um frasco de compota com o nome escrito."],
+    ["Ciclo", "for · while", "i-swan", "Repetir a mesma coisa várias vezes sem escrever tudo outra vez.", "Como lavar a loiça: prato a prato até acabar."],
+    ["if", "if · else", "i-heart", "O computador a tomar decisões.", "Se chover, levo guarda-chuva. Senão, levo óculos de sol."],
+    ["Classe", "class Pessoa", "i-blossom", "Um molde para criar coisas parecidas.", "A forma do bolo é a classe; cada bolo é um objeto."],
+    ["Método", "somar(9, 2)", "i-leaf", "Uma tarefa com nome, que se usa sempre que for preciso.", "Como a receita de «fazer café»."],
+    ["Erro de compilação", "error: ';' expected", "i-swan-sleep", "O computador a dizer: não percebi esta frase.", "É normal. Ele vê isto muitas vezes por dia."],
+    ["Commit", "git commit", "i-cherry", "Guardar uma fotografia do trabalho, com data e hora.", "É daqui que vêm as cerejas desta página."],
+    ["Bug", "resultado errado", "i-heart", "Um erro escondido: o programa funciona, mas faz a coisa errada.", "Como pôr sal em vez de açúcar no bolo."]
+  ];
+  $("#flips").innerHTML = WORDS.map(([w, t, ic, back, ex]) => `
+    <button type="button" class="flip" aria-pressed="false" aria-label="${esc(w)}: virar carta">
+      <span class="in">
+        <span class="face front"><svg class="ic" aria-hidden="true"><use href="#${ic}"/></svg><span class="word">${esc(w)}</span><span class="tech" translate="no">${esc(t)}</span><span class="tap">Toca para virar</span></span>
+        <span class="face back"><span class="bp">${esc(back)}</span><small>${esc(ex)}</small></span>
+      </span>
+    </button>`).join("");
+  $("#flips").addEventListener("click", e => { const f = e.target.closest(".flip"); if(f) f.setAttribute("aria-pressed", f.getAttribute("aria-pressed") !== "true"); });
+
+  /* ---------- recadinhos ---------- */
+  let sticker = "i-heart";
+  document.querySelectorAll(".stk").forEach(b => b.addEventListener("click", () => {
+    sticker = b.dataset.stk;
+    document.querySelectorAll(".stk").forEach(x => x.setAttribute("aria-pressed", x === b));
+  }));
+  function renderBoard(){
+    $("#board").innerHTML = data.notes.length
+      ? data.notes.slice().reverse().map((n, ri) => {
+          const i = data.notes.length - 1 - ri;
+          return `<div class="sticky" style="transform:rotate(${((i * 37) % 7) - 3}deg)">
+            <svg class="s" aria-hidden="true"><use href="#${esc(n.stk)}"/></svg>
+            <button type="button" class="del" data-del="${i}" aria-label="Apagar recadinho">apagar</button>
+            <p>${esc(n.text)}</p><small>${esc(fmt.long.format(new Date(n.t)))}</small></div>`; }).join("")
+      : `<p class="empty">Ainda não há recadinhos. O primeiro vai deixá-lo muito contente.</p>`;
+    $("#hugCount").textContent = data.hugs ? `Já lhe mandaste ${plural(data.hugs, "abraço", "abraços")}.` : "";
+  }
+  $("#noteForm").addEventListener("submit", e => {
+    e.preventDefault();
+    const ta = $("#noteText"), text = ta.value.trim();
+    if(!text){ $("#hugCount").textContent = "Escreve alguma coisa primeiro, nem que seja só um olá."; ta.focus(); return; }
+    data.notes.push({t:Date.now(), text, stk:sticker});
+    saveData(); ta.value = "";
+    renderBoard();
+    hearts(...centerOf(e.submitter || $("#noteForm button[type=submit]")), 12);
+  });
+  $("#board").addEventListener("click", e => {
+    const d = e.target.closest("[data-del]");
+    if(d && confirm("Apagar este recadinho?")){ data.notes.splice(+d.dataset.del, 1); saveData(); renderBoard(); }
+  });
+  $("#hugBtn").addEventListener("click", e => { data.hugs++; saveData(); renderBoard(); hearts(...centerOf(e.currentTarget), 14); });
+  renderBoard();
+
+  /* ---------- jogo: apanhar cerejas ---------- */
+  initGame(data, saveData, hearts, centerOf);
+}
+</script>
+
+<script>
+function initGame(data, saveData, hearts, centerOf){
+  const cv = $("#game"), ctx = cv.getContext("2d"), W = cv.width, H = cv.height, WATER = H * .62;
+  const ui = $("#gameUi"), scoreEl = $("#gScore"), timeEl = $("#gTime");
+  const svgImg = markup => { const im = new Image(); im.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(markup); return im; };
+  const swanImg = svgImg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+    <path d="M8 88 C 14 66 44 60 70 68 C 84 72 96 70 106 60 C 112 76 106 96 80 102 C 52 108 18 106 8 88 Z" fill="#fff"/>
+    <path d="M26 84 C 42 68 70 70 88 82 C 70 88 48 94 26 84 Z" fill="#E9EEF3"/>
+    <path d="M80 74 C 98 58 64 44 74 26" fill="none" stroke="#fff" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="79" cy="22" r="10" fill="#fff"/><path d="M86 17 L104 23 L86 29 Z" fill="#F08B35"/>
+    <path d="M84 16 C 90 18 90 28 84 29 Z" fill="#2B2230"/><circle cx="78" cy="19" r="1.9" fill="#2B2230"/></svg>`);
+  const cherryImg = svgImg(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+    <path d="M26 6 C 24 16 22 22 22 28" fill="none" stroke="#4F7D43" stroke-width="2.4" stroke-linecap="round"/>
+    <path d="M26 6 C 32 2 40 4 43 9 C 37 12 31 11 26 6 Z" fill="#6FA35E"/>
+    <circle cx="22" cy="35" r="10" fill="#C9243F"/><circle cx="22" cy="35" r="10" fill="#7E0F28" opacity=".25" transform="translate(2 2)"/>
+    <ellipse cx="18.5" cy="31" rx="3" ry="1.8" fill="#fff" opacity=".75" transform="rotate(-30 18.5 31)"/></svg>`);
+
+  const DURATION = 30;
+  let running = false, raf = 0, last = 0, left = DURATION, score = 0, spawnIn = 0;
+  let swanX = W / 2, targetX = W / 2, facing = 1;
+  const keys = {left:false, right:false};
+  let drops = [], pops = [];
+
+  function draw(t){
+    const sky = ctx.createLinearGradient(0, 0, 0, WATER);
+    sky.addColorStop(0, "#FBE1E8"); sky.addColorStop(1, "#EAF3F6");
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, WATER);
+    const water = ctx.createLinearGradient(0, WATER, 0, H);
+    water.addColorStop(0, "#A6D4DF"); water.addColorStop(1, "#6BAABD");
+    ctx.fillStyle = water; ctx.fillRect(0, WATER, W, H - WATER);
+    ctx.strokeStyle = "rgba(255,255,255,.45)"; ctx.lineWidth = 3; ctx.lineCap = "round";
+    for(let i = 0; i < 7; i++){
+      const x = (i * 150 + t * .02) % (W + 100) - 50, y = WATER + 30 + (i * 37) % (H - WATER - 50);
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + 50, y); ctx.stroke();
+    }
+    drops.forEach(d => { ctx.save(); ctx.translate(d.x, d.y); ctx.rotate(Math.sin(d.y / 40) * .2); ctx.drawImage(cherryImg, -24, -30, 48, 48); ctx.restore(); });
+    const bob = Math.sin(t / 380) * 3, s = 150;
+    ctx.save(); ctx.translate(swanX, WATER - s * .62 + bob); ctx.scale(facing, 1);
+    ctx.drawImage(swanImg, -s / 2, 0, s, s); ctx.restore();
+    pops.forEach(p => { ctx.globalAlpha = Math.max(p.life, 0); ctx.fillStyle = "#8A1230"; ctx.font = "600 28px Fredoka, sans-serif"; ctx.textAlign = "center"; ctx.fillText("+1", p.x, p.y); ctx.globalAlpha = 1; });
+  }
+
+  function loop(t){
+    const dt = Math.min((t - last) / 1000, .05); last = t;
+    left -= dt;
+    if(keys.left) targetX -= 620 * dt;
+    if(keys.right) targetX += 620 * dt;
+    targetX = Math.max(60, Math.min(W - 60, targetX));
+    const prev = swanX;
+    swanX += (targetX - swanX) * Math.min(1, dt * 12);
+    if(Math.abs(swanX - prev) > .4) facing = swanX > prev ? 1 : -1;
+
+    spawnIn -= dt;
+    if(spawnIn <= 0){
+      const hard = 1 - left / DURATION;
+      drops.push({x: 40 + Math.random() * (W - 80), y: -30, v: 170 + Math.random() * 90 + hard * 160});
+      spawnIn = .75 - hard * .4;
+    }
+    drops.forEach(d => { d.v += 60 * dt; d.y += d.v * dt; });
+    const catchY = WATER - 40;
+    drops = drops.filter(d => {
+      if(d.y > catchY - 30 && d.y < catchY + 40 && Math.abs(d.x - swanX) < 70){
+        score++; pops.push({x: d.x, y: catchY - 40, life: 1});
+        scoreEl.textContent = score + (score === 1 ? " cereja" : " cerejas");
+        return false;
+      }
+      return d.y < H + 40;
+    });
+    pops.forEach(p => { p.y -= 60 * dt; p.life -= dt * 1.6; });
+    pops = pops.filter(p => p.life > 0);
+    timeEl.textContent = Math.ceil(Math.max(left, 0)) + " s";
+    draw(t);
+    if(left <= 0) return end();
+    raf = requestAnimationFrame(loop);
+  }
+
+  function start(){
+    running = true; left = DURATION; score = 0; drops = []; pops = []; spawnIn = .3;
+    scoreEl.textContent = "0 cerejas"; ui.dataset.show = "false";
+    cv.focus({preventScroll:true});
+    last = performance.now(); raf = requestAnimationFrame(loop);
+  }
+  function end(){
+    running = false; cancelAnimationFrame(raf);
+    const record = score > (data.best || 0);
+    if(record){ data.best = score; saveData(); }
+    $("#gTitle").textContent = `Apanhaste ${score} ${score === 1 ? "cereja" : "cerejas"}!`;
+    $("#gText").textContent = record && score > 0 ? "Novo recorde. O cisne está impressionado." : `O teu recorde é ${data.best}. Mais uma?`;
+    $("#gStart").lastChild.textContent = "Jogar outra vez";
+    ui.dataset.show = "true";
+    if(record && score > 0) hearts(...centerOf(cv), 16);
+    $("#gStart").focus({preventScroll:true});
+  }
+
+  const toCanvasX = e => { const r = cv.getBoundingClientRect(); return (e.clientX - r.left) / r.width * W; };
+  cv.addEventListener("pointermove", e => { if(running) targetX = toCanvasX(e); });
+  cv.addEventListener("pointerdown", e => { if(running){ targetX = toCanvasX(e); cv.setPointerCapture(e.pointerId); } });
+  cv.addEventListener("keydown", e => {
+    if(!running) return;
+    if(e.key === "ArrowLeft"){ keys.left = true; e.preventDefault(); }
+    if(e.key === "ArrowRight"){ keys.right = true; e.preventDefault(); }
+  });
+  cv.addEventListener("keyup", e => { if(e.key === "ArrowLeft") keys.left = false; if(e.key === "ArrowRight") keys.right = false; });
+  cv.addEventListener("blur", () => { keys.left = keys.right = false; });
+  $("#gStart").addEventListener("click", start);
+  // pára o jogo se a Bibi mudar de modo a meio
+  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { if(running && b.dataset.mode !== "bibi") end(); }));
+  if(data.best) $("#gText").textContent = `Tens 30 segundos. O teu recorde é ${data.best}.`;
+  Promise.all([swanImg, cherryImg].map(im => im.decode ? im.decode().catch(() => {}) : null)).then(() => draw(0));
+}
+
+/* arranque */
+setMode(location.hash === "#bibi" ? "bibi" : "bancada", false);
 </script>
 </body>
 </html>
