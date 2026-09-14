@@ -9,8 +9,13 @@
 create table if not exists public.recados (
   id bigint generated always as identity primary key,
   criado timestamptz not null default now(),
-  dados text not null check (dados ~ '^v1\.[A-Za-z0-9+/]{16}\.[A-Za-z0-9+/=]{40,6000}$')
+  dados text not null
 );
+
+-- o Postgres não aceita repetições acima de 255 numa expressão regular: o tamanho vai à parte
+alter table public.recados drop constraint if exists recados_dados_check;
+alter table public.recados add constraint recados_dados_check
+  check (length(dados) between 60 and 6100 and dados ~ '^v1\.[A-Za-z0-9+/]{16}\.[A-Za-z0-9+/=]+$');
 
 alter table public.recados enable row level security;
 
