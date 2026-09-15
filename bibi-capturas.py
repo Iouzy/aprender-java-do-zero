@@ -220,6 +220,17 @@ def correr(p, base, nome, opts, res):
     # nos dados de teste a Bibi resolveu o Swandoku do dia 6 dias seguidos, até hoje
     seq = page.evaluate("[document.querySelector('#sdStreak').hidden, document.querySelector('#sdStreak').textContent, [...document.querySelectorAll('.pl-streak')].map(e => e.textContent)]")
     res.check(nome, "sequência do Swandoku no tabuleiro e no placar", not seq[0] and seq[1].startswith("6 dias seguidos") and "6 dias seguidos no Swandoku" in seq[2], json.dumps(seq, ensure_ascii=False))
+    # nos dados de teste o Louzy vai à frente no Adivinha a música: a Bibi pode pedir revanche
+    rev = page.query_selector("#plRows .pl-rev:not([disabled])")
+    if rev:
+        ir_para(page, "#placar")
+        rev.click()
+        page.wait_for_timeout(800)
+        page.screenshot(path=pasta / "09-placar-revanche.png")
+        txt = page.evaluate("[...document.querySelectorAll('#plRows .pl-rev')].map(b => b.textContent)")
+        res.check(nome, "revanche envia a carta", "carta enviada" in txt, json.dumps(txt, ensure_ascii=False))
+    else:
+        res.check(nome, "revanche envia a carta", False, "sem botão Revanche no placar")
     linhas = page.evaluate("document.querySelectorAll('#plRows li').length")
     res.check(nome, f"placar com as {CATEGORIAS} categorias", linhas == CATEGORIAS, f"{linhas} linhas")
 
