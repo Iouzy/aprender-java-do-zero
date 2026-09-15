@@ -80,6 +80,7 @@ def cartas():
     agora = datetime.datetime.now()
     abraco = lambda i, h, quem: {"id": i, "criado": (agora - datetime.timedelta(hours=h)).isoformat(), "autor": "teste-" + quem, "nome": quem, "tipo": "abraco", "texto": None, "selo": None}
     return [{"id": 1, "criado": agora.isoformat(), "autor": "teste-louzy", "nome": "louzy", "tipo": "carta", "texto": "Carta de teste.", "selo": "swan"},
+            {"id": 9, "criado": (agora - datetime.timedelta(hours=4)).isoformat(), "autor": "teste-louzy", "nome": "louzy", "tipo": "carta", "texto": "Revanche no Swanrejas! As tuas 42 cerejas têm os dias contados.", "selo": "cherry"},
             abraco(2, 1, "louzy"), abraco(3, 2, "louzy"), abraco(4, 30, "louzy"), abraco(5, 3, "bibi")]
 
 
@@ -210,6 +211,11 @@ def correr(p, base, nome, opts, res):
     page.mouse.move(5, 5)
     page.screenshot(path=pasta / "01-lago-com-video.png")
     tapados = page.evaluate(JANELA)
+    for _ in range(9):   # o título desvia-se com uma transição: dá-lhe até uns 4 s num computador lento
+        if not tapados:
+            break
+        page.wait_for_timeout(300)
+        tapados = page.evaluate(JANELA)
     res.check(nome, "janela do vídeo não tapa o «Olá, Bibi»", not tapados, "tapa " + ", ".join(tapados))
     page.evaluate("document.querySelector('#discoWin').classList.add('off')")
 
@@ -299,6 +305,9 @@ def correr(p, base, nome, opts, res):
     e = page.evaluate(ESTANTE)
     res.check(nome, "estante: livros dentro das prateleiras", "erro" not in e and not e["fora"] and not e["finos"], json.dumps(e))
     res.check(nome, "estante: ocupa a largura da página", "erro" not in e and abs(e["largura"] - e["wrap"]) <= 2, json.dumps(e))
+    # o Modo Bibi esconde o que sobra para o lado: mede cada bloco das folhas
+    largos = page.evaluate("[...document.querySelectorAll('#mBibi .sheet .wrap > *, #mBibi .sheet .wrap > * > *')].filter(e => e.offsetParent && e.getBoundingClientRect().right > Math.min(innerWidth, e.closest('.wrap').getBoundingClientRect().right) + 1).map(e => (e.id || e.className || e.tagName).toString().slice(0, 30))")
+    res.check(nome, "nada das folhas passa da margem da página", not largos, ", ".join(largos[:5]))
     res.check(nome, "Modo Bibi sem scroll para o lado", page.evaluate(SEM_SCROLL_LATERAL) <= 1, f"{page.evaluate(SEM_SCROLL_LATERAL)} px a mais")
     # nos dados de teste a Bibi resolveu o Swandoku do dia 6 dias seguidos, até hoje
     seq = page.evaluate("[document.querySelector('#sdStreak').hidden, document.querySelector('#sdStreak').textContent, [...document.querySelectorAll('.pl-streak')].map(e => e.textContent)]")
@@ -320,6 +329,11 @@ def correr(p, base, nome, opts, res):
     abr = page.evaluate("[...document.querySelectorAll('#board .hug-count b')].map(b => b.textContent)")
     page.screenshot(path=pasta / "10-cartas-abracos.png")
     res.check(nome, "cartas: aba dos abraços", abr == ["3", "1"], json.dumps(abr))
+    page.click("#mailRev")
+    page.wait_for_timeout(300)
+    rev = page.evaluate("document.querySelectorAll('#board .rev-list li').length")
+    page.screenshot(path=pasta / "10-cartas-revanches.png")
+    res.check(nome, "cartas: revanches numa aba à parte", rev == 1 and caixa == 1, f"revanches {rev}, cartas em «Para ti» {caixa}")
     page.click("#mailIn")
     res.check(nome, "cartas: recebidas e enviadas em abas", caixa == 1 and enviadas == [0, True], f"para ti {caixa}, enviadas {enviadas}")
 
