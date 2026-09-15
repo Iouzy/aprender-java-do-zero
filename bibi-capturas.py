@@ -232,6 +232,20 @@ def correr(p, base, nome, opts, res):
             page.wait_for_timeout(150)
         page.screenshot(path=pasta / "06-jogo-a-jogar.png")
         estado = page.evaluate("[document.querySelector('#gameUi').dataset.show, document.querySelector('#gTime').textContent, document.querySelector('#gLevel').textContent]")
+        # recomeçar a meio: o tempo volta ao início e o lago continua a mexer
+        page.click("#gRestart")
+        page.wait_for_timeout(800)
+        recomecou = page.evaluate("document.querySelector('#gTime').textContent")
+        mexe = "document.querySelector('#game').toDataURL('image/jpeg', .3)"
+        antes = page.evaluate(mexe); page.wait_for_timeout(500); depois = page.evaluate(mexe)
+        res.check(nome, "swanrejas: recomeçar a meio", recomecou in ("29 s", "30 s") and antes != depois, recomecou)
+        if nome == "computador":
+            # jogar até ao fim e outra vez: antes o lago congelava na segunda partida
+            page.wait_for_selector("#gameUi[data-show=true]", timeout=90000)
+            page.click("#gStart")
+            page.wait_for_timeout(800)
+            antes = page.evaluate(mexe); page.wait_for_timeout(500); depois = page.evaluate(mexe)
+            res.check(nome, "swanrejas: segunda partida não congela", antes != depois, "o lago ficou parado")
         res.check(nome, "swanrejas: a partida corre", estado[0] == "false" and estado[1].endswith(" s") and estado[2].startswith("nível"), json.dumps(estado, ensure_ascii=False))
     except Exception as ex:
         res.check(nome, "swanrejas: a partida corre", False, str(ex).splitlines()[0])
