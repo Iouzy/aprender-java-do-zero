@@ -76,49 +76,10 @@ body[data-mode=bibi] .modes .thumb{transform:translateX(100%)}
 body[data-mode=bibi] .presence{font-family:var(--display);font-style:italic;font-size:16px;color:var(--on-dark-2)}
 body[data-mode=bibi] .presence.on{color:var(--gold-2)}
 body[data-mode=bibi] .presence.on i{background:var(--candle)}
-/* ---------- gira-discos ---------- */
+/* ---------- gira-discos: o disco do canto, a estante e a janela do vídeo ---------- */
 .disco{position:fixed;left:16px;bottom:16px;z-index:88;display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:calc(100vw - 32px)}
-.disco[hidden],.disco-btn[hidden]{display:none}
-.disco-btn{display:flex;align-items:center;gap:12px;padding:8px 20px 8px 8px;border-radius:999px;background:var(--surface2);color:var(--text);border:1px solid var(--line2);box-shadow:0 14px 30px -14px rgba(0,0,0,.7);font-size:14px;font-weight:500;transition:transform .14s ease}
-.disco-btn:active{transform:scale(.97)}
-/* o botão do canto sem caixa: só a capa e o vinil, por cima da cena */
-.disco-btn{background:none;border:0;box-shadow:none;padding:4px 6px 4px 0;color:#F4E9D2;text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 14px rgba(0,0,0,.6);touch-action:none}
-.disco-btn:focus-visible{outline:2px solid var(--accent);outline-offset:4px;border-radius:8px}
-/* o disco do canto: a capa do álbum com o vinil a espreitar, e a rodar fora da capa quando toca */
-.deck{position:relative;width:136px;height:80px;flex:none}
-.deck .rec{top:2px;left:54px;width:76px;transform:none}
-.deck-sleeve{position:absolute;z-index:1;left:0;top:0;width:80px;height:80px;border-radius:4px;background:#2a211c var(--img) center/cover;box-shadow:0 10px 18px -8px #000,inset 0 0 0 1px rgba(255,255,255,.12)}
-.deck .rec{animation:deckspin 9s linear infinite}
-.disco.playing .deck .rec,.disco.waiting .deck .rec{animation-duration:2.4s}
-@keyframes deckspin{from{transform:translateX(4px) rotate(0)}to{transform:translateX(4px) rotate(360deg)}}
-.deck-sleeve{box-shadow:0 12px 22px -8px rgba(0,0,0,.9),0 2px 6px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.12)}
-.deck .rec{box-shadow:0 8px 18px -6px rgba(0,0,0,.9)}
-.disco-panel{width:min(360px,calc(100vw - 32px));padding:14px;border-radius:18px;background:var(--surface2);color:var(--text);border:1px solid var(--line2);box-shadow:0 30px 60px -24px rgba(0,0,0,.8)}
-.disco-panel[hidden]{display:none}
-.disco-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px}
-.disco-head b{display:block;font-size:15px}
-.disco-head span{display:block;font-size:13px;color:var(--muted)}
-.disco-frame{position:relative;width:100%;aspect-ratio:16/10;min-height:200px;border-radius:10px;overflow:hidden;background:#000}
-.disco-frame iframe,.disco-frame > div{position:absolute;inset:0;width:100%;height:100%;border:0}
-.disco-now{font-size:13px;color:var(--muted);margin:10px 0 6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.disco-ctrl{display:flex;align-items:center;justify-content:space-between;gap:6px}
-.disco-ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--muted);transition:background-color .2s ease,color .2s ease}
-.disco-ic svg{width:18px;height:18px}
-.disco-ic[aria-pressed=true]{color:var(--accent)}
-@media (hover:hover) and (pointer:fine){.disco-ic:hover{background:rgba(255,255,255,.07);color:var(--text)}}
-.disco-play{width:50px;height:50px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:var(--accent-ink);transition:transform .12s ease}
-.disco-play:active{transform:scale(.94)}
-.disco-play svg{width:22px;height:22px}
-.disco-play .i-pause,.disco.playing .disco-play .i-play{display:none}
-.disco.playing .disco-play .i-pause{display:block}
-.disco-albums{list-style:none;margin:14px 0 0;padding:4px 30px 6px 2px;max-height:min(42vh,340px);overflow:auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 12px;scrollbar-width:thin}
-.sleeve-btn{position:relative;display:block;width:100%;aspect-ratio:1;padding:0;border-radius:3px}
-.sleeve{position:absolute;inset:0;z-index:1;border-radius:3px;background:var(--c) var(--img) center/cover;
-  box-shadow:0 10px 18px -10px #000,inset 0 0 0 1px rgba(255,255,255,.12)}
-.sleeve::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.18),transparent 38%)}
-.disco-albums li{min-width:0}
-.sleeve-cap{display:block;margin-top:6px;font-size:11px;line-height:1.2;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* vinil com a capa no rótulo do meio */
+.disco[hidden],.vwin[hidden]{display:none}
+/* vinil com a capa no rótulo do meio (disco do canto, capas da estante, lista) */
 .rec{position:absolute;z-index:0;top:5%;left:5%;width:90%;aspect-ratio:1;border-radius:50%;
   background:radial-gradient(circle,transparent 0 31%,#0d0a09 31.5% 34%,transparent 34.5%),
     conic-gradient(from 30deg,rgba(255,255,255,.16),transparent 12%,transparent 45%,rgba(255,255,255,.12) 55%,transparent 68%),
@@ -126,58 +87,85 @@ body[data-mode=bibi] .presence.on i{background:var(--candle)}
   box-shadow:0 6px 14px -6px #000;transition:transform .6s cubic-bezier(.23,1,.32,1)}
 .rec::before{content:"";position:absolute;inset:32%;border-radius:50%;background:var(--c,#6A1C29) var(--img) center/cover;box-shadow:0 0 0 1px rgba(0,0,0,.5)}
 .rec::after{content:"";position:absolute;left:50%;top:50%;width:6%;height:6%;margin:-3% 0 0 -3%;border-radius:50%;background:#EADCC0;box-shadow:inset 0 1px 2px rgba(0,0,0,.6)}
-.sleeve-btn[aria-current=true] .rec{transform:translateX(36%)}
-.disco.playing .sleeve-btn[aria-current=true] .rec{animation:recspin 2.4s linear infinite}
+/* em repouso: só a capa e o vinil a rodar, sem caixa nem texto */
+.disco-btn{display:block;padding:4px;background:none;border:0;border-radius:8px;transition:transform .14s ease}
+.disco-btn:active{transform:scale(.97)}
+.disco-btn:focus-visible{outline:2px solid #C9A55F;outline-offset:4px}
+.deck{position:relative;display:block;width:136px;height:80px}
+.deck-sleeve{position:absolute;z-index:1;left:0;top:0;width:80px;height:80px;border-radius:4px;background:#2a211c var(--img) center/cover;box-shadow:0 12px 22px -8px rgba(0,0,0,.9),0 2px 6px rgba(0,0,0,.5),inset 0 0 0 1px rgba(255,255,255,.12);transition:transform .3s cubic-bezier(.23,1,.32,1)}
+.deck .rec{top:2px;left:54px;width:76px;box-shadow:0 8px 18px -6px rgba(0,0,0,.9);animation:deckspin 9s linear infinite}
+.disco.playing .deck .rec,.disco.waiting .deck .rec{animation-duration:2.4s}
+@keyframes deckspin{from{transform:translateX(4px) rotate(0)}to{transform:translateX(4px) rotate(360deg)}}
+@media (hover:hover) and (pointer:fine){.disco-btn:hover .deck-sleeve{transform:translateY(-3px)}}
+.disco-toast{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:17px;color:#F4E9D2;text-shadow:0 1px 3px rgba(0,0,0,.85),0 0 14px rgba(0,0,0,.6);padding:0 4px}
+.disco-toast:empty{display:none}
+/* vidro escuro, o mesmo na estante e na janela do vídeo */
+.glass{background:rgba(14,10,8,.55);-webkit-backdrop-filter:blur(20px) saturate(1.1);backdrop-filter:blur(20px) saturate(1.1);border:1px solid rgba(255,255,255,.08);box-shadow:0 24px 50px -24px rgba(0,0,0,.85);color:#F1E6CF}
+.disco-ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:rgba(241,230,207,.82);transition:background-color .2s ease,color .2s ease}
+.disco-ic svg{width:18px;height:18px}
+.disco-ic[aria-pressed=true]{color:#E9B8C0}
+@media (hover:hover) and (pointer:fine){.disco-ic:hover{background:rgba(241,230,207,.08);color:#F6ECD6}}
+.disco-play{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(120% 140% at 30% 20%,#C23A50,#6A1C29 60%,#3E0E17);color:#F4E9D2;transition:transform .12s ease}
+.disco-play:active{transform:scale(.94)}
+.disco-play svg{width:20px;height:20px}
+.disco-play .i-pause,.playing .disco-play .i-play{display:none}
+.playing .disco-play .i-pause{display:block}
+/* a estante: capas em fila, músicas do disco escolhido, uma barra fina */
+.shelf{width:min(380px,calc(100vw - 32px));max-height:calc(100dvh - 150px);display:flex;flex-direction:column;border-radius:18px;padding:14px 12px 8px;font-family:"EB Garamond",Georgia,serif;transform-origin:bottom left;animation:shelfIn .35s cubic-bezier(.23,1,.32,1)}
+.shelf[hidden]{display:none}
+@keyframes shelfIn{from{opacity:0;transform:translateY(10px) scale(.98)}}
+.sh-head{display:flex;align-items:center;gap:8px;padding:0 2px 10px 6px;flex:none}
+.sh-head h2{flex:1;min-width:0;margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-weight:600;font-size:23px;line-height:1.15;color:#F6ECD6;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-head small{font-style:italic;font-size:15px;opacity:.55}
+.sh-info{width:30px;height:30px;font:italic 600 16px "Cormorant Garamond",Georgia,serif;opacity:.6;cursor:help}
+.sh-covers{display:flex;gap:12px;overflow-x:auto;padding:4px 8px 14px 6px;scroll-snap-type:x proximity;scrollbar-width:none;flex:none}
+.sh-covers::-webkit-scrollbar{display:none}
+.sleeve-btn{position:relative;flex:none;width:74px;aspect-ratio:1;padding:0;border-radius:3px;scroll-snap-align:start;transition:margin .5s cubic-bezier(.23,1,.32,1),opacity .3s ease;opacity:.6}
+.sleeve-btn[aria-pressed=true],.sleeve-btn[data-playing]{opacity:1}
+.sleeve-btn[data-playing]{margin-right:24px}
+.sleeve{position:absolute;inset:0;z-index:1;border-radius:3px;background:var(--c) var(--img) center/cover;box-shadow:0 10px 18px -10px #000,inset 0 0 0 1px rgba(255,255,255,.12);transition:box-shadow .3s ease}
+.sleeve::after{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.16),transparent 38%)}
+.sleeve-btn[aria-pressed=true] .sleeve{box-shadow:0 10px 18px -10px #000,0 0 0 2px #C9A55F}
+.sleeve-btn[data-playing] .rec{transform:translateX(36%)}
+.disco.playing .sleeve-btn[data-playing] .rec{animation:recspin 2.4s linear infinite}
 @keyframes recspin{from{transform:translateX(36%) rotate(0)}to{transform:translateX(36%) rotate(360deg)}}
-@media (hover:hover) and (pointer:fine){.sleeve-btn:not([aria-current=true]):hover .rec{transform:translateX(16%)}}
-.sleeve-btn:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
-.disco-note{font-size:11px;color:var(--dim);margin-top:10px}
-/* encolhido enquanto toca: o leitor continua visível, como o YouTube exige */
-.disco-panel{position:relative}
-.disco-panel.mini{width:min(var(--mini-w,420px),calc(100vw - 32px));padding:10px 12px 8px}
-/* canto para mudar o tamanho do leitor pequeno (do lado oposto ao canto onde está preso) */
-.disco-resize{display:none;position:absolute;right:0;bottom:0;width:22px;height:22px;cursor:nwse-resize;touch-action:none;color:rgba(241,230,207,.55)}
-.disco-resize svg{width:100%;height:100%}
-.disco.right .disco-resize{right:auto;left:0;cursor:nesw-resize;transform:scaleX(-1)}
-.disco-panel.mini .disco-resize{display:block}
-#discoLyricsBtn[aria-pressed=true]{color:var(--accent)}
-body[data-mode=bibi] #discoLyricsBtn[aria-pressed=true]{color:#6A1C29}
-body[data-mode=bibi] .disco-panel.mini #discoLyricsBtn[aria-pressed=true]{color:#E9B8C0}
-.disco-panel.mini .disco-head span,.disco-panel.mini .disco-albums,.disco-panel.mini .disco-note,.disco-panel.mini #discoShuffle{display:none}
-.disco-panel.mini .disco-frame{aspect-ratio:16/9;min-height:0}
-.disco-panel:not(.mini) #discoExpand{display:none}
-/* arrastar: pela barra de cima do painel ou pelo próprio disco do canto */
-.disco-head{cursor:grab;touch-action:none;user-select:none}
-.disco-grip{display:none;width:18px;height:18px;margin:4px 0 0;color:currentColor;opacity:.45;flex:none}
-.disco-panel.mini .disco-grip{display:block}
-.disco-panel.mini .disco-head b{font-size:17px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.disco.dragging,.disco.dragging .disco-head{cursor:grabbing}
-.disco.dragging iframe{pointer-events:none}
-.disco.dragging .disco-btn{transform:none}
-.disco.right{align-items:flex-end}
-.disco.waiting .disco-now{white-space:normal}
-.disco-panel{max-height:calc(100dvh - 16px);display:flex;flex-direction:column}
-.disco-panel > *{flex:none}
-.disco-panel .disco-albums{flex:0 1 auto;min-height:90px}
-body[data-mode=bibi] .disco-panel{background:linear-gradient(180deg,#EEE2C6,#DFCDA6);color:#33241A;border-color:rgba(201,165,95,.55);font-family:"EB Garamond",Georgia,serif}
-body[data-mode=bibi] .disco-btn{font-family:"Cormorant Garamond",Georgia,serif;font-size:18px;font-weight:600;font-style:italic}
-body[data-mode=bibi] .disco-head b{font-family:"Cormorant Garamond",Georgia,serif;font-size:22px;font-weight:600}
-body[data-mode=bibi] .disco-head span,body[data-mode=bibi] .disco-now{color:#6B5845;font-style:italic;font-size:15px}
-body[data-mode=bibi] .disco-ic{color:#6B5845}
-body[data-mode=bibi] .disco-ic[aria-pressed=true]{color:#6A1C29}
-body[data-mode=bibi] .disco-play{background:radial-gradient(120% 140% at 30% 20%,#C23A50,#6A1C29 60%,#3E0E17);color:#EEE2C6}
-body[data-mode=bibi] .disco-note,body[data-mode=bibi] .sleeve-cap{color:#8C7C66}
-body[data-mode=bibi] .sleeve-cap{font-family:"EB Garamond",Georgia,serif;font-style:italic;font-size:13px}
-body[data-mode=bibi] .disco-frame{box-shadow:0 0 0 3px #C9A55F,0 0 0 4px #6E4F1F}
-/* leitor pequeno: sem caixa bege, um vidro escuro que se mistura com a cena */
-.disco-panel.mini,body[data-mode=bibi] .disco-panel.mini{background:rgba(14,10,8,.42);-webkit-backdrop-filter:blur(18px) saturate(1.1);backdrop-filter:blur(18px) saturate(1.1);border-color:rgba(255,255,255,.08);box-shadow:0 18px 40px -20px rgba(0,0,0,.7);color:#F1E6CF}
-.disco-panel.mini .disco-head{margin-bottom:8px}
-.disco-panel.mini .disco-head b,body[data-mode=bibi] .disco-panel.mini .disco-head b{color:#F1E6CF;text-shadow:0 1px 3px rgba(0,0,0,.6)}
-.disco-panel.mini .disco-now,body[data-mode=bibi] .disco-panel.mini .disco-now{color:rgba(241,230,207,.78);margin:8px 0 2px;font-size:14px}
-.disco-panel.mini .disco-ic,body[data-mode=bibi] .disco-panel.mini .disco-ic{color:rgba(241,230,207,.85)}
-.disco-panel.mini .disco-play{width:42px;height:42px}
-body[data-mode=bibi] .disco-panel.mini .disco-frame{box-shadow:0 0 0 1px rgba(201,165,95,.45),0 10px 24px -12px #000}
-@media(max-width:620px){.disco-label{display:none}.disco-btn{padding:4px}.deck{width:108px;height:64px}.deck-sleeve{width:64px;height:64px}.deck .rec{left:44px;width:60px;top:2px}}
+@media (hover:hover) and (pointer:fine){.sleeve-btn:hover{opacity:1}.sleeve-btn:not([data-playing]):hover .rec{transform:translateX(16%)}}
+.sleeve-btn:focus-visible{outline:2px solid #C9A55F;outline-offset:3px}
+.sh-tracks{list-style:none;margin:0;padding:6px 0;overflow-y:auto;flex:1 1 auto;min-height:110px;border-top:1px solid rgba(241,230,207,.1);scrollbar-width:thin;scrollbar-color:rgba(241,230,207,.22) transparent;overscroll-behavior:contain}
+.sh-tracks button{display:flex;align-items:center;gap:12px;width:100%;padding:7px 8px;border-radius:8px;text-align:left;color:inherit;font-size:17px;line-height:1.25}
+@media (hover:hover) and (pointer:fine){.sh-tracks button:hover{background:rgba(241,230,207,.07)}}
+.sh-tracks .n{width:20px;flex:none;text-align:right;font-size:13px;opacity:.45;font-variant-numeric:tabular-nums}
+.sh-tracks .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sh-tracks .rec{display:none;position:relative;top:auto;left:auto;width:20px;flex:none;box-shadow:none}
+.sh-tracks li.on .n{display:none}
+.sh-tracks li.on .rec{display:block}
+.sh-tracks li.on button{color:#F3D9A4;font-weight:600}
+.disco.playing .sh-tracks li.on .rec{animation:spin 2.4s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sh-bar{display:flex;align-items:center;justify-content:space-between;gap:4px;padding:8px 4px 0;border-top:1px solid rgba(241,230,207,.1);flex:none}
+/* a janela do vídeo: só o vídeo; os botões aparecem com o rato por cima */
+.vwin{position:fixed;right:16px;bottom:16px;z-index:87;width:min(var(--vw,400px),calc(100vw - 32px));display:flex;flex-direction:column;align-items:center;gap:6px;transition:opacity .45s ease,visibility .45s}
+.vwin.off{opacity:0;visibility:hidden;pointer-events:none}
+.vwin-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;box-shadow:0 24px 50px -20px rgba(0,0,0,.85),0 0 0 1px rgba(255,255,255,.06)}
+.vwin-slot,.vwin-slot > *{position:absolute;inset:0;width:100%;height:100%;border:0}
+.vwin-bar{display:flex;align-items:center;gap:2px;padding:3px 6px;border-radius:999px;opacity:0;transition:opacity .25s ease;cursor:grab;touch-action:none;user-select:none}
+.vwin:hover .vwin-bar,.vwin:focus-within .vwin-bar,.vwin.dragging .vwin-bar{opacity:1}
+@media (hover:none){.vwin-bar{opacity:1}}
+.vwin-bar .disco-ic{width:34px;height:34px}
+.vwin-bar .disco-play{width:34px;height:34px}
+.vwin-bar .disco-play svg{width:16px;height:16px}
+.vwin-grip{width:16px;height:16px;margin:0 4px;opacity:.45;flex:none}
+.vwin-status{font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:16px;padding:3px 14px;border-radius:999px;text-align:center}
+.vwin-status:empty{display:none}
+.vwin.dragging,.vwin.dragging .vwin-bar{cursor:grabbing}
+.vwin.dragging iframe{pointer-events:none}
+/* mudar o tamanho: canto do vídeo virado para dentro do ecrã */
+.vwin-resize{position:absolute;z-index:2;left:0;bottom:0;width:24px;height:24px;cursor:nesw-resize;touch-action:none;color:rgba(241,230,207,.8);opacity:0;transition:opacity .25s ease;transform:scaleX(-1)}
+.vwin-resize svg{width:100%;height:100%;filter:drop-shadow(0 1px 2px #000)}
+.vwin.left .vwin-resize{left:auto;right:0;cursor:nwse-resize;transform:none}
+.vwin:hover .vwin-resize,.vwin.dragging .vwin-resize{opacity:1}
+@media (hover:none){.vwin-resize{opacity:1}}
+@media(max-width:620px){.deck{width:108px;height:64px}.deck-sleeve{width:64px;height:64px}.deck .rec{left:44px;width:60px;top:2px}.shelf{max-height:calc(100dvh - 130px)}.vwin{bottom:100px}}
 .toasts{position:fixed;right:16px;bottom:16px;z-index:90;display:grid;gap:10px;width:min(360px,calc(100vw - 32px))}
 .toast{padding:14px 16px;border-radius:14px;background:var(--surface2);color:var(--text);border:1px solid var(--line2);box-shadow:0 20px 40px -16px rgba(0,0,0,.7);
   opacity:0;transform:translateY(12px) scale(.98);transition:opacity .3s var(--ease-out),transform .3s var(--ease-out)}
@@ -767,29 +755,42 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 <div class="amb-lyrics off" id="ambLyrics" hidden aria-hidden="true"><p class="al-line al-prev"></p><p class="al-line al-cur"></p><p class="al-line al-next"></p><p class="al-note"></p></div>
 <!-- gira-discos: só aparece com sessão iniciada -->
 <div class="disco" id="disco" hidden>
-  <section class="disco-panel" id="discoPanel" hidden aria-label="Gira-discos">
-    <div class="disco-head">
-      <svg class="disco-grip" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>
-      <p style="flex:1;min-width:0"><b>Lana Del Rey</b><span id="discoAlbum">escolhe um disco</span></p>
-      <button type="button" class="disco-ic" id="discoMin" aria-label="Encolher o gira-discos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  <section class="shelf glass" id="discoShelf" hidden aria-label="Discos da Lana Del Rey">
+    <div class="sh-head">
+      <h2 id="shAlbum">Born To Die</h2><small id="shYear">2012</small>
+      <button type="button" class="disco-ic sh-info" title="A tocar a partir do YouTube (com YouTube Premium neste navegador, sem anúncios). Letras do LRCLIB." aria-label="Sobre o gira-discos">i</button>
+      <button type="button" class="disco-ic" id="shClose" aria-label="Fechar a estante"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
     </div>
-    <div class="disco-frame"><div id="discoPlayer"></div></div>
-    <p class="disco-now" id="discoNow" aria-live="polite">&nbsp;</p>
-    <div class="disco-ctrl">
-      <button type="button" class="disco-ic" id="discoShuffle" aria-pressed="false" aria-label="Ordem aleatória"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3c5 0 5 10 10 10h3M4 17h3c2 0 3-1.5 4-3M13 10c1-1.5 2-3 4-3h3M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="disco-ic" id="discoPrev" aria-label="Música anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M19 5 9 12l10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="disco-play" id="discoPlay" aria-label="Tocar"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-play"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-pause"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg></button>
-      <button type="button" class="disco-ic" id="discoNext" aria-label="Música seguinte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M5 5l10 7-10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="disco-ic" id="discoLyricsBtn" aria-pressed="false" aria-label="Mostrar a letra no lago"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 11h11M4 16h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.5 13.5v5.2a1.8 1.8 0 1 1-1.2-1.7M17.5 13.5l3 -1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-      <button type="button" class="disco-ic" id="discoExpand" aria-label="Mostrar os discos"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 15l7-7 7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <div class="sh-covers" id="shCovers" aria-label="Discos"></div>
+    <ol class="sh-tracks" id="shTracks" aria-label="Músicas"></ol>
+    <div class="sh-bar">
+      <button type="button" class="disco-ic" data-act="shuffle" aria-pressed="false" aria-label="Ordem aleatória"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3c5 0 5 10 10 10h3M4 17h3c2 0 3-1.5 4-3M13 10c1-1.5 2-3 4-3h3M17 4l3 3-3 3M17 14l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="disco-ic" data-act="prev" aria-label="Música anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M19 5 9 12l10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="disco-play" data-act="play" aria-label="Tocar"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-play"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-pause"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg></button>
+      <button type="button" class="disco-ic" data-act="next" aria-label="Música seguinte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M5 5l10 7-10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="disco-ic" data-act="lyrics" aria-pressed="false" aria-label="Letra por cima dos cisnes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 11h11M4 16h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.5 13.5v5.2a1.8 1.8 0 1 1-1.2-1.7M17.5 13.5l3 -1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
-    <ol class="disco-albums" id="discoAlbums"></ol>
-    <p class="disco-note">A tocar a partir do YouTube. Com sessão do YouTube Premium neste navegador, sem anúncios. Letras do LRCLIB.</p>
-    <span class="disco-resize" id="discoResize" title="Arrasta para mudar o tamanho"><svg viewBox="0 0 22 22" aria-hidden="true"><path d="M20 9 9 20M20 15l-5 5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg></span>
   </section>
-  <button type="button" class="disco-btn" id="discoBtn" aria-expanded="false" aria-controls="discoPanel">
-    <span class="deck" aria-hidden="true"><span class="rec"></span><span class="deck-sleeve"></span></span><span class="disco-label">pôr um disco</span>
+  <p class="disco-toast" id="discoToast" aria-live="polite"></p>
+  <button type="button" class="disco-btn" id="discoBtn" aria-expanded="false" aria-controls="discoShelf" aria-label="Discos da Lana Del Rey" title="Discos da Lana">
+    <span class="deck" aria-hidden="true"><span class="rec"></span><span class="deck-sleeve"></span></span>
   </button>
+</div>
+<!-- a janela do vídeo (o YouTube exige que o leitor esteja à vista enquanto toca) -->
+<div class="vwin off" id="discoWin" hidden>
+  <p class="vwin-status glass" id="vwinStatus" aria-live="polite"></p>
+  <div class="vwin-frame">
+    <div class="vwin-slot"><div id="discoPlayer"></div></div>
+    <span class="vwin-resize" id="vwinResize" title="Arrasta para mudar o tamanho (duplo clique: tamanho normal)"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11 11 21M21 17l-4 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></span>
+  </div>
+  <div class="vwin-bar glass" id="vwinBar">
+    <svg class="vwin-grip" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 6h.01M15 6h.01M9 12h.01M15 12h.01M9 18h.01M15 18h.01" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round"/></svg>
+    <button type="button" class="disco-ic" data-act="prev" aria-label="Música anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M19 5 9 12l10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="disco-play" data-act="play" aria-label="Tocar"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-play"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-pause"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg></button>
+    <button type="button" class="disco-ic" data-act="next" aria-label="Música seguinte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M5 5l10 7-10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="disco-ic" data-act="lyrics" aria-pressed="false" aria-label="Letra por cima dos cisnes"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 11h11M4 16h8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M17.5 13.5v5.2a1.8 1.8 0 1 1-1.2-1.7M17.5 13.5l3 -1" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button type="button" class="disco-ic" data-act="close" aria-label="Parar e fechar o vídeo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+  </div>
 </div>
 
 <!-- Ícones desenhados à mão (SVG), reutilizados com <use> -->
@@ -1336,7 +1337,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 const EXERCISES=[{"n": "Ola.java", "d": "Primeiro programa: classe, main e println.", "src": "cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"}, {"n": "Tipos.java", "d": "Tipos primitivos, divisão inteira, resto e cast.", "src": "cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="}, {"n": "Iva.java", "d": "Variáveis String/int e concatenação.", "src": "cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"}, {"n": "Saudacao.java", "d": "Scanner, hasNextInt, if/else if e validação.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="}, {"n": "Contagem.java", "d": "for crescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "ContagemR.java", "d": "for decrescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "Pares.java", "d": "Números pares alterando o passo do for.", "src": "cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="}, {"n": "Pares2.java", "d": "Números pares usando % e if.", "src": "cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"}, {"n": "Tabuada.java", "d": "Scanner + for + cálculo da tabuada.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="}, {"n": "Metodos.java", "d": "Métodos, parâmetros, return, void e boolean.", "src": "CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"}, {"n": "Pessoa.java", "d": "Classe, private, construtor, this, setter e métodos.", "src": "cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="}, {"n": "Programa.java", "d": "Criação e utilização de objetos Pessoa.", "src": "cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}, {"n": "aquecimento1.java", "d": "Validação de input com while: insistir até a idade fazer sentido.", "src": "Ly8gYXF1ZWNpbWVudG8xLmphdmEg4oCUIDEwIHNldGVtYnJvIDIwMjYsIDE4OjEyCmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBhcXVlY2ltZW50bzF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkKCQlpbnQgaWRhZGU7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIGEgc3VhIGlkYWRlPyIpOwoJCWlkYWRlID0gc2MubmV4dEludCgpOwoJCQoJCXdoaWxlKGlkYWRlIDwgMCl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiQSBpZGFkZSBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLCByZWludHJvZHV6YSBhIGlkYWRlLiIpOyAKCQkJaWRhZGUgPSBzYy5uZXh0SW50KCk7CgkJfQoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGVucyAiICsgaWRhZGUgKyAiIGFub3MuIik7Cgl9Cn0K"}, {"n": "exContagem.java", "d": "Validar com while e contar só os pares até ao número.", "src": "Ly8gZXhDb250YWdlbS5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMTowOQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3MgZXhDb250YWdlbXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCVNjYW5uZXIgc2MgPSAgbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCgkJaW50IG51bWVybzsKCQlpbnQgY29udGFnZW0gPSAwOwoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG51bWVybyBwb3NpdGl2byBwYXJhIGNvbWXDp2FyIGEgY29udGFnZW0uIik7CgkJbnVtZXJvID0gc2MubmV4dEludCgpOwoKCQl3aGlsZShudW1lcm8gPCAxKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKCJJbnRyb2R1emEgdW0gbnVtZXJvIHBvc2l0aXZvLiIpOwoJCQludW1lcm8gPSBzYy5uZXh0SW50KCk7CgkJfQoKCQl3aGlsZShjb250YWdlbSA8IG51bWVybyl7CgkJCWNvbnRhZ2VtKys7CgkJCQoJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oY29udGFnZW0pOwoJCQl9CgkJCQoJCX0KCX0KfQo="}, {"n": "somaPares.java", "d": "Acumulador: somar os pares até um número.", "src": "Ly8gc29tYVBhcmVzLmphdmEg4oCUIDEzIHNldGVtYnJvIDIwMjYsIDIxOjM1CmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBzb21hUGFyZXMJewoJCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkJCgkJCWludCBudW1lcm8gPSAwOwoJCQlpbnQgY29udGFnZW0gPSAxOwoJCQlpbnQgc29tYVBhcmVzID0gMDsKCQkJCgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG7Dum1lcm86Iik7CgkJCW51bWVybyA9IHNjLm5leHRJbnQoKTsKCgkJCXdoaWxlKG51bWVybyA8PSAwKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBuw7ptZXJvIG7Do28gcG9kZSBzZXIgbmVnYXRpdm8sIGludHJvZHV6YSB1bSBuw7ptZXJvIHBvc2l0aXZvLiIpOwoJCQkJbnVtZXJvID0gc2MubmV4dEludCgpOwoJCQl9CgkJCQoJCQkKCQkJd2hpbGUoY29udGFnZW0gPCBudW1lcm8pewoJCQkJY29udGFnZW0rKzsgCgkJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQkJc29tYVBhcmVzID0gY29udGFnZW0gKyBzb21hUGFyZXM7CgkJCQl9CgkJCQkKCQkJfQoJCQkKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgYXTDqSAiICsgbnVtZXJvICsgIiDDqSBkZSAiICsgc29tYVBhcmVzICsgIi4iKTsKCX0KfQoK"}, {"n": "somaIntervalo.java", "d": "Acumulador num intervalo, com validação do início e do fim.", "src": "Ly8gc29tYUludGVydmFsby5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMjo0MQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3Mgc29tYUludGVydmFsb3sKCQlwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgoJCQlpbnQgaW50ZXJ2YWxvSW5pY2lvID0gMDsKCQkJaW50IGludGVydmFsb0ZpbmFsID0gMDsKCQkJaW50IGNvbnRhZ2VtID0gMDsKCQkJaW50IHNvbWFQYXJlcyA9IDA7CgkJCQoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIGludGVydmFsbyBkZSBudW1lcm9zIGRvIHF1YWwgcXVlciBhIHNvbWE6ICIpOwoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIG51bWVybyBkbyBpbmljaW86ICIpOwoJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIG8gbnVtZXJvIGRvIGZpbmFsOiAiKTsKCQkJaW50ZXJ2YWxvRmluYWwgPSBzYy5uZXh0SW50KCk7CgkJCgkJCXdoaWxlKGludGVydmFsb0luaWNpbyA+IGludGVydmFsb0ZpbmFsKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBudW1lcm8gaW5pY2lhbCBuw6NvIHBvZGUgc2VyIHN1cGVyaW9yIGFvIG51bWVybyBmaW5hbC4iKTsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiUmVpbnRyb2R1emEgbyBudW1lcm8gaW5pY2lhbDogIik7CgkJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCX0KCQkJCgkJCWNvbnRhZ2VtID0gaW50ZXJ2YWxvSW5pY2lvOwoJCQkKCQkJd2hpbGUoY29udGFnZW0gPD0gaW50ZXJ2YWxvRmluYWwpewoJCQkJaWYoY29udGFnZW0gJSAyID09IDApewoJCQkJCXNvbWFQYXJlcyA9IGNvbnRhZ2VtICsgc29tYVBhcmVzOwoJCQkJfQoJCQkJY29udGFnZW0rKzsKCQkJfQoKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgbm8gaW50ZXJ2YWxvIGRlIG51bWVyb3MgZGUgIiArIGludGVydmFsb0luaWNpbyArICIgYSAiICsgaW50ZXJ2YWxvRmluYWwgKyAiIMOpIGRlOiAiICsgc29tYVBhcmVzKTsKCQl9CgoJCn0K"}];
 
 /* Histórico do Git. Não editar à mão: corre  python3 bibi-atualizar.py */
-const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "12223a7", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "ea37d3a", "t": "2026-09-14T23:25:06+01:00", "s": "Cartas em tempo real, avisos e presença", "f": ["java-bancada.html"]}, {"h": "6df6ce4", "t": "2026-09-15T00:52:28+01:00", "s": "Gira-discos com os álbuns da Lana, e o lago sem texto", "f": ["java-bancada.html"]}, {"h": "3426572", "t": "2026-09-15T01:02:51+01:00", "s": "Gira-discos com as capas verdadeiras dos álbuns", "f": ["bibi/capas/blue-banisters.webp", "bibi/capas/born-to-die.webp", "bibi/capas/chemtrails.webp", "bibi/capas/honeymoon.webp", "bibi/capas/lust-for-life.webp", "bibi/capas/nfr.webp", "bibi/capas/ocean-blvd.webp", "bibi/capas/paradise.webp", "bibi/capas/ultraviolence.webp", "java-bancada.html"]}, {"h": "12b36bc", "t": "2026-09-15T01:15:30+01:00", "s": "Leitor que se arrasta, lago que pára nos cisnes e cerejas limpas", "f": ["bibi/gravuras/cerejas.svg", "java-bancada.html"]}, {"h": "e78f63f", "t": "2026-09-15T01:16:15+01:00", "s": "Diário: gravura da cerejeira com as proporções certas", "f": ["java-bancada.html"]}, {"h": "95b2d0e", "t": "2026-09-15T01:24:00+01:00", "s": "Gira-discos: letra em tempo real e leitor pequeno maior, com tamanho à escolha", "f": ["java-bancada.html"]}, {"h": "dba0911", "t": "2026-09-15T01:32:19+01:00", "s": "Letra por cima dos cisnes e o lago em sossego", "f": ["java-bancada.html"]}]/*@COMMITS:END*/;
+const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "12223a7", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "ea37d3a", "t": "2026-09-14T23:25:06+01:00", "s": "Cartas em tempo real, avisos e presença", "f": ["java-bancada.html"]}, {"h": "6df6ce4", "t": "2026-09-15T00:52:28+01:00", "s": "Gira-discos com os álbuns da Lana, e o lago sem texto", "f": ["java-bancada.html"]}, {"h": "3426572", "t": "2026-09-15T01:02:51+01:00", "s": "Gira-discos com as capas verdadeiras dos álbuns", "f": ["bibi/capas/blue-banisters.webp", "bibi/capas/born-to-die.webp", "bibi/capas/chemtrails.webp", "bibi/capas/honeymoon.webp", "bibi/capas/lust-for-life.webp", "bibi/capas/nfr.webp", "bibi/capas/ocean-blvd.webp", "bibi/capas/paradise.webp", "bibi/capas/ultraviolence.webp", "java-bancada.html"]}, {"h": "12b36bc", "t": "2026-09-15T01:15:30+01:00", "s": "Leitor que se arrasta, lago que pára nos cisnes e cerejas limpas", "f": ["bibi/gravuras/cerejas.svg", "java-bancada.html"]}, {"h": "e78f63f", "t": "2026-09-15T01:16:15+01:00", "s": "Diário: gravura da cerejeira com as proporções certas", "f": ["java-bancada.html"]}, {"h": "95b2d0e", "t": "2026-09-15T01:24:00+01:00", "s": "Gira-discos: letra em tempo real e leitor pequeno maior, com tamanho à escolha", "f": ["java-bancada.html"]}, {"h": "e527ac4", "t": "2026-09-15T01:32:19+01:00", "s": "Letra por cima dos cisnes e o lago em sossego", "f": ["java-bancada.html"]}, {"h": "5e43816", "t": "2026-09-15T01:43:26+01:00", "s": "Gira-discos redesenhado: disco, estante com as músicas e janela do vídeo", "f": ["java-bancada.html"]}]/*@COMMITS:END*/;
 
 /* ---------- guiões de execução ----------
    Cada guião é um gerador: devolve um passo de cada vez.
@@ -1768,58 +1769,98 @@ Live.on("carta", row => {
 
 /* ---------- gira-discos (YouTube), só com sessão iniciada ---------- */
 const Disco = (() => {
+  // [nome, ano, playlist do YouTube, cor, capa, [[vídeo, música], …] pela ordem em que o YouTube as toca]
   const ALBUMS = [
-    ["Born To Die", 2012, "OLAK5uy_lJb0Jpa2n98IyR-Tj07ufsiKI9MVgg-OU", "#65433B", "born-to-die"],
-    ["Paradise", 2012, "OLAK5uy_koTcEY0Bpevx-Le5R65bPhXhtoV00x3zU", "#655639", "paradise"],
-    ["Ultraviolence", 2014, "OLAK5uy_lZVgcQp3acwd7iL5xm6d_I-ACj5F_gf1c", "#4C4C4C", "ultraviolence"],
-    ["Honeymoon", 2015, "OLAK5uy_nIKMbuSAOxnLGiMM09jdug9vn_JAGsj_Y", "#721119", "honeymoon"],
-    ["Lust For Life", 2017, "OLAK5uy_m8igIPuZDSmOHDu5REA0LW5iES2wcokuY", "#3E5540", "lust-for-life"],
-    ["Norman Fucking Rockwell!", 2019, "OLAK5uy_kq_gJdWJ9LUwgYzXMWeocvSyee4OqsvOQ", "#2F5872", "nfr"],
-    ["Chemtrails Over The Country Club", 2021, "OLAK5uy_kmSQB4so6iQEAbj__V6UgE_kOUkZlKIvc", "#555555", "chemtrails"],
-    ["Blue Banisters", 2021, "OLAK5uy_n3SsqKbsxhinUNInrUk1atWYQdmI2v5nM", "#65332E", "blue-banisters"],
-    ["Did You Know That There's a Tunnel Under Ocean Blvd", 2023, "OLAK5uy_nHy9AQa4vZ3De0zzhjXqt0P-lCRnSiukA", "#474C59", "ocean-blvd"]
+    ["Born To Die", 2012, "OLAK5uy_lJb0Jpa2n98IyR-Tj07ufsiKI9MVgg-OU", "#65433B", "born-to-die", [["Bag1gUxuU0g", "Born To Die"], ["1CaS4pSpS3c", "Off To The Races"], ["JRWox-i6aAk", "Blue Jeans"], ["cE6wxDqdOV0", "Video Games"], ["qtBxUoUkG8s", "Diet Mountain Dew"], ["sxDdEPED0h8", "National Anthem"], ["l4rhJx2YPo8", "Dark Paradise"], ["i6UtQTcG03A", "Radio"], ["L6K8Uq88BEQ", "Carmen"], ["4jRJ8cym2eI", "Million Dollar Man"], ["TdrL3QxjyVw", "Summertime Sadness"], ["ym_OdiSV_cg", "This Is What Makes Us Girls"]]],
+    ["Paradise", 2012, "OLAK5uy_koTcEY0Bpevx-Le5R65bPhXhtoV00x3zU", "#655639", "paradise", [["Py_-3di1yx0", "Ride"], ["zaNVAY_nHZg", "American"], ["2D75zeuwNTY", "Cola"], ["tlRIo9grLCg", "Body Electric"], ["tfC1t3Sa_TE", "Blue Velvet"], ["NyOXwZjpar8", "Gods & Monsters"], ["0KjtrqjiEZs", "Yayo"], ["skzZGZo72fE", "Bel Air"]]],
+    ["Ultraviolence", 2014, "OLAK5uy_lZVgcQp3acwd7iL5xm6d_I-ACj5F_gf1c", "#4C4C4C", "ultraviolence", [["epvlvDzKfv8", "Cruel World"], ["ZFWC4SiZBao", "Ultraviolence"], ["rJABBmAMXnY", "Shades Of Cool"], ["T5xcnjAG8pE", "Brooklyn Baby"], ["oKxuiw3iMBE", "West Coast"], ["jvm6DpqqbLk", "Sad Girl"], ["2CSWw2OVxio", "Pretty When You Cry"], ["BnfumBZQKyQ", "Money Power Glory"], ["TeUP_yGYbuY", "Fucked My Way Up To The Top"], ["DWuiC49Onfk", "Old Money"], ["7KzPh_x5w14", "The Other Woman"]]],
+    ["Honeymoon", 2015, "OLAK5uy_nIKMbuSAOxnLGiMM09jdug9vn_JAGsj_Y", "#721119", "honeymoon", [["oPU8XJcA__k", "Honeymoon"], ["5kYsxoWfjCg", "Music To Watch Boys To"], ["emDU4QvdwVk", "Terrence Loves You"], ["BT2atmOqvPc", "God Knows I Tried"], ["QnxpHIl5Ynw", "High By The Beach"], ["jq30l5-vBbo", "Freak"], ["QbLGjeR9bvI", "Art Deco"], ["QbajAoqIsQg", "Burnt Norton (Interlude)"], ["HUB63iL3icA", "Religion"], ["GVQON-muEFc", "Salvatore"], ["BiKYRNoyzZ0", "The Blackest Day"], ["pkIYYpAjsjo", "24"], ["EnbCJDFvT7M", "Swan Song"], ["9bAl93PPj54", "Don't Let Me Be Misunderstood"]]],
+    ["Lust For Life", 2017, "OLAK5uy_m8igIPuZDSmOHDu5REA0LW5iES2wcokuY", "#3E5540", "lust-for-life", [["3-NTv0CdFCk", "Love"], ["eP4eqhWc7sI", "Lust For Life"], ["Mcvz8DnuoGI", "13 Beaches"], ["uNuMH2i6wdI", "Cherry"], ["F4ELqraXx-U", "White Mustang"], ["AcVQJJoD45w", "Summer Bummer"], ["tBwoRviPvVw", "Groupie Love"], ["jDj6orud0n8", "In My Feelings"], ["cjDfD_RtYiA", "Coachella - Woodstock In My Mind"], ["teSMNuuDnrs", "God Bless America - And All The Beautiful Women In It"], ["tuaSfBDoiQk", "When The World Was At War We Kept Dancing"], ["Vs_sURGuYys", "Beautiful People Beautiful Problems"], ["3fR2qL7wy68", "Tomorrow Never Came"], ["3-nW3luYvzc", "Heroin"], ["p0FdAM9knDo", "Change"], ["axRMZqUNVEw", "Get Free"]]],
+    ["Norman Fucking Rockwell!", 2019, "OLAK5uy_kq_gJdWJ9LUwgYzXMWeocvSyee4OqsvOQ", "#2F5872", "nfr", [["wPt0dGg4BKA", "Norman fucking Rockwell"], ["1uFv9Ts7Sdw", "Mariners Apartment Complex"], ["Qg3DxELVPj4", "Venice Bitch"], ["LrSX_OcpeJg", "Fuck it I love you"], ["qolmz4FlnZ0", "Doin' Time"], ["5xx9gTEQaiQ", "Love song"], ["DCYmJDO2_IE", "Cinnamon Girl"], ["WU_EGJOQ69o", "How to disappear"], ["vK1YiArMDfg", "California"], ["zKYYVrrs2oY", "The Next Best American Record"], ["LrSX_OcpeJg", "The greatest"], ["ocKrWwWeHLQ", "Bartender"], ["nbcXvlEa7Wk", "Happiness is a butterfly"], ["rY2LUmLw_DQ", "hope is a dangerous thing for a woman like me to have - but i have it"]]],
+    ["Chemtrails Over The Country Club", 2021, "OLAK5uy_kmSQB4so6iQEAbj__V6UgE_kOUkZlKIvc", "#555555", "chemtrails", [["yJuV8PDwvC8", "White Dress"], ["vBHild0PiTE", "Chemtrails Over The Country Club"], ["pLiCh9PXbwg", "Tulsa Jesus Freak"], ["Nj9QqP-ce4E", "Let Me Love You Like A Woman"], ["vMZdbpeyHAc", "Wild At Heart"], ["_l0NeLJjL4I", "Dark But Just A Game"], ["aK_lWrowOwg", "Not All Who Wander Are Lost"], ["AEt5owHwVD0", "Yosemite"], ["Mn2ZroMnvK0", "Breaking Up Slowly"], ["DOKZxWSczNg", "Dance Till We Die"], ["EqSvJU0xaqg", "For Free"]]],
+    ["Blue Banisters", 2021, "OLAK5uy_n3SsqKbsxhinUNInrUk1atWYQdmI2v5nM", "#65332E", "blue-banisters", [["1QLtgxHQBec", "Text Book"], ["fN0OmdJUl0I", "Blue Banisters"], ["4mECX60FVJQ", "Arcadia"], ["f5K5E_ZTBjk", "Interlude - The Trio"], ["vr8TN9Yhl4g", "Black Bathing Suit"], ["xFv0wg_alGk", "If You Lie Down With Me"], ["8WyPWYzmQro", "Beautiful"], ["wnm5I8DqOPs", "Violets for Roses"], ["Vn86aScbzKk", "Dealer"], ["atGkMugJaxw", "Thunder"], ["MQAn157UeKY", "Wildflower Wildfire"], ["4XlJhgPvNgw", "Nectar Of The Gods"], ["CZBaZoALkhU", "Living Legend"], ["sf7ln87Z0WI", "Cherry Blossom"], ["gitWGi7UWno", "Sweet Carolina"]]],
+    ["Did You Know That There's a Tunnel Under Ocean Blvd", 2023, "OLAK5uy_nHy9AQa4vZ3De0zzhjXqt0P-lCRnSiukA", "#474C59", "ocean-blvd", [["ZegtK54DC4c", "The Grants"], ["IuY54A3bOmg", "Did you know that there's a tunnel under Ocean Blvd"], ["-Fg-DcLJY4s", "Sweet"], ["pYqky795R1s", "A&W"], ["8y-vMgLEXo4", "Judah Smith Interlude"], ["C2e0H6MUWyU", "Candy Necklace"], ["L1qqQRqRBs8", "Jon Batiste Interlude"], ["Yb2zNCG0s3I", "Kintsugi"], ["EHbfrvonTLE", "Fingertips"], ["ZlZXHV0uTpI", "Paris, Texas"], ["92HmXTsTRQ8", "Grandfather please stand on the shoulders of my father while he's deep-sea fishing"], ["WJlQ4jt5Fz4", "Let The Light In"], ["2xtKhqbNBoY", "Margaret"], ["cs8VlhUDna0", "Fishtail"], ["hNFoCOKk7LE", "Peppers"], ["Zu4SjO6E_ag", "Taco Truck x VB"]]]
   ];
+  const TRACK = new Map();   // vídeo -> [disco, faixa]
+  ALBUMS.forEach((a, ai) => a[5].forEach(([v], ti) => TRACK.set(v, [ai, ti])));
   const st = store("java-disco");
-  const saved = Object.assign({album:0, index:0, shuffle:false}, st.get() || {});
-  const root = $("#disco"), panel = $("#discoPanel"), btn = $("#discoBtn");
-  let player = null, apiP = null, ready = false, playing = false, pendingPlay = false;
-  // pediu para tocar mas o YouTube ainda não começou (a carregar ou a passar anúncios)
-  let wanted = false, wantedAt = 0;
+  const saved = Object.assign({album:0, index:0, shuffle:false, lyrics:false}, st.get() || {});
+  delete saved.pos; delete saved.w;   // da versão anterior
+  if(!ALBUMS[saved.album]) saved.album = 0;
   const save = () => st.set(saved);
+  const root = $("#disco"), shelf = $("#discoShelf"), btn = $("#discoBtn"), win = $("#discoWin");
+  const covers = $("#shCovers"), trackList = $("#shTracks"), vStatus = $("#vwinStatus"), toast = $("#discoToast");
+  const acts = name => [...document.querySelectorAll(`#disco [data-act="${name}"], #discoWin [data-act="${name}"]`)];
+  const img = slug => `url(bibi/capas/${slug}.webp)`;
+  let view = saved.album;   // o disco aberto na estante (pode não ser o que está a tocar)
+  let player = null, apiP = null, ready = false, playing = false, pendingPlay = false;
+  let wanted = false, wantedAt = 0, toastT = 0;
+  let pendingVid = null;   // o YouTube ignora a faixa inicial nestas playlists: salta para ela quando a lista chegar   // pediu para tocar mas o YouTube ainda não começou (a carregar ou anúncios)
 
   function loadApi(){
     if(window.YT && window.YT.Player) return Promise.resolve();
     if(!apiP) apiP = new Promise(res => {
       const prev = window.onYouTubeIframeAPIReady;
       window.onYouTubeIframeAPIReady = () => { if(prev) prev(); res(); };
-      const s = document.createElement("script"); s.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(s);
+      const sc = document.createElement("script"); sc.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(sc);
     });
     return apiP;
   }
-  function renderAlbums(){
-    const img = slug => `url(bibi/capas/${slug}.webp)`;
-    $("#discoAlbums").innerHTML = ALBUMS.map(([n, y, , c, slug], i) => `
-      <li><button type="button" class="sleeve-btn" data-a="${i}" aria-current="${i === saved.album}" aria-label="${esc(n)}, ${y}" title="${esc(n)} (${y})" style="--c:${c};--img:${img(slug)}">
-        <span class="rec" aria-hidden="true"></span>
-        <span class="sleeve"></span>
-      </button><span class="sleeve-cap" aria-hidden="true">${esc(n)}</span></li>`).join("");
+  function say(t, ms){ clearTimeout(toastT); toast.textContent = t; if(ms) toastT = setTimeout(() => { toast.textContent = ""; }, ms); }
+
+  /* ---------- estante ---------- */
+  function renderCovers(){
+    covers.innerHTML = ALBUMS.map(([n, y, , c, slug], i) => `<button type="button" class="sleeve-btn" data-a="${i}" aria-pressed="false" aria-label="${esc(n)}, ${y}" title="${esc(n)} (${y})" style="--c:${c};--img:${img(slug)}"><span class="rec" aria-hidden="true"></span><span class="sleeve"></span></button>`).join("");
+  }
+  function renderTracks(){
+    const [n, y, , , , list] = ALBUMS[view];
+    $("#shAlbum").textContent = n; $("#shAlbum").title = n; $("#shYear").textContent = y;
+    trackList.innerHTML = list.map(([, t], i) => `<li><button type="button" data-t="${i}"><span class="n">${i + 1}</span><span class="rec" aria-hidden="true"></span><span class="t">${esc(t)}</span></button></li>`).join("");
+    trackList.style.setProperty("--c", ALBUMS[view][3]); trackList.style.setProperty("--img", img(ALBUMS[view][4]));
+  }
+  function markNow(){
+    covers.querySelectorAll("[data-a]").forEach(b => { const i = +b.dataset.a; b.toggleAttribute("data-playing", i === saved.album); b.setAttribute("aria-pressed", i === view); });
+    trackList.querySelectorAll("li").forEach((li, i) => {
+      const on = view === saved.album && i === saved.index;
+      li.classList.toggle("on", on);
+      li.firstElementChild.toggleAttribute("aria-current", on);
+    });
     const [, , , c, slug] = ALBUMS[saved.album];
     btn.style.setProperty("--c", c); btn.style.setProperty("--img", img(slug));
-    $("#discoAlbum").textContent = ALBUMS[saved.album][0];
-    $("#discoShuffle").setAttribute("aria-pressed", saved.shuffle);
   }
+  function setView(i){ view = i; renderTracks(); markNow(); trackList.scrollTop = 0; }
+  function openShelf(){
+    shelf.hidden = false; btn.setAttribute("aria-expanded", "true");
+    setView(saved.album); loadApi();
+    // mostra a música a tocar e a capa do disco, sem mexer no scroll da página
+    const on = trackList.querySelector("li.on"), cb = covers.querySelector(`[data-a="${saved.album}"]`);
+    if(on) trackList.scrollTop = on.offsetTop - trackList.clientHeight / 2 + on.offsetHeight / 2;
+    if(cb) covers.scrollLeft = cb.offsetLeft - 8;
+  }
+  function closeShelf(){ shelf.hidden = true; btn.setAttribute("aria-expanded", "false"); }
+  btn.addEventListener("click", () => shelf.hidden ? openShelf() : closeShelf());
+  $("#shClose").addEventListener("click", closeShelf);
+  document.addEventListener("keydown", e => { if(e.key === "Escape" && !shelf.hidden){ closeShelf(); btn.focus(); } });
+  document.addEventListener("pointerdown", e => { if(!shelf.hidden && !e.target.closest("#disco, #discoWin")) closeShelf(); });
+  covers.addEventListener("click", e => { const b = e.target.closest("[data-a]"); if(b) setView(+b.dataset.a); });
+  trackList.addEventListener("click", e => { const b = e.target.closest("[data-t]"); if(b) playTrack(view, +b.dataset.t); });
+
+  /* ---------- leitor ---------- */
   function setPlaying(on){
     playing = on;
-    if(on) wanted = false;
-    root.classList.toggle("playing", on);
-    root.classList.toggle("waiting", !on && wanted);
-    $("#discoPlay").setAttribute("aria-label", on ? "Pausa" : "Tocar");
-    btn.querySelector(".disco-label").textContent = on ? "a tocar Lana" : "pôr um disco";
+    if(on){ wanted = false; vStatus.textContent = ""; }
+    [root, win].forEach(el => { el.classList.toggle("playing", on); el.classList.toggle("waiting", !on && wanted); });
+    acts("play").forEach(b => b.setAttribute("aria-label", on ? "Pausa" : "Tocar"));
   }
-  function updateNow(){
-    if(!ready || Date.now() < hintUntil) return;
+  function want(){ wanted = true; wantedAt = Date.now(); [root, win].forEach(el => el.classList.add("waiting")); showWin(); }
+  function showWin(){ win.classList.remove("off"); place(); }
+  // o vídeo que está a tocar diz em que disco e faixa estamos (também com ordem aleatória)
+  function syncNow(){
     const d = player.getVideoData ? player.getVideoData() : null;
-    if(d && d.title) $("#discoNow").textContent = d.title;
+    const hit = d && TRACK.get(d.video_id);
+    if(hit){ saved.album = hit[0]; saved.index = hit[1]; }
+    else saved.index = Math.max(0, player.getPlaylistIndex());
+    save(); markNow();
   }
   async function ensurePlayer(autoplay){
     await loadApi();
@@ -1829,116 +1870,133 @@ const Disco = (() => {
       width:"100%", height:"100%",
       playerVars:{listType:"playlist", list:ALBUMS[saved.album][2], index:saved.index, playsinline:1, rel:0, autoplay:autoplay ? 1 : 0},
       events:{
-        onReady:() => { ready = true; player.setShuffle(saved.shuffle); if(pendingPlay){ pendingPlay = false; player.playVideo(); } },
+        onReady:() => { ready = true; player.setShuffle(saved.shuffle); if(!goPending() && pendingPlay){ pendingPlay = false; player.playVideo(); } },
         onStateChange:e => {
-          if(e.data === 1){ setPlaying(true); updateNow(); loadLyrics(); saved.index = player.getPlaylistIndex(); save(); }
+          if(goPending()) return;
+          if(e.data === 1){ setPlaying(true); syncNow(); loadLyrics(); }
           else if(e.data === 2){ wanted = false; setPlaying(false); }
           else if(e.data === 0){
             const list = player.getPlaylist() || [], i = player.getPlaylistIndex();
-            // fim do disco: passa ao seguinte
-            if(i >= list.length - 1) playAlbum((saved.album + 1) % ALBUMS.length);
+            if(i >= list.length - 1) playAlbum((saved.album + 1) % ALBUMS.length, 0);   // fim do disco: passa ao seguinte
           }
         },
-        // faixa bloqueada fora do YouTube: salta para a seguinte
-        onError:() => { if(ready) player.nextVideo(); }
+        onError:() => { if(ready) player.nextVideo(); }   // faixa bloqueada fora do YouTube: salta
       }
     });
   }
-  // o YouTube ignora a troca de lista em alguns estados: recriar o leitor com o disco novo é o caminho seguro
-  function playAlbum(i){
-    saved.album = i; saved.index = 0; save(); renderAlbums();
-    $("#discoNow").textContent = "a pôr o disco…";
-    want();
+  function goPending(){
+    if(!pendingVid || !ready) return false;
+    const d = player.getVideoData ? player.getVideoData() : null;
+    if(d && d.video_id === pendingVid){ pendingVid = null; return false; }
+    const at = (player.getPlaylist() || []).indexOf(pendingVid);
+    if(at < 0) return false;
+    pendingVid = null; pendingPlay = false;
+    player.playVideoAt(at);
+    return true;
+  }
+  // trocar de disco: o YouTube ignora a troca de lista em alguns estados, recriar o leitor é o caminho seguro
+  function playAlbum(i, index){
+    saved.album = i; saved.index = index || 0; save(); markNow();
+    pendingVid = saved.index ? ALBUMS[i][5][saved.index][0] : null;
+    want(); vStatus.textContent = "a pôr o disco…";
     if(player){ try{ player.destroy(); }catch(e){} player = null; ready = false; }
-    const frame = document.querySelector(".disco-frame");
-    frame.innerHTML = '<div id="discoPlayer"></div>';
+    win.querySelector(".vwin-slot").innerHTML = '<div id="discoPlayer"></div>';
     ensurePlayer(true);
   }
-  function want(){ wanted = true; wantedAt = Date.now(); root.classList.add("waiting"); }
-  // enquanto espera: explica a demora (os anúncios só avançam com o leitor à vista)
+  function playTrack(ai, ti){
+    const vid = ALBUMS[ai][5][ti][0];
+    const at = ready && ai === saved.album ? (player.getPlaylist() || []).indexOf(vid) : -1;
+    if(at < 0) return playAlbum(ai, ti);
+    saved.index = ti; save(); markNow(); want();
+    player.playVideoAt(at);
+  }
+  function togglePlay(){
+    if(!player){ playAlbum(saved.album, saved.index); return; }
+    if(!ready){ pendingPlay = true; want(); return; }
+    if(playing) player.pauseVideo(); else { want(); player.playVideo(); }
+  }
   function checkWaiting(){
     if(!wanted || playing || !ready) return;
-    const secs = (Date.now() - wantedAt) / 1000, stateNow = player.getPlayerState(), t = player.getCurrentTime ? player.getCurrentTime() : 0;
+    const secs = (Date.now() - wantedAt) / 1000, s0 = player.getPlayerState(), t = player.getCurrentTime ? player.getCurrentTime() : 0;
     if(secs < 2.5) return;
-    if((stateNow === -1 || stateNow === 5) && !t && secs > 7) $("#discoNow").textContent = "carrega no vídeo para começar";
-    else $("#discoNow").textContent = "anúncio do YouTube, a música vem já a seguir…";
+    vStatus.textContent = (s0 === -1 || s0 === 5) && !t && secs > 7 ? "carrega no vídeo para começar" : "anúncio do YouTube, a música vem já a seguir…";
   }
-  function openPanel(){ panel.hidden = false; panel.classList.remove("mini"); btn.setAttribute("aria-expanded", "true"); btn.hidden = true; ensurePlayer(); }
-  function minimize(){
-    btn.setAttribute("aria-expanded", "false");
-    if(playing || wanted){ panel.classList.add("mini"); }   // a tocar (ou à espera do anúncio): fica pequeno, mas visível
-    else { panel.hidden = true; btn.hidden = false; }
-  }
-  btn.addEventListener("click", () => { if(!dragMoved) openPanel(); });
+  setInterval(checkWaiting, 1000);
+  acts("play").forEach(b => b.addEventListener("click", togglePlay));
+  acts("next").forEach(b => b.addEventListener("click", () => ready && player.nextVideo()));
+  acts("prev").forEach(b => b.addEventListener("click", () => ready && player.previousVideo()));
+  acts("shuffle").forEach(b => b.addEventListener("click", () => {
+    saved.shuffle = !saved.shuffle; save();
+    acts("shuffle").forEach(x => x.setAttribute("aria-pressed", saved.shuffle));
+    if(ready) player.setShuffle(saved.shuffle);
+  }));
+  acts("shuffle").forEach(x => x.setAttribute("aria-pressed", saved.shuffle));
+  acts("close").forEach(b => b.addEventListener("click", () => {
+    wanted = false; vStatus.textContent = "";
+    if(ready) player.pauseVideo();
+    setPlaying(false); win.classList.add("off");
+  }));
 
-  /* arrastar o gira-discos para qualquer sítio; fica preso ao canto mais perto */
-  let dragMoved = false;
+  /* ---------- janela do vídeo: arrastar e mudar o tamanho; fica presa ao canto mais perto ---------- */
   function place(){
-    const pos = saved.pos;
-    root.classList.toggle("right", !!pos && pos.h === "right");
-    root.style.left = root.style.right = root.style.top = root.style.bottom = "";
+    const pos = saved.vpos;
+    win.classList.toggle("left", !!pos && pos.h === "left");
+    win.style.left = win.style.right = win.style.top = win.style.bottom = "";
     if(!pos) return;
-    const r = root.getBoundingClientRect(), m = 8;
+    const r = win.getBoundingClientRect(), m = 8;
     const dx = Math.min(Math.max(m, pos.dx), Math.max(m, innerWidth - r.width - m));
     const dy = Math.min(Math.max(m, pos.dy), Math.max(m, innerHeight - r.height - m));
-    root.style[pos.h === "right" ? "right" : "left"] = dx + "px";
-    root.style[pos.v === "top" ? "top" : "bottom"] = dy + "px";
-    if(pos.h === "right") root.style.left = "auto";
-    if(pos.v === "top") root.style.bottom = "auto";
+    win.style[pos.h] = dx + "px"; win.style[pos.v] = dy + "px";
+    win.style[pos.h === "left" ? "right" : "left"] = "auto";
+    win.style[pos.v === "top" ? "bottom" : "top"] = "auto";
   }
-  function dragFrom(handle){
-    handle.addEventListener("pointerdown", e => {
-      if(e.button !== 0 || e.target.closest("button:not(.disco-btn)")) return;
-      const r0 = root.getBoundingClientRect(), x0 = e.clientX, y0 = e.clientY;
-      dragMoved = false;
-      handle.setPointerCapture(e.pointerId);
-      const move = ev => {
-        const mx = ev.clientX - x0, my = ev.clientY - y0;
-        if(!dragMoved && Math.hypot(mx, my) < 6) return;
-        dragMoved = true; root.classList.add("dragging");
-        const w = r0.width, h = r0.height;
-        const left = Math.min(Math.max(8, r0.left + mx), innerWidth - w - 8), top = Math.min(Math.max(8, r0.top + my), innerHeight - h - 8);
-        root.classList.remove("right");
-        Object.assign(root.style, {left:left + "px", top:top + "px", right:"auto", bottom:"auto"});
-      };
-      const up = () => {
-        handle.removeEventListener("pointermove", move); handle.removeEventListener("pointerup", up); handle.removeEventListener("pointercancel", up);
-        root.classList.remove("dragging");
-        if(dragMoved){
-          const r = root.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-          const h = cx > innerWidth / 2 ? "right" : "left", v = cy > innerHeight / 2 ? "bottom" : "top";
-          saved.pos = {h, v, dx:Math.round(h === "right" ? innerWidth - r.right : r.left), dy:Math.round(v === "bottom" ? innerHeight - r.bottom : r.top)};
-          save(); place();
-          setTimeout(() => { dragMoved = false; }, 0);
-        }
-      };
-      handle.addEventListener("pointermove", move); handle.addEventListener("pointerup", up); handle.addEventListener("pointercancel", up);
-    });
-  }
-  dragFrom(btn); dragFrom(panel.querySelector(".disco-head"));
-  // o painel muda de tamanho ao abrir/encolher: volta a caber no ecrã
-  new ResizeObserver(() => { if(!root.classList.contains("dragging")) place(); }).observe(root);
+  const bar = $("#vwinBar");
+  bar.addEventListener("pointerdown", e => {
+    if(e.button !== 0 || e.target.closest("button")) return;
+    const r0 = win.getBoundingClientRect(), x0 = e.clientX, y0 = e.clientY;
+    let moved = false;
+    bar.setPointerCapture(e.pointerId);
+    const move = ev => {
+      const mx = ev.clientX - x0, my = ev.clientY - y0;
+      if(!moved && Math.hypot(mx, my) < 5) return;
+      moved = true; win.classList.add("dragging");
+      Object.assign(win.style, {
+        left:Math.min(Math.max(8, r0.left + mx), innerWidth - r0.width - 8) + "px",
+        top:Math.min(Math.max(8, r0.top + my), innerHeight - r0.height - 8) + "px", right:"auto", bottom:"auto"});
+    };
+    const up = () => {
+      bar.removeEventListener("pointermove", move); bar.removeEventListener("pointerup", up); bar.removeEventListener("pointercancel", up);
+      win.classList.remove("dragging");
+      if(!moved) return;
+      const r = win.getBoundingClientRect(), h = r.left + r.width / 2 > innerWidth / 2 ? "right" : "left", v = r.top + r.height / 2 > innerHeight / 2 ? "bottom" : "top";
+      saved.vpos = {h, v, dx:Math.round(h === "right" ? innerWidth - r.right : r.left), dy:Math.round(v === "bottom" ? innerHeight - r.bottom : r.top)};
+      save(); place();
+    };
+    bar.addEventListener("pointermove", move); bar.addEventListener("pointerup", up); bar.addEventListener("pointercancel", up);
+  });
+  if(saved.vw) win.style.setProperty("--vw", saved.vw + "px");
+  const rz = $("#vwinResize");
+  rz.addEventListener("pointerdown", e => {
+    if(e.button !== 0) return;
+    e.preventDefault(); e.stopPropagation();
+    const w0 = win.getBoundingClientRect().width, x0 = e.clientX, grow = win.classList.contains("left") ? 1 : -1;
+    rz.setPointerCapture(e.pointerId); win.classList.add("dragging");
+    // no mínimo 356 px: o YouTube pede um leitor com pelo menos 200 px de altura
+    const move = ev => win.style.setProperty("--vw", Math.round(Math.min(Math.max(356, w0 + (ev.clientX - x0) * grow), Math.min(960, innerWidth - 32))) + "px");
+    const up = () => {
+      rz.removeEventListener("pointermove", move); rz.removeEventListener("pointerup", up); rz.removeEventListener("pointercancel", up);
+      win.classList.remove("dragging");
+      saved.vw = parseInt(win.style.getPropertyValue("--vw"), 10) || undefined; save(); place();
+    };
+    rz.addEventListener("pointermove", move); rz.addEventListener("pointerup", up); rz.addEventListener("pointercancel", up);
+  });
+  rz.addEventListener("dblclick", () => { saved.vw = undefined; save(); win.style.removeProperty("--vw"); place(); });
+  new ResizeObserver(() => { if(!win.classList.contains("dragging")) place(); }).observe(win);
   window.addEventListener("resize", place);
-  $("#discoMin").addEventListener("click", () => {
-    if(panel.classList.contains("mini")){ wanted = false; root.classList.remove("waiting"); if(ready) player.pauseVideo(); panel.hidden = true; btn.hidden = false; panel.classList.remove("mini"); }
-    else minimize();
-  });
-  $("#discoExpand").addEventListener("click", openPanel);
-  $("#discoPlay").addEventListener("click", () => {
-    if(!ready){ pendingPlay = true; want(); ensurePlayer(); return; }
-    if(playing) player.pauseVideo(); else { want(); player.playVideo(); }
-  });
-  $("#discoNext").addEventListener("click", () => ready && player.nextVideo());
-  $("#discoPrev").addEventListener("click", () => ready && player.previousVideo());
-  $("#discoShuffle").addEventListener("click", () => { saved.shuffle = !saved.shuffle; save(); renderAlbums(); if(ready) player.setShuffle(saved.shuffle); });
-  $("#discoAlbums").addEventListener("click", e => { const b = e.target.closest("[data-a]"); if(b) playAlbum(+b.dataset.a); });
-  renderAlbums();
-  setInterval(() => { if(playing){ updateNow(); loadLyrics(); } }, 3000);
 
-  /* ---------- letra em tempo real (LRCLIB), por cima do lago ---------- */
+  /* ---------- letra em tempo real (LRCLIB), por cima dos cisnes ---------- */
   const lyr = {vid:null, lines:[], idx:-2, cache:new Map()};
   const alBox = $("#ambLyrics"), alPrev = alBox.querySelector(".al-prev"), alCur = alBox.querySelector(".al-cur"), alNext = alBox.querySelector(".al-next"), alNote = alBox.querySelector(".al-note");
-  const lyBtns = [$("#discoLyricsBtn"), $("#ambLyricsBtn")];
   const cleanTitle = t => t
     .replace(/^\s*lana del rey\s*[-–—:|]\s*/i, "")
     .replace(/\s*[(\[][^)\]]*(official|video|audio|lyric|visuali[sz]er|explicit|remaster|hd|4k)[^)\]]*[)\]]/gi, "")
@@ -1984,7 +2042,9 @@ const Disco = (() => {
     if(!saved.lyrics || !ready) return;
     const d = player.getVideoData ? player.getVideoData() : null;
     if(!d || !d.video_id || d.video_id === lyr.vid) return;
-    const vid = lyr.vid = d.video_id, title = cleanTitle(d.title || ""), dur = player.getDuration() || 0;
+    const hit0 = TRACK.get(d.video_id);
+    const vid = lyr.vid = d.video_id, dur = player.getDuration() || 0;
+    const title = hit0 ? ALBUMS[hit0[0]][5][hit0[1]][1] : cleanTitle(d.title || "");
     lyr.lines = []; lyr.idx = -2; clearLines(); alNote.textContent = "à procura da letra…";
     try{
       let hit = lyr.cache.get(vid);
@@ -2003,50 +2063,28 @@ const Disco = (() => {
     for(let k = 0; k < lyr.lines.length && lyr.lines[k].t <= t; k++) i = k;
     if(i !== lyr.idx){ lyr.idx = i; showLine(i); }
   }
-  setInterval(() => { if(playing) tickLyrics(); }, 200);
-  let hintUntil = 0;
+  setInterval(() => { if(playing){ tickLyrics(); loadLyrics(); } }, 200);
   function setLyrics(on, fromPlayer){
     saved.lyrics = on; save();
     alBox.hidden = !on;
-    lyBtns.forEach(b => { b.setAttribute("aria-pressed", on); });
+    [...acts("lyrics"), $("#ambLyricsBtn")].forEach(b => b.setAttribute("aria-pressed", on));
     $("#ambLyricsBtn").textContent = on ? "Sem letra" : "Letra";
     if(!on) return;
     placeLyrics();
-    if(fromPlayer && alBox.classList.contains("off")){ hintUntil = Date.now() + 4500; $("#discoNow").textContent = "a letra aparece por cima dos cisnes"; }
+    if(fromPlayer && alBox.classList.contains("off")) say("a letra aparece por cima dos cisnes", 4000);
     if(lyr.lines.length){ lyr.idx = -2; tickLyrics(); }
     else { lyr.vid = null; clearLines(); alNote.textContent = ready ? "" : "põe um disco a tocar para veres a letra"; loadLyrics(); }
   }
-  $("#discoLyricsBtn").addEventListener("click", () => setLyrics(!saved.lyrics, true));
+  acts("lyrics").forEach(b => b.addEventListener("click", () => setLyrics(!saved.lyrics, true)));
   $("#ambLyricsBtn").addEventListener("click", () => setLyrics(!saved.lyrics));
-  setLyrics(!!saved.lyrics);
 
-  /* ---------- tamanho do leitor pequeno ---------- */
-  if(saved.w) panel.style.setProperty("--mini-w", saved.w + "px");
-  const rz = $("#discoResize");
-  rz.addEventListener("pointerdown", e => {
-    if(e.button !== 0) return;
-    e.preventDefault(); e.stopPropagation();
-    const w0 = panel.getBoundingClientRect().width, x0 = e.clientX, fromLeft = root.classList.contains("right");
-    rz.setPointerCapture(e.pointerId); root.classList.add("dragging");
-    const move = ev => {
-      const w = Math.round(Math.min(Math.max(280, w0 + (ev.clientX - x0) * (fromLeft ? -1 : 1)), Math.min(820, innerWidth - 32)));
-      panel.style.setProperty("--mini-w", w + "px");
-    };
-    const up = () => {
-      rz.removeEventListener("pointermove", move); rz.removeEventListener("pointerup", up); rz.removeEventListener("pointercancel", up);
-      root.classList.remove("dragging");
-      saved.w = parseInt(panel.style.getPropertyValue("--mini-w"), 10) || undefined; save(); place();
-    };
-    rz.addEventListener("pointermove", move); rz.addEventListener("pointerup", up); rz.addEventListener("pointercancel", up);
-  });
-  rz.addEventListener("dblclick", () => { saved.w = undefined; save(); panel.style.removeProperty("--mini-w"); place(); });
-  setInterval(checkWaiting, 1000);
+  renderCovers(); renderTracks(); markNow(); setLyrics(!!saved.lyrics);
 
   function sync(){
     const on = Conta.loggedIn();
-    root.hidden = !on;
+    root.hidden = win.hidden = !on;
     if(on){ loadApi(); place(); }   // a API já pronta quando carregar num disco
-    if(!on && ready){ try{ player.stopVideo(); }catch(e){} setPlaying(false); panel.hidden = true; btn.hidden = false; }
+    if(!on){ if(ready){ try{ player.stopVideo(); }catch(e){} } wanted = false; setPlaying(false); closeShelf(); win.classList.add("off"); }
   }
   return {sync};
 })();
