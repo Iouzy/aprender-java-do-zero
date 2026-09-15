@@ -222,6 +222,20 @@ def correr(p, base, nome, opts, res):
             m = page.evaluate(CABE, seletor)
             res.check(nome, f"{ficheiro[3:]} cabe num ecrã", m and m["cima"] >= -2 and m["baixo"] >= -2, json.dumps(m))
 
+    # swanrejas: começa, o cisne mexe-se e as cerejas caem
+    ir_para(page, 'section[aria-labelledby="gameTitle"]')
+    try:
+        page.click("#gStart")
+        caixa = page.query_selector("#game").bounding_box()
+        for k in range(24):
+            page.mouse.move(caixa["x"] + caixa["width"] * (.2 + .6 * (k % 6) / 5), caixa["y"] + caixa["height"] * .6)
+            page.wait_for_timeout(150)
+        page.screenshot(path=pasta / "06-jogo-a-jogar.png")
+        estado = page.evaluate("[document.querySelector('#gameUi').dataset.show, document.querySelector('#gTime').textContent, document.querySelector('#gLevel').textContent]")
+        res.check(nome, "swanrejas: a partida corre", estado[0] == "false" and estado[1].endswith(" s") and estado[2].startswith("nível"), json.dumps(estado, ensure_ascii=False))
+    except Exception as ex:
+        res.check(nome, "swanrejas: a partida corre", False, str(ex).splitlines()[0])
+
     # swandoku: rascunho numa casa vazia e contagem dos símbolos que faltam
     ir_para(page, 'section[aria-labelledby="sdTitle"]')
     try:
