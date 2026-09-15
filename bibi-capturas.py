@@ -28,7 +28,7 @@ from playwright.sync_api import sync_playwright
 ROOT = pathlib.Path(__file__).resolve().parent
 OUT = ROOT / "capturas"
 PAGINA = "java-bancada.html"   # --pagina=outra.html para testar uma cópia
-CATEGORIAS = 4                 # linhas do placar
+CATEGORIAS = 5                 # linhas do placar
 
 ECRAS = {
     "computador": {"viewport": {"width": 1440, "height": 900}},
@@ -45,6 +45,7 @@ SECCOES = [
     ("05-fichas", 'section[aria-labelledby="dictTitle"]'),
     ("06-jogo", 'section[aria-labelledby="gameTitle"]'),
     ("07-swandoku", 'section[aria-labelledby="sdTitle"]'),
+    ("08-musica", "#musica"),
     ("09-placar", "#placar"),
     ("10-cartas", 'section[aria-label="Cartas"]'),
 ]
@@ -66,6 +67,8 @@ def partidas():
     add("bibi", "cerejas", 0, 42, dia(0))
     add("louzy", "cerejas", 0, 38, dia(1))
     add("bibi", "swandoku", 9, 811, dia(2))
+    add("louzy", "musica", 0, 150, dia(0))
+    add("bibi", "musica", 0, 120, dia(1))
     return rows
 
 
@@ -193,6 +196,22 @@ def correr(p, base, nome, opts, res):
             res.check(nome, f"secção {ficheiro}", False, "não existe")
             continue
         page.screenshot(path=pasta / f"{ficheiro}.png")
+
+    # adivinha a música: começa, responde à primeira pergunta e mostra a resposta (letras de teste)
+    ir_para(page, "#musica")
+    page.click('#musica [data-mu="start"]')
+    try:
+        page.wait_for_selector("#musica .mu-opt", timeout=8000)
+        opcoes = page.evaluate("document.querySelectorAll('#musica .mu-opt').length")
+        page.wait_for_timeout(700)
+        page.screenshot(path=pasta / "08-musica-pergunta.png")
+        page.click("#musica .mu-opt")
+        page.wait_for_selector("#musica .mu-reveal", timeout=3000)
+        page.wait_for_timeout(500)
+        page.screenshot(path=pasta / "08-musica-resposta.png")
+        res.check(nome, "adivinha a música: pergunta com 4 músicas e resposta", opcoes == 4, f"{opcoes} opções")
+    except Exception as ex:
+        res.check(nome, "adivinha a música: pergunta com 4 músicas e resposta", False, str(ex).splitlines()[0])
 
     e = page.evaluate(ESTANTE)
     res.check(nome, "estante: livros dentro das prateleiras", "erro" not in e and not e["fora"] and not e["finos"], json.dumps(e))
