@@ -201,6 +201,18 @@ def correr(p, base, nome, opts, res):
     linhas = page.evaluate("document.querySelectorAll('#plRows li').length")
     res.check(nome, f"placar com as {CATEGORIAS} categorias", linhas == CATEGORIAS, f"{linhas} linhas")
 
+    # o atalho do topo leva ao placar
+    page.evaluate("window.scrollTo(0, 0)")
+    page.wait_for_timeout(500)
+    atalho = page.query_selector("#toPlacar")
+    if atalho and atalho.is_visible():
+        atalho.click()
+        page.wait_for_timeout(1500)
+        topo = page.evaluate("document.querySelector('#placar').getBoundingClientRect().top")
+        res.check(nome, "atalho do topo chega ao placar", -40 < topo < 200, f"placar a {round(topo)} px do topo")
+    else:
+        res.check(nome, "atalho do topo chega ao placar", False, "sem botão #toPlacar à vista")
+
     res.check(nome, "sem erros de JavaScript", not erros, " | ".join(erros[:3]))
     ctx.close()
     browser.close()
