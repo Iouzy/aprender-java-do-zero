@@ -260,6 +260,28 @@ def correr(p, base, nome, opts, res):
     browser.close()
 
 
+SESSAO_DELE = SESSAO.replace('id:"teste-bibi", nome:"bibi"', 'id:"teste-louzy", nome:"louzy"')
+
+
+def textos_dele(p, base, res):
+    """Com a conta do Louzy a página fala com ele: sem «ele estuda», «Pronta?» e afins."""
+    browser = p.chromium.launch()
+    ctx = browser.new_context(**ECRAS["computador"], locale="pt-PT")
+    ctx.add_init_script(SESSAO_DELE)
+    ctx.route("**/*", responder)
+    page = ctx.new_page()
+    erros = []
+    page.on("pageerror", lambda e: erros.append(str(e)))
+    page.goto(base + "/" + PAGINA + "#bibi", wait_until="networkidle")
+    page.wait_for_timeout(1500)
+    texto = page.evaluate("document.querySelector('#mBibi').textContent.replace(/\\s+/g, ' ') + ' ' + document.title")
+    import re
+    achados = sorted(set(m.group(0) for m in re.finditer(r"\b(ele (estuda|estudou|guard\w+|diz|termina|está a ler|ser programador|vê)|Pronta\?|o progresso dele|Estudou|estudou)\b", texto)))
+    res.check("louzy", "textos na segunda pessoa com a conta dele", not achados and "Pronto?" in texto, ", ".join(achados) or "falta «Pronto?»")
+    res.check("louzy", "sem erros de JavaScript", not erros, " | ".join(erros[:3]))
+    browser.close()
+
+
 def main():
     escolhidos = [a for a in sys.argv[1:] if a in ECRAS] or list(ECRAS)
     global PAGINA
@@ -276,6 +298,7 @@ def main():
         for nome in escolhidos:
             print(f"· {nome}…", flush=True)
             correr(p, base, nome, ECRAS[nome], res)
+        textos_dele(p, base, res)
     srv.shutdown()
     print("\n".join(res.linhas))
     print(f"\nCapturas em {OUT.relative_to(ROOT)}/ · {round(time.time() - t0)} s · "
