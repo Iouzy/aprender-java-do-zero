@@ -220,6 +220,15 @@ def correr(p, base, nome, opts, res):
     # nos dados de teste a Bibi resolveu o Swandoku do dia 6 dias seguidos, até hoje
     seq = page.evaluate("[document.querySelector('#sdStreak').hidden, document.querySelector('#sdStreak').textContent, [...document.querySelectorAll('.pl-streak')].map(e => e.textContent)]")
     res.check(nome, "sequência do Swandoku no tabuleiro e no placar", not seq[0] and seq[1].startswith("6 dias seguidos") and "6 dias seguidos no Swandoku" in seq[2], json.dumps(seq, ensure_ascii=False))
+    # cartas: a do Louzy aparece em «Para ti»; em «As que mandaste» não há nenhuma
+    ir_para(page, 'section[aria-label="Cartas"]')
+    caixa = page.evaluate("document.querySelectorAll('#board .env').length")
+    page.click("#mailOut")
+    page.wait_for_timeout(300)
+    enviadas = page.evaluate("[document.querySelectorAll('#board .env').length, !!document.querySelector('#board .empty-note')]")
+    page.click("#mailIn")
+    res.check(nome, "cartas: recebidas e enviadas em abas", caixa == 1 and enviadas == [0, True], f"para ti {caixa}, enviadas {enviadas}")
+
     # nos dados de teste o Louzy vai à frente no Adivinha a música: a Bibi pode pedir revanche
     rev = page.query_selector("#plRows .pl-rev:not([disabled])")
     if rev:
