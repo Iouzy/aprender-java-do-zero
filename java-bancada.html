@@ -723,6 +723,33 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 .forget{font-family:var(--book);font-style:italic;font-size:14px;color:#8C7C66;text-decoration:underline;text-underline-offset:3px;margin-top:14px}
 .env.loading-box{pointer-events:none}
 
+/* ---------- placar ---------- */
+.placar{max-width:880px;margin:0 auto;padding:clamp(22px,4vw,44px);font-variant-numeric:lining-nums proportional-nums}
+.pl-seg{display:flex;width:max-content;max-width:100%;margin:0 auto;padding:4px;border-radius:999px;border:1px solid rgba(51,36,26,.3)}
+.pl-seg button{padding:7px 16px;border-radius:999px;font-family:var(--display);font-weight:600;font-size:17px;color:var(--parch-soft);transition:background-color .2s ease,color .2s ease}
+.pl-seg button[aria-pressed=true]{background:var(--burgundy);color:var(--parch)}
+.pl-duel{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:6px clamp(12px,3vw,32px);margin-top:clamp(20px,3vw,30px);text-align:center}
+.pl-who{display:grid;justify-items:center;gap:2px;min-width:0}
+.pl-who b{font-family:var(--display);font-weight:500;font-size:clamp(34px,5vw,56px);line-height:1;color:var(--parch-ink)}
+.pl-who small{font-style:italic;color:var(--parch-soft);font-size:15px;min-height:1.4em}
+.pl-crown{width:36px;height:24px;color:#B08A3E;opacity:0;transform:translateY(6px);transition:opacity .4s ease,transform .4s ease}
+.pl-who.lead .pl-crown{opacity:1;transform:none}
+.pl-score{font-family:var(--display);font-weight:600;font-size:clamp(42px,6vw,68px);line-height:1;color:var(--burgundy);white-space:nowrap;padding-bottom:1.4em}
+.pl-score span{color:var(--parch-soft);font-size:.55em;margin:0 .25em;vertical-align:.2em}
+.pl-sub{grid-column:1/-1;font-style:italic;color:var(--parch-soft);font-size:15px}
+.pl-rows{list-style:none;margin:clamp(16px,3vw,26px) 0 0;padding:0;border-top:1px solid rgba(51,36,26,.25)}
+.pl-rows li{display:grid;grid-template-columns:1fr minmax(0,1.15fr) 1fr;align-items:center;gap:10px;padding:14px 0;border-bottom:1px solid rgba(51,36,26,.15);text-align:center}
+.pl-cat{font-family:var(--display);font-weight:600;font-size:clamp(17px,2vw,21px);line-height:1.1;color:var(--parch-ink)}
+.pl-cat small{display:block;margin-top:3px;font-family:var(--book);font-weight:400;font-style:italic;font-size:13px;color:var(--parch-soft)}
+.pl-v{font-family:var(--display);font-size:clamp(22px,2.6vw,30px);line-height:1;color:var(--parch-soft)}
+.pl-v small{display:block;margin-top:4px;font-family:var(--book);font-style:italic;font-size:13px}
+.pl-v.win{color:var(--burgundy);font-weight:600}
+.pl-v.win b::before{content:"";display:inline-block;width:.38em;height:.38em;margin-right:.3em;border-radius:50%;background:var(--cherry);vertical-align:.2em}
+.pl-v b{font-weight:inherit}
+.pl-v.none{opacity:.5}
+.pl-note{margin-top:16px;text-align:center;font-style:italic;color:var(--parch-soft);font-size:15px}
+.pl-note:empty{display:none}
+
 /* ---------- swandoku ---------- */
 .sd-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,.62fr);gap:clamp(22px,4vw,48px);align-items:start}
 .sd-paper{padding:clamp(14px,2.4vw,26px)}
@@ -1290,6 +1317,10 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
           <div class="sd-board" id="sdBoard" role="grid" aria-label="Tabuleiro do Swandoku"></div>
         </div>
         <div class="sd-side">
+          <div class="sd-seg" id="sdMode" role="group" aria-label="Que tabuleiro">
+            <button type="button" data-m="dia" aria-pressed="true">Do dia<small>conta para o placar</small></button>
+            <button type="button" data-m="livre" aria-pressed="false">Livre<small>à vontade</small></button>
+          </div>
           <div class="sd-seg" id="sdSize" role="group" aria-label="Tamanho do tabuleiro">
             <button type="button" data-n="4" aria-pressed="false">4×4<small>fácil</small></button>
             <button type="button" data-n="6" aria-pressed="true">6×6<small>médio</small></button>
@@ -1305,6 +1336,25 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
           <p class="sd-status" id="sdStatus" aria-live="polite"></p>
           <p class="sd-rules">Toca numa casa e depois num símbolo. No teclado: setas para andar, números para escolher, 0 para apagar. Os repetidos ficam marcados com um ponto vermelho.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- placar -->
+  <section class="sheet" id="placar" aria-labelledby="placarTitle">
+    <div class="wrap">
+      <div class="sheet-head">
+        <h2 id="placarTitle">Placar</h2>
+        <p>Quem apanha mais cerejas e quem resolve o Swandoku do dia mais depressa. No Swandoku, cada dia ganha quem for mais rápido no tabuleiro desse dia. A semana recomeça à segunda-feira.</p>
+      </div>
+      <div class="parchment placar">
+        <div class="pl-seg" id="plView" role="group" aria-label="Período">
+          <button type="button" data-v="semana" aria-pressed="true">Esta semana</button>
+          <button type="button" data-v="sempre" aria-pressed="false">Desde sempre</button>
+        </div>
+        <div class="pl-duel" id="plDuel" aria-live="polite"></div>
+        <ol class="pl-rows" id="plRows"></ol>
+        <p class="pl-note" id="plNote"></p>
       </div>
     </div>
   </section>
@@ -1397,7 +1447,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 const EXERCISES=[{"n": "Ola.java", "d": "Primeiro programa: classe, main e println.", "src": "cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"}, {"n": "Tipos.java", "d": "Tipos primitivos, divisão inteira, resto e cast.", "src": "cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="}, {"n": "Iva.java", "d": "Variáveis String/int e concatenação.", "src": "cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"}, {"n": "Saudacao.java", "d": "Scanner, hasNextInt, if/else if e validação.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="}, {"n": "Contagem.java", "d": "for crescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "ContagemR.java", "d": "for decrescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "Pares.java", "d": "Números pares alterando o passo do for.", "src": "cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="}, {"n": "Pares2.java", "d": "Números pares usando % e if.", "src": "cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"}, {"n": "Tabuada.java", "d": "Scanner + for + cálculo da tabuada.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="}, {"n": "Metodos.java", "d": "Métodos, parâmetros, return, void e boolean.", "src": "CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"}, {"n": "Pessoa.java", "d": "Classe, private, construtor, this, setter e métodos.", "src": "cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="}, {"n": "Programa.java", "d": "Criação e utilização de objetos Pessoa.", "src": "cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}, {"n": "aquecimento1.java", "d": "Validação de input com while: insistir até a idade fazer sentido.", "src": "Ly8gYXF1ZWNpbWVudG8xLmphdmEg4oCUIDEwIHNldGVtYnJvIDIwMjYsIDE4OjEyCmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBhcXVlY2ltZW50bzF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkKCQlpbnQgaWRhZGU7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIGEgc3VhIGlkYWRlPyIpOwoJCWlkYWRlID0gc2MubmV4dEludCgpOwoJCQoJCXdoaWxlKGlkYWRlIDwgMCl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiQSBpZGFkZSBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLCByZWludHJvZHV6YSBhIGlkYWRlLiIpOyAKCQkJaWRhZGUgPSBzYy5uZXh0SW50KCk7CgkJfQoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGVucyAiICsgaWRhZGUgKyAiIGFub3MuIik7Cgl9Cn0K"}, {"n": "exContagem.java", "d": "Validar com while e contar só os pares até ao número.", "src": "Ly8gZXhDb250YWdlbS5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMTowOQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3MgZXhDb250YWdlbXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCVNjYW5uZXIgc2MgPSAgbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCgkJaW50IG51bWVybzsKCQlpbnQgY29udGFnZW0gPSAwOwoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG51bWVybyBwb3NpdGl2byBwYXJhIGNvbWXDp2FyIGEgY29udGFnZW0uIik7CgkJbnVtZXJvID0gc2MubmV4dEludCgpOwoKCQl3aGlsZShudW1lcm8gPCAxKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKCJJbnRyb2R1emEgdW0gbnVtZXJvIHBvc2l0aXZvLiIpOwoJCQludW1lcm8gPSBzYy5uZXh0SW50KCk7CgkJfQoKCQl3aGlsZShjb250YWdlbSA8IG51bWVybyl7CgkJCWNvbnRhZ2VtKys7CgkJCQoJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oY29udGFnZW0pOwoJCQl9CgkJCQoJCX0KCX0KfQo="}, {"n": "somaPares.java", "d": "Acumulador: somar os pares até um número.", "src": "Ly8gc29tYVBhcmVzLmphdmEg4oCUIDEzIHNldGVtYnJvIDIwMjYsIDIxOjM1CmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBzb21hUGFyZXMJewoJCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkJCgkJCWludCBudW1lcm8gPSAwOwoJCQlpbnQgY29udGFnZW0gPSAxOwoJCQlpbnQgc29tYVBhcmVzID0gMDsKCQkJCgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG7Dum1lcm86Iik7CgkJCW51bWVybyA9IHNjLm5leHRJbnQoKTsKCgkJCXdoaWxlKG51bWVybyA8PSAwKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBuw7ptZXJvIG7Do28gcG9kZSBzZXIgbmVnYXRpdm8sIGludHJvZHV6YSB1bSBuw7ptZXJvIHBvc2l0aXZvLiIpOwoJCQkJbnVtZXJvID0gc2MubmV4dEludCgpOwoJCQl9CgkJCQoJCQkKCQkJd2hpbGUoY29udGFnZW0gPCBudW1lcm8pewoJCQkJY29udGFnZW0rKzsgCgkJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQkJc29tYVBhcmVzID0gY29udGFnZW0gKyBzb21hUGFyZXM7CgkJCQl9CgkJCQkKCQkJfQoJCQkKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgYXTDqSAiICsgbnVtZXJvICsgIiDDqSBkZSAiICsgc29tYVBhcmVzICsgIi4iKTsKCX0KfQoK"}, {"n": "somaIntervalo.java", "d": "Acumulador num intervalo, com validação do início e do fim.", "src": "Ly8gc29tYUludGVydmFsby5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMjo0MQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3Mgc29tYUludGVydmFsb3sKCQlwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgoJCQlpbnQgaW50ZXJ2YWxvSW5pY2lvID0gMDsKCQkJaW50IGludGVydmFsb0ZpbmFsID0gMDsKCQkJaW50IGNvbnRhZ2VtID0gMDsKCQkJaW50IHNvbWFQYXJlcyA9IDA7CgkJCQoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIGludGVydmFsbyBkZSBudW1lcm9zIGRvIHF1YWwgcXVlciBhIHNvbWE6ICIpOwoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIG51bWVybyBkbyBpbmljaW86ICIpOwoJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIG8gbnVtZXJvIGRvIGZpbmFsOiAiKTsKCQkJaW50ZXJ2YWxvRmluYWwgPSBzYy5uZXh0SW50KCk7CgkJCgkJCXdoaWxlKGludGVydmFsb0luaWNpbyA+IGludGVydmFsb0ZpbmFsKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBudW1lcm8gaW5pY2lhbCBuw6NvIHBvZGUgc2VyIHN1cGVyaW9yIGFvIG51bWVybyBmaW5hbC4iKTsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiUmVpbnRyb2R1emEgbyBudW1lcm8gaW5pY2lhbDogIik7CgkJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCX0KCQkJCgkJCWNvbnRhZ2VtID0gaW50ZXJ2YWxvSW5pY2lvOwoJCQkKCQkJd2hpbGUoY29udGFnZW0gPD0gaW50ZXJ2YWxvRmluYWwpewoJCQkJaWYoY29udGFnZW0gJSAyID09IDApewoJCQkJCXNvbWFQYXJlcyA9IGNvbnRhZ2VtICsgc29tYVBhcmVzOwoJCQkJfQoJCQkJY29udGFnZW0rKzsKCQkJfQoKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgbm8gaW50ZXJ2YWxvIGRlIG51bWVyb3MgZGUgIiArIGludGVydmFsb0luaWNpbyArICIgYSAiICsgaW50ZXJ2YWxvRmluYWwgKyAiIMOpIGRlOiAiICsgc29tYVBhcmVzKTsKCQl9CgoJCn0K"}];
 
 /* Histórico do Git. Não editar à mão: corre  python3 bibi-atualizar.py */
-const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "12223a7", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "ea37d3a", "t": "2026-09-14T23:25:06+01:00", "s": "Cartas em tempo real, avisos e presença", "f": ["java-bancada.html"]}, {"h": "6df6ce4", "t": "2026-09-15T00:52:28+01:00", "s": "Gira-discos com os álbuns da Lana, e o lago sem texto", "f": ["java-bancada.html"]}, {"h": "3426572", "t": "2026-09-15T01:02:51+01:00", "s": "Gira-discos com as capas verdadeiras dos álbuns", "f": ["bibi/capas/blue-banisters.webp", "bibi/capas/born-to-die.webp", "bibi/capas/chemtrails.webp", "bibi/capas/honeymoon.webp", "bibi/capas/lust-for-life.webp", "bibi/capas/nfr.webp", "bibi/capas/ocean-blvd.webp", "bibi/capas/paradise.webp", "bibi/capas/ultraviolence.webp", "java-bancada.html"]}, {"h": "12b36bc", "t": "2026-09-15T01:15:30+01:00", "s": "Leitor que se arrasta, lago que pára nos cisnes e cerejas limpas", "f": ["bibi/gravuras/cerejas.svg", "java-bancada.html"]}, {"h": "e78f63f", "t": "2026-09-15T01:16:15+01:00", "s": "Diário: gravura da cerejeira com as proporções certas", "f": ["java-bancada.html"]}, {"h": "95b2d0e", "t": "2026-09-15T01:24:00+01:00", "s": "Gira-discos: letra em tempo real e leitor pequeno maior, com tamanho à escolha", "f": ["java-bancada.html"]}, {"h": "e527ac4", "t": "2026-09-15T01:32:19+01:00", "s": "Letra por cima dos cisnes e o lago em sossego", "f": ["java-bancada.html"]}, {"h": "1f92c32", "t": "2026-09-15T01:43:26+01:00", "s": "Gira-discos redesenhado: disco, estante com as músicas e janela do vídeo", "f": ["java-bancada.html"]}, {"h": "a7c673c", "t": "2026-09-15T01:50:29+01:00", "s": "Gira-discos: vídeo limpo, volume, setas nas capas e moldura para arrastar", "f": ["java-bancada.html"]}, {"h": "fe72cb9", "t": "2026-09-15T01:53:08+01:00", "s": "Gira-discos: botão da letra no canto da estante e repetir", "f": ["java-bancada.html"]}, {"h": "a10ad1d", "t": "2026-09-15T02:18:45+01:00", "s": "Gira-discos: janela do vídeo de 200×200", "f": ["java-bancada.html"]}, {"h": "35ff3e8", "t": "2026-09-15T02:27:42+01:00", "s": "Gira-discos: recolher e pausar; «só o lago» por cima da janela", "f": ["java-bancada.html"]}, {"h": "32243b6", "t": "2026-09-15T02:44:34+01:00", "s": "Letra não fica por cima dos textos da cena do lago", "f": ["java-bancada.html"]}, {"h": "e321188", "t": "2026-09-15T03:02:09+01:00", "s": "Estante dos livros: prateleiras certas em todos os ecrãs", "f": ["java-bancada.html"]}]/*@COMMITS:END*/;
+const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "12223a7", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "ea37d3a", "t": "2026-09-14T23:25:06+01:00", "s": "Cartas em tempo real, avisos e presença", "f": ["java-bancada.html"]}, {"h": "6df6ce4", "t": "2026-09-15T00:52:28+01:00", "s": "Gira-discos com os álbuns da Lana, e o lago sem texto", "f": ["java-bancada.html"]}, {"h": "3426572", "t": "2026-09-15T01:02:51+01:00", "s": "Gira-discos com as capas verdadeiras dos álbuns", "f": ["bibi/capas/blue-banisters.webp", "bibi/capas/born-to-die.webp", "bibi/capas/chemtrails.webp", "bibi/capas/honeymoon.webp", "bibi/capas/lust-for-life.webp", "bibi/capas/nfr.webp", "bibi/capas/ocean-blvd.webp", "bibi/capas/paradise.webp", "bibi/capas/ultraviolence.webp", "java-bancada.html"]}, {"h": "12b36bc", "t": "2026-09-15T01:15:30+01:00", "s": "Leitor que se arrasta, lago que pára nos cisnes e cerejas limpas", "f": ["bibi/gravuras/cerejas.svg", "java-bancada.html"]}, {"h": "e78f63f", "t": "2026-09-15T01:16:15+01:00", "s": "Diário: gravura da cerejeira com as proporções certas", "f": ["java-bancada.html"]}, {"h": "95b2d0e", "t": "2026-09-15T01:24:00+01:00", "s": "Gira-discos: letra em tempo real e leitor pequeno maior, com tamanho à escolha", "f": ["java-bancada.html"]}, {"h": "e527ac4", "t": "2026-09-15T01:32:19+01:00", "s": "Letra por cima dos cisnes e o lago em sossego", "f": ["java-bancada.html"]}, {"h": "1f92c32", "t": "2026-09-15T01:43:26+01:00", "s": "Gira-discos redesenhado: disco, estante com as músicas e janela do vídeo", "f": ["java-bancada.html"]}, {"h": "a7c673c", "t": "2026-09-15T01:50:29+01:00", "s": "Gira-discos: vídeo limpo, volume, setas nas capas e moldura para arrastar", "f": ["java-bancada.html"]}, {"h": "fe72cb9", "t": "2026-09-15T01:53:08+01:00", "s": "Gira-discos: botão da letra no canto da estante e repetir", "f": ["java-bancada.html"]}, {"h": "a10ad1d", "t": "2026-09-15T02:18:45+01:00", "s": "Gira-discos: janela do vídeo de 200×200", "f": ["java-bancada.html"]}, {"h": "35ff3e8", "t": "2026-09-15T02:27:42+01:00", "s": "Gira-discos: recolher e pausar; «só o lago» por cima da janela", "f": ["java-bancada.html"]}, {"h": "32243b6", "t": "2026-09-15T02:44:34+01:00", "s": "Letra não fica por cima dos textos da cena do lago", "f": ["java-bancada.html"]}, {"h": "b61d2ae", "t": "2026-09-15T03:02:09+01:00", "s": "Estante dos livros: prateleiras certas em todos os ecrãs", "f": ["java-bancada.html"]}, {"h": "0a4e3c9", "t": "2026-09-15T03:15:30+01:00", "s": "Placar: Bibi contra Louzy nos jogos", "f": [".gitignore", "java-bancada.html"]}]/*@COMMITS:END*/;
 
 /* ---------- guiões de execução ----------
    Cada guião é um gerador: devolve um passo de cada vez.
@@ -1745,8 +1795,8 @@ const Conta = (() => {
 const OTHER_NAME = me => me === "bibi" ? "louzy" : "bibi";
 const NICE = n => n === "bibi" ? "Bibi" : n === "louzy" ? "Louzy" : n;
 const Live = (() => {
-  let client = null, chCartas = null, chPres = null, beat = 0, authT = 0;
-  const handlers = {carta:[], presenca:[]};
+  let client = null, chCartas = null, chPres = null, chPartidas = null, beat = 0, authT = 0;
+  const handlers = {carta:[], presenca:[], partida:[]};
   let onlineNames = [];
   const emit = (k, v) => handlers[k].forEach(f => { try{ f(v); }catch(e){} });
   const markSeen = () => Conta.loggedIn() && Conta.api("presenca?on_conflict=autor", {method:"POST",
@@ -1761,6 +1811,9 @@ const Live = (() => {
     chCartas = client.channel("cartas-novas")
       .on("postgres_changes", {event:"INSERT", schema:"public", table:"cartas"}, payload => emit("carta", payload.new))
       .subscribe();
+    chPartidas = client.channel("partidas-novas")
+      .on("postgres_changes", {event:"INSERT", schema:"public", table:"partidas"}, payload => emit("partida", payload.new))
+      .subscribe();
     chPres = client.channel("lago-presenca", {config:{presence:{key:me.nome}}});
     chPres.on("presence", {event:"sync"}, () => { onlineNames = Object.keys(chPres.presenceState()); emit("presenca", onlineNames); })
       .subscribe(async status => { if(status === "SUBSCRIBED") await chPres.track({nome:me.nome, desde:Date.now()}); });
@@ -1774,7 +1827,7 @@ const Live = (() => {
     clearInterval(beat); clearInterval(authT);
     document.removeEventListener("visibilitychange", markSeen);
     if(client){ try{ client.removeAllChannels(); }catch(e){} }
-    client = chCartas = chPres = null; onlineNames = [];
+    client = chCartas = chPres = chPartidas = null; onlineNames = [];
     emit("presenca", []);
   }
   const lastSeen = () => Conta.api("presenca?select=nome,visto").catch(() => []);
@@ -1826,6 +1879,135 @@ Live.on("carta", row => {
   }
   document.dispatchEvent(new CustomEvent("cartas:nova", {detail:row}));
 });
+
+/* ---------- placar: as partidas dos dois, no Supabase ---------- */
+const Placar = (() => {
+  const JOGADORES = ["bibi", "louzy"];
+  const CATS = [
+    {jogo:"cerejas", nivel:0, nome:"Apanha as cerejas", maior:true},
+    {jogo:"swandoku", nivel:4, nome:"Swandoku 4×4", maior:false},
+    {jogo:"swandoku", nivel:6, nome:"Swandoku 6×6", maior:false},
+    {jogo:"swandoku", nivel:9, nome:"Swandoku 9×9", maior:false}
+  ];
+  let rows = [], estado = "vazio", view = "semana";   // estado: vazio | ok | desligado
+  const tempo = s => Math.floor(s / 60) + ":" + String(Math.round(s) % 60).padStart(2, "0");
+  const valorTxt = (c, v) => c.maior ? String(v) : tempo(v);
+  const melhor = (c, a, b) => b === null || (c.maior ? a > b : a < b);
+  const bestOf = (c, list) => list.reduce((b, r) => melhor(c, r.valor, b) ? r.valor : b, null);
+  const inicioSemana = () => { const d = startOfDay(new Date()); d.setDate(d.getDate() - (d.getDay() + 6) % 7); return dayKey(d); };
+  const daCat = c => rows.filter(r => r.jogo === c.jogo && r.nivel === c.nivel);
+
+  async function load(){
+    if(!Conta.loggedIn()) return;
+    try{ rows = await Conta.api("partidas?select=id,criado,nome,jogo,nivel,dia,valor&order=id.asc&limit=5000") || []; estado = "ok"; }
+    catch(e){ if(!e.auth) estado = "desligado"; }
+    render();
+  }
+  // devolve "ok", "repetida" (o Swandoku do dia já estava registado) ou "falhou"
+  async function registar(jogo, nivel, valor, dia){
+    if(!Conta.loggedIn()) return "falhou";
+    const body = {jogo, nivel, valor:Math.round(valor)};
+    if(dia) body.dia = dia;
+    try{ await Conta.api("partidas", {method:"POST", headers:{Prefer:"return=minimal"}, body:JSON.stringify(body)}); }
+    catch(e){ return /duplicate|unique/i.test(e.message) ? "repetida" : "falhou"; }
+    load();
+    return "ok";
+  }
+
+  // por categoria: melhor de sempre, melhor da semana e, no Swandoku, dias ganhos
+  function resumo(c){
+    const semana = inicioSemana(), hoje = dayKey(new Date()), todas = daCat(c);
+    const out = {};
+    JOGADORES.forEach(j => {
+      const minhas = todas.filter(r => r.nome === j), sem = minhas.filter(r => r.dia >= semana);
+      out[j] = {sempre:bestOf(c, minhas), semana:bestOf(c, sem), jogos:sem.length, dias:0};
+    });
+    if(c.jogo === "swandoku"){
+      // cada dia ganha quem foi mais depressa; um dia só de um conta quando o dia já acabou
+      [...new Set(todas.filter(r => r.dia >= semana).map(r => r.dia))].forEach(d => {
+        const t = JOGADORES.map(j => { const r = todas.find(x => x.dia === d && x.nome === j); return r ? r.valor : null; });
+        if(t[0] !== null && t[1] !== null){ if(t[0] !== t[1]) out[JOGADORES[t[0] < t[1] ? 0 : 1]].dias++; }
+        else if(d < hoje) out[JOGADORES[t[0] !== null ? 0 : 1]].dias++;
+      });
+    }
+    return out;
+  }
+  function vencedor(c, r){
+    const [a, b] = JOGADORES.map(j => r[j]);
+    if(view === "semana" && c.jogo === "swandoku") return a.dias === b.dias ? null : JOGADORES[a.dias > b.dias ? 0 : 1];
+    const va = a[view], vb = b[view];
+    if(va === null && vb === null) return null;
+    if(va === null || vb === null) return JOGADORES[va === null ? 1 : 0];
+    return va === vb ? null : JOGADORES[melhor(c, va, vb) ? 0 : 1];
+  }
+
+  const CROWN = '<svg class="pl-crown" viewBox="0 0 36 24" aria-hidden="true"><path d="M3 20 5 6l8 7 5-11 5 11 8-7 2 14Z" fill="currentColor"/><path d="M3 22h30" stroke="currentColor" stroke-width="2"/></svg>';
+  function render(){
+    const duel = $("#plDuel"), list = $("#plRows"), note = $("#plNote");
+    if(!duel) return;
+    const me = Conta.user(), res = CATS.map(c => [c, resumo(c)]);
+    const wins = {bibi:0, louzy:0};
+    list.innerHTML = res.map(([c, r]) => {
+      const w = vencedor(c, r);
+      if(w) wins[w]++;
+      const cell = j => {
+        const x = r[j], v = x[view];
+        let main, sub = "";
+        if(view === "semana" && c.jogo === "swandoku"){
+          main = x.dias === 1 ? "1 dia" : `${x.dias} dias`;
+          sub = v !== null ? `melhor ${tempo(v)}` : "ainda não jogou";
+        } else if(v === null){ main = "—"; sub = view === "semana" ? "ainda não jogou" : ""; }
+        else { main = valorTxt(c, v); if(c.maior) sub = view === "semana" ? `${x.jogos} ${x.jogos === 1 ? "jogo" : "jogos"}` : "cerejas"; }
+        const none = main === "—" || (view === "semana" && c.jogo === "swandoku" && !x.dias && v === null);
+        return `<div class="pl-v ${w === j ? "win" : ""} ${none ? "none" : ""}"><b>${main}</b>${sub ? `<small>${sub}</small>` : ""}</div>`;
+      };
+      const legenda = c.jogo === "swandoku" ? (view === "semana" ? "dias ganhos" : "melhor tempo") : (view === "semana" ? "melhor da semana" : "recorde");
+      return `<li>${cell("bibi")}<div class="pl-cat">${c.nome}<small>${legenda}</small></div>${cell("louzy")}</li>`;
+    }).join("");
+    const lead = wins.bibi === wins.louzy ? null : wins.bibi > wins.louzy ? "bibi" : "louzy";
+    const who = j => `<div class="pl-who ${lead === j ? "lead" : ""}">${CROWN}<b>${NICE(j)}</b><small>${me && me.nome === j ? "tu" : ""}</small></div>`;
+    duel.innerHTML = `${who("bibi")}<div class="pl-score" aria-label="Bibi ${wins.bibi}, Louzy ${wins.louzy}">${wins.bibi}<span>·</span>${wins.louzy}</div>${who("louzy")}
+      <p class="pl-sub">${view === "semana" ? "jogos ganhos esta semana" : "recordes de cada um"}${lead ? "" : wins.bibi ? " · empate" : ""}</p>`;
+    const semana = inicioSemana();
+    note.textContent = estado === "desligado" ? "O placar ainda não está ligado." :
+      estado === "ok" && !rows.some(r => view === "sempre" || r.dia >= semana) ? (view === "semana" ? "Ainda ninguém jogou esta semana. A primeira partida já conta." : "Ainda não há partidas. A primeira já conta.") : "";
+    document.dispatchEvent(new Event("placar:atualizado"));
+  }
+  $("#plView").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b) return;
+    view = b.dataset.v;
+    $("#plView").querySelectorAll("button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    render();
+  });
+
+  // aviso quando o outro passa à frente
+  Live.on("partida", r => {
+    if(rows.some(x => x.id === r.id)) return;
+    const antes = rows.slice();
+    rows.push(r); estado = "ok"; render();
+    const me = Conta.user();
+    if(!me || r.nome === me.nome) return;
+    const c = CATS.find(k => k.jogo === r.jogo && k.nivel === r.nivel); if(!c) return;
+    const quem = NICE(r.nome), minhas = antes.filter(x => x.nome === me.nome && x.jogo === c.jogo && x.nivel === c.nivel);
+    const meu = bestOf(c, minhas), meuHoje = minhas.find(x => x.dia === r.dia);
+    let aviso = null;
+    if(c.jogo === "cerejas"){
+      if(meu !== null && r.valor > meu) aviso = [`${quem} bateu o teu recorde nas cerejas: ${r.valor}!`, `O teu é ${meu}. Vais deixar?`];
+    } else if(meuHoje && r.valor < meuHoje.valor){
+      aviso = [`${quem} resolveu o ${c.nome} de hoje mais depressa`, `${tempo(r.valor)} contra os teus ${tempo(meuHoje.valor)}.`];
+    } else if(meu !== null && r.valor < meu){
+      aviso = [`${quem} bateu o teu recorde no ${c.nome}`, `${tempo(r.valor)}. O teu melhor é ${tempo(meu)}.`];
+    }
+    if(!aviso) return;
+    const ver = () => { setMode("bibi"); setTimeout(() => { const p = $("#placar"); if(p) p.scrollIntoView({behavior:"smooth", block:"start"}); }, 1200); };
+    Aviso.toast(aviso[0], aviso[1], {label:"Ver o placar", run:ver});
+    Aviso.notify(aviso[0], aviso[1]);
+  });
+
+  render();
+  const hojeDe = n => { const hoje = dayKey(new Date()), o = {}; JOGADORES.forEach(j => { const r = rows.find(x => x.jogo === "swandoku" && x.nivel === n && x.dia === hoje && x.nome === j); o[j] = r ? r.valor : null; }); return o; };
+  return {load, registar, hojeDe, ligado:() => estado === "ok", limpar:() => { rows = []; estado = "vazio"; render(); }};
+})();
 
 /* ---------- gira-discos (YouTube), só com sessão iniciada ---------- */
 const Disco = (() => {
@@ -2299,7 +2481,7 @@ async function renderPresence(){
 Live.on("presenca", renderPresence);
 async function refreshSeen(){ if(Conta.loggedIn()){ seenCache = await Live.lastSeen(); renderPresence(); } }
 setInterval(refreshSeen, 60000);
-function startLive(){ if(Conta.loggedIn()){ Live.start(); refreshSeen(); } else { Live.stop(); renderPresence(); } Disco.sync(); }
+function startLive(){ if(Conta.loggedIn()){ Live.start(); refreshSeen(); Placar.load(); } else { Live.stop(); renderPresence(); Placar.limpar(); } Disco.sync(); }
 
 const Cartas = {
   list:() => Conta.api("cartas?select=id,criado,autor,nome,tipo,texto,selo&order=id.desc&limit=500"),
@@ -3292,7 +3474,11 @@ function initSwandoku(hearts, centerOf){
   const GIVENS = {4:6, 6:14, 9:30};
   const dims = n => n === 4 ? [2, 2] : n === 6 ? [2, 3] : [3, 3];   // [linhas, colunas] de cada caixa
   const boxOf = (n, r, c) => { const [br, bc] = dims(n); return Math.floor(r / br) * (n / bc) + Math.floor(c / bc); };
-  const shuffle = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  // o tabuleiro do dia sai de uma semente (o dia e o tamanho): é igual para os dois
+  let rand = Math.random;
+  const seeded = str => { let h = 2166136261; for(const ch of str){ h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
+    return () => { h |= 0; h = h + 0x6D2B79F5 | 0; let t = Math.imul(h ^ h >>> 15, 1 | h); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; };
+  const shuffle = a => { for(let i = a.length - 1; i > 0; i--){ const j = Math.floor(rand() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
 
   /* ---------- gerador ---------- */
   // conta soluções até "limit", sempre pela casa com menos hipóteses
@@ -3341,7 +3527,8 @@ function initSwandoku(hearts, centerOf){
     })(0);
     return g;
   }
-  function makePuzzle(n){
+  function makePuzzle(n, dia){
+    rand = dia ? seeded(`swandoku-v1-${dia}-${n}`) : Math.random;
     const sol = fillGrid(n), puz = sol.slice();
     let givens = n * n;
     for(const i of shuffle([...Array(n * n).keys()])){
@@ -3349,15 +3536,21 @@ function initSwandoku(hearts, centerOf){
       const keep = puz[i]; puz[i] = 0;
       if(countSolutions(puz.slice(), n, 2) !== 1) puz[i] = keep; else givens--;
     }
-    return {n, sol, puz, cur:puz.slice(), elapsed:0, hints:0, done:false};
+    rand = Math.random;
+    return {n, sol, puz, cur:puz.slice(), elapsed:0, hints:0, done:false, dia:dia || null};
   }
 
   /* ---------- estado ---------- */
   let saved = st.get() || {};
-  let game = saved.game && saved.game.sol ? saved.game : null;
+  let livre = saved.game && saved.game.sol ? saved.game : null;
   let best = saved.best || {};
+  let mode = saved.mode === "livre" ? "livre" : "dia";
+  // do dia: um tabuleiro por tamanho, cada um com o seu progresso; só se guarda o dia de hoje (e o de ontem, se estava a meio)
+  let daily = saved.daily && saved.daily.games ? saved.daily : {games:{}};
+  const today = () => dayKey(new Date());
+  let game = null;
   let sel = -1, history = [], tick = 0, startedAt = 0;
-  const save = () => st.set({game, best});
+  const save = () => st.set({game:livre, best, mode, daily, n:game ? game.n : 6});
   const time = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
   const elapsedNow = () => game.elapsed + (startedAt ? (Date.now() - startedAt) / 1000 : 0);
 
@@ -3368,10 +3561,44 @@ function initSwandoku(hearts, centerOf){
     status.textContent = "A preparar um tabuleiro novo…";
     // deixa o texto aparecer antes de gerar (o 9×9 pode demorar um instante)
     setTimeout(() => {
-      game = makePuzzle(n); sel = -1; history = []; startedAt = Date.now();
+      game = livre = makePuzzle(n); sel = -1; history = []; startedAt = Date.now();
       save(); render(); board.removeAttribute("aria-busy");
       status.textContent = "Cada símbolo aparece uma vez por linha, por coluna e por caixa.";
     }, 30);
+  }
+  // o relógio conta sempre que o tabuleiro está à vista (também ao trocar de tabuleiro sem sair do sítio)
+  const onScreen = () => { const r = board.getBoundingClientRect(); return !$("#mBibi").hidden && r.height > 0 && r.bottom > 0 && r.top < innerHeight; };
+  // abre o tabuleiro do dia deste tamanho: continua o que estava a meio, ou gera o de hoje
+  function openDaily(n){
+    const d = today(), g = daily.games[n];
+    // um de ontem a meio ainda se pode acabar; resolvido ou mais antigo dá lugar ao de hoje
+    const keep = g && g.sol && (g.dia === d || (!g.done && g.dia >= dayKey(new Date(Date.now() - 864e5))));
+    sel = -1; history = [];
+    if(keep){
+      game = g; startedAt = !g.done && onScreen() ? Date.now() : 0; render();
+      status.textContent = g.done ? doneText(g) : g.dia === d ? "Continua de onde ficaste." : "Ainda é o tabuleiro de ontem: acaba-o, conta para o dia de ontem.";
+      // resolvido sem conseguir chegar ao placar (sem rede, ou o placar ainda não estava ligado): tenta outra vez
+      if(g.done && g.placar === "falhou") Placar.registar("swandoku", n, Math.max(3, Math.round(g.elapsed)), g.dia).then(res => { if(res !== "falhou"){ g.placar = res; save(); if(game === g) status.textContent = doneText(g); } });
+      return;
+    }
+    board.setAttribute("aria-busy", "true");
+    status.textContent = "A preparar o tabuleiro de hoje…";
+    setTimeout(() => {
+      game = daily.games[n] = makePuzzle(n, d); startedAt = Date.now();
+      Object.keys(daily.games).forEach(k => { if(daily.games[k].dia < dayKey(new Date(Date.now() - 864e5))) delete daily.games[k]; });
+      save(); render(); board.removeAttribute("aria-busy");
+      status.textContent = "O tabuleiro de hoje é igual para os dois. Sem pistas, e o relógio só conta com ele à vista.";
+    }, 30);
+  }
+  const doneText = g => g.placar === "ok" ? `Resolvido em ${time(Math.round(g.elapsed))}. Já está no placar; amanhã há outro.`
+    : g.placar === "repetida" ? "Já tinhas resolvido este noutro aparelho: conta o primeiro tempo." : `Resolvido em ${time(Math.round(g.elapsed))}. Amanhã há outro.`;
+  function openMode(m, n){
+    if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; }
+    mode = m;
+    document.querySelectorAll("#sdMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
+    if(m === "dia") return openDaily(n);
+    if(livre && livre.n === n){ game = livre; sel = -1; history = []; startedAt = !livre.done && onScreen() ? Date.now() : 0; save(); render(); status.textContent = livre.done ? "Este já está resolvido. Carrega em «Novo» para outro." : "Continua de onde ficaste."; }
+    else newGame(n);
   }
 
   function conflicts(){
@@ -3414,10 +3641,26 @@ function initSwandoku(hearts, centerOf){
       `<button type="button" class="sd-sym erase" data-v="0" aria-label="Apagar (tecla 0)"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><small>apagar</small></button>`;
     document.querySelectorAll("#sdSize button").forEach(b => b.setAttribute("aria-pressed", +b.dataset.n === n));
     $("#sdUndo").disabled = !history.length || game.done;
-    $("#sdHint").disabled = game.done;
-    $("#sdBest").textContent = best[n] ? `melhor tempo: ${time(best[n])}` : "ainda sem recorde";
+    $("#sdHint").disabled = game.done || !!game.dia;
+    $("#sdHint").title = game.dia ? "No tabuleiro do dia não há pistas" : "";
+    $("#sdNew").disabled = !!game.dia;
+    $("#sdNew").title = game.dia ? "O tabuleiro do dia é só um: amanhã há outro" : "";
+    document.querySelectorAll("#sdMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === mode));
+    updateBest();
     updateClock();
   }
+  // do dia: o tempo dos dois hoje; livre: o recorde deste aparelho
+  function updateBest(){
+    if(!game) return;
+    const n = game.n;
+    if(!game.dia){ $("#sdBest").textContent = best[n] ? `melhor tempo: ${time(best[n])}` : "ainda sem recorde"; return; }
+    const me = Conta.user(), t = Placar.hojeDe(n);
+    if(!me || !Placar.ligado()){ $("#sdBest").textContent = "tabuleiro de hoje"; return; }
+    const other = me.nome === "bibi" ? "louzy" : "bibi";
+    const part = (label, v) => `${label}: ${v === null ? "ainda não" : time(v)}`;
+    $("#sdBest").textContent = `hoje · ${part("tu", t[me.nome])} · ${part(NICE(other), t[other])}`;
+  }
+  document.addEventListener("placar:atualizado", updateBest);
 
   function updateClock(){ clock.textContent = time(elapsedNow()); }
 
@@ -3435,9 +3678,18 @@ function initSwandoku(hearts, centerOf){
     if(game.cur.every((v, i) => v === game.sol[i])){
       game.elapsed = elapsedNow(); startedAt = 0; game.done = true;
       const t = Math.round(game.elapsed), n = game.n, record = !best[n] || t < best[n];
+      hearts(...centerOf(board), 18);
+      if(game.dia){
+        const g = game;
+        status.textContent = `Resolvido em ${time(t)}! A pôr no placar…`;
+        Placar.registar("swandoku", n, Math.max(3, t), g.dia).then(res => {
+          g.placar = res; save();
+          if(game === g) status.textContent = res === "falhou" ? `Resolvido em ${time(t)}! Não consegui pôr no placar (sem ligação?).` : doneText(g);
+        });
+        return;
+      }
       if(record && !game.hints) best[n] = t;
       status.textContent = `Resolvido em ${time(t)}${game.hints ? ` com ${game.hints} ${game.hints === 1 ? "pista" : "pistas"}` : ""}! ${record && !game.hints ? "Novo recorde." : "Os cisnes estão orgulhosos."}`;
-      hearts(...centerOf(board), 18);
     } else if(game.cur.every(v => v)){
       status.textContent = "O tabuleiro está cheio, mas há algum símbolo repetido. Procura os que estão marcados.";
     }
@@ -3465,10 +3717,16 @@ function initSwandoku(hearts, centerOf){
   $("#sdSize").addEventListener("click", e => {
     const b = e.target.closest("button"); if(!b) return;
     const n = +b.dataset.n;
+    if(mode === "dia") return openMode("dia", n);   // cada tamanho guarda o seu progresso
     if(game && !game.done && game.n !== n && game.cur.some((v, i) => v && !game.puz[i]) && !confirm("Começar um tabuleiro novo? Perdes o que já preencheste.")) return;
     newGame(n);
   });
+  $("#sdMode").addEventListener("click", e => {
+    const b = e.target.closest("button"); if(!b || b.dataset.m === mode) return;
+    openMode(b.dataset.m, game ? game.n : 6);
+  });
   $("#sdNew").addEventListener("click", () => {
+    if(game && game.dia) return;
     if(game && !game.done && game.cur.some((v, i) => v && !game.puz[i]) && !confirm("Começar um tabuleiro novo? Perdes o que já preencheste.")) return;
     newGame(game ? game.n : 6);
   });
@@ -3477,7 +3735,7 @@ function initSwandoku(hearts, centerOf){
     game.cur[h[0]] = h[1]; sel = h[0]; save(); render();
   });
   $("#sdHint").addEventListener("click", () => {
-    if(game.done) return;
+    if(game.done || game.dia) return;
     const n = game.n;
     let i = sel >= 0 && !game.puz[sel] && game.cur[sel] !== game.sol[sel] ? sel : -1;
     if(i < 0){ const empty = [...Array(n * n).keys()].filter(k => game.cur[k] !== game.sol[k]); i = empty[Math.floor(Math.random() * empty.length)]; }
@@ -3498,8 +3756,7 @@ function initSwandoku(hearts, centerOf){
   tick = setInterval(() => { if(game && startedAt && !game.done) updateClock(); }, 1000);
   window.addEventListener("pagehide", () => { if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); } });
 
-  if(game){ startedAt = 0; render(); status.textContent = game.done ? "Este já está resolvido. Carrega em «Novo» para outro." : "Continua de onde ficaste."; }
-  else newGame(6);
+  openMode(mode, [4, 6, 9].includes(saved.n) ? saved.n : 6);
 }
 </script>
 
@@ -3681,6 +3938,7 @@ function initGame(data, saveData, hearts, centerOf){
   }
   function end(){
     running = false; cancelAnimationFrame(raf);
+    if(left <= 0) Placar.registar("cerejas", 0, score);   // só conta a partida jogada até ao fim
     const record = score > (data.best || 0);
     if(record){ data.best = score; saveData(); }
     $("#gTitle").textContent = `Apanhaste ${score} ${score === 1 ? "cereja" : "cerejas"}!`;
