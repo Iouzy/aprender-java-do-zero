@@ -197,6 +197,25 @@ def correr(p, base, nome, opts, res):
             continue
         page.screenshot(path=pasta / f"{ficheiro}.png")
 
+    # swandoku: rascunho numa casa vazia e contagem dos símbolos que faltam
+    ir_para(page, 'section[aria-labelledby="sdTitle"]')
+    try:
+        vazia = page.query_selector("#sdBoard .sd-cell:not(.given)")
+        vazia.click()
+        page.click("#sdDraft")
+        page.click('#sdPalette .sd-sym[data-v="1"]')
+        page.click('#sdPalette .sd-sym[data-v="2"]')
+        page.wait_for_timeout(200)
+        notas = page.evaluate("document.querySelectorAll('#sdBoard .sd-notes svg').length")
+        faltam = page.evaluate("[...document.querySelectorAll('#sdPalette .sd-left')].map(e => e.textContent)")
+        page.screenshot(path=pasta / "07-swandoku-rascunho.png")
+        page.click("#sdUndo"); page.click("#sdUndo"); page.click("#sdDraft")
+        page.wait_for_timeout(200)
+        depois = page.evaluate("document.querySelectorAll('#sdBoard .sd-notes svg').length")
+        res.check(nome, "swandoku: rascunho, anular e símbolos que faltam", notas == 2 and depois == 0 and len(faltam) >= 4 and all(f.isdigit() or f == "✓" for f in faltam), f"notas {notas}→{depois}, faltam {faltam}")
+    except Exception as ex:
+        res.check(nome, "swandoku: rascunho, anular e símbolos que faltam", False, str(ex).splitlines()[0])
+
     # adivinha a música: começa, responde à primeira pergunta e mostra a resposta (letras de teste)
     ir_para(page, "#musica")
     page.click('#musica [data-mu="start"]')
