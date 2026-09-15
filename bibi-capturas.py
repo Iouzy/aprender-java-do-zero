@@ -198,6 +198,9 @@ def correr(p, base, nome, opts, res):
     res.check(nome, "estante: livros dentro das prateleiras", "erro" not in e and not e["fora"] and not e["finos"], json.dumps(e))
     res.check(nome, "estante: ocupa a largura da página", "erro" not in e and abs(e["largura"] - e["wrap"]) <= 2, json.dumps(e))
     res.check(nome, "Modo Bibi sem scroll para o lado", page.evaluate(SEM_SCROLL_LATERAL) <= 1, f"{page.evaluate(SEM_SCROLL_LATERAL)} px a mais")
+    # nos dados de teste a Bibi resolveu o Swandoku do dia 6 dias seguidos, até hoje
+    seq = page.evaluate("[document.querySelector('#sdStreak').hidden, document.querySelector('#sdStreak').textContent, [...document.querySelectorAll('.pl-streak')].map(e => e.textContent)]")
+    res.check(nome, "sequência do Swandoku no tabuleiro e no placar", not seq[0] and seq[1].startswith("6 dias seguidos") and "6 dias seguidos no Swandoku" in seq[2], json.dumps(seq, ensure_ascii=False))
     linhas = page.evaluate("document.querySelectorAll('#plRows li').length")
     res.check(nome, f"placar com as {CATEGORIAS} categorias", linhas == CATEGORIAS, f"{linhas} linhas")
 
