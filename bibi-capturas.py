@@ -309,17 +309,22 @@ def correr(p, base, nome, opts, res):
     linhas = page.evaluate("document.querySelectorAll('#plRows li').length")
     res.check(nome, f"placar com as {CATEGORIAS} categorias", linhas == CATEGORIAS, f"{linhas} linhas")
 
-    # o atalho do topo leva ao placar
-    page.evaluate("window.scrollTo(0, 0)")
-    page.wait_for_timeout(500)
-    atalho = page.query_selector("#toPlacar")
-    if atalho and atalho.is_visible():
-        atalho.click()
-        page.wait_for_timeout(1500)
-        topo = page.evaluate("document.querySelector('#placar').getBoundingClientRect().top")
-        res.check(nome, "atalho do topo chega ao placar", -40 < topo < 200, f"placar a {round(topo)} px do topo")
-    else:
-        res.check(nome, "atalho do topo chega ao placar", False, "sem botão #toPlacar à vista")
+    # os atalhos do topo levam a cada jogo, ao placar e às cartas (no telemóvel, pelo menu)
+    for alvo in ['section[aria-labelledby="gameTitle"]', 'section[aria-labelledby="sdTitle"]', "#musica", "#placar", 'section[aria-label="Cartas"]']:
+        page.evaluate("window.scrollTo(0, 0)")
+        page.wait_for_timeout(300)
+        if page.is_visible("#jumpBtn"):
+            page.click("#jumpBtn")
+            page.wait_for_timeout(250)
+        botao = page.query_selector(f"#jump [data-go='{alvo}']")
+        if not (botao and botao.is_visible()):
+            res.check(nome, f"atalho do topo para {alvo}", False, "sem botão à vista")
+            continue
+        botao.click()
+        page.wait_for_timeout(1200)
+        topo = page.evaluate("s => document.querySelector(s).getBoundingClientRect().top", alvo)
+        res.check(nome, f"atalho do topo para {alvo.split('=')[-1].strip('#]\"')}", -40 < topo < 200, f"a {round(topo)} px do topo")
+    page.screenshot(path=pasta / "00-topo.png", clip={"x": 0, "y": 0, "width": opts["viewport"]["width"], "height": 90})
 
     res.check(nome, "sem erros de JavaScript", not erros, " | ".join(erros[:3]))
     ctx.close()
