@@ -77,7 +77,10 @@ def partidas():
 
 
 def cartas():
-    return [{"id": 1, "criado": datetime.datetime.now().isoformat(), "autor": "teste-louzy", "nome": "louzy", "tipo": "carta", "texto": "Carta de teste.", "selo": "swan"}]
+    agora = datetime.datetime.now()
+    abraco = lambda i, h, quem: {"id": i, "criado": (agora - datetime.timedelta(hours=h)).isoformat(), "autor": "teste-" + quem, "nome": quem, "tipo": "abraco", "texto": None, "selo": None}
+    return [{"id": 1, "criado": agora.isoformat(), "autor": "teste-louzy", "nome": "louzy", "tipo": "carta", "texto": "Carta de teste.", "selo": "swan"},
+            abraco(2, 1, "louzy"), abraco(3, 2, "louzy"), abraco(4, 30, "louzy"), abraco(5, 3, "bibi")]
 
 
 def letra_falsa(titulo):
@@ -284,6 +287,11 @@ def correr(p, base, nome, opts, res):
     page.click("#mailOut")
     page.wait_for_timeout(300)
     enviadas = page.evaluate("[document.querySelectorAll('#board .env').length, !!document.querySelector('#board .empty-note')]")
+    page.click("#mailHug")
+    page.wait_for_timeout(300)
+    abr = page.evaluate("[...document.querySelectorAll('#board .hug-count b')].map(b => b.textContent)")
+    page.screenshot(path=pasta / "10-cartas-abracos.png")
+    res.check(nome, "cartas: aba dos abraços", abr == ["3", "1"], json.dumps(abr))
     page.click("#mailIn")
     res.check(nome, "cartas: recebidas e enviadas em abas", caixa == 1 and enviadas == [0, True], f"para ti {caixa}, enviadas {enviadas}")
 
