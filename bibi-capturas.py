@@ -35,8 +35,12 @@ ECRAS = {
     "portatil": {"viewport": {"width": 1280, "height": 720}},
     # a janela do browser a meio do monitor
     "meio-monitor": {"viewport": {"width": 960, "height": 1000}},
+    # portátil de 1366×768 com as barras do browser
+    "portatil-baixo": {"viewport": {"width": 1366, "height": 650}},
     "telemovel": {"viewport": {"width": 390, "height": 844}, "device_scale_factor": 3, "is_mobile": True, "has_touch": True},
 }
+
+JOGOS = ['section[aria-labelledby="gameTitle"]', 'section[aria-labelledby="sdTitle"]', "#musica", "#placar"]
 
 SECCOES = [
     ("02-veredicto", 'section[aria-labelledby="nowTitle"]'),
@@ -131,6 +135,21 @@ ESTANTE = """() => {
 }"""
 
 # o título da cena do lago e o botão «só o lago» não podem ficar por baixo da janela do vídeo
+# jogos e placar: no computador, do título ao fim do jogo tem de caber entre a barra de cima e o fundo do ecrã
+CABE = """s => {
+  const sec = document.querySelector(s); if(!sec) return null;
+  const top = document.querySelector(".topbar .wrap").getBoundingClientRect().bottom;
+  const els = [...sec.querySelectorAll(".sheet-head, .sd-paper, .sd-side, .game, .mu-card, .placar")].filter(e => e.offsetParent);
+  const t = Math.min(...els.map(e => e.getBoundingClientRect().top)), b = Math.max(...els.map(e => e.getBoundingClientRect().bottom));
+  return {cima: Math.round(t - top), baixo: Math.round(innerHeight - b)};
+}"""
+
+TAPA_JOGO = """s => {
+  const w = document.querySelector("#discoWin").getBoundingClientRect(), sec = document.querySelector(s);
+  const bate = r => r.width && w.left < r.right && w.right > r.left && w.top < r.bottom && w.bottom > r.top;
+  return [...sec.querySelectorAll(".sheet-head, .sd-paper, .sd-side > *, .game, .mu-card, .placar")].filter(e => e.offsetParent && bate(e.getBoundingClientRect())).map(e => e.className.split(" ")[0] || e.tagName);
+}"""
+
 JANELA = """() => {
   const win = document.querySelector("#discoWin");
   const parts = [win.querySelector(".vwin-card"), win.querySelector(".vwin-bar")].map(e => e.getBoundingClientRect());
@@ -196,6 +215,9 @@ def correr(p, base, nome, opts, res):
             res.check(nome, f"secção {ficheiro}", False, "não existe")
             continue
         page.screenshot(path=pasta / f"{ficheiro}.png")
+        if seletor in JOGOS and opts["viewport"]["width"] > 900:
+            m = page.evaluate(CABE, seletor)
+            res.check(nome, f"{ficheiro[3:]} cabe num ecrã", m and m["cima"] >= -2 and m["baixo"] >= -2, json.dumps(m))
 
     # swandoku: rascunho numa casa vazia e contagem dos símbolos que faltam
     ir_para(page, 'section[aria-labelledby="sdTitle"]')
@@ -231,6 +253,17 @@ def correr(p, base, nome, opts, res):
         res.check(nome, "adivinha a música: pergunta com 4 músicas e resposta", opcoes == 4, f"{opcoes} opções")
     except Exception as ex:
         res.check(nome, "adivinha a música: pergunta com 4 músicas e resposta", False, str(ex).splitlines()[0])
+
+    # com a janela do vídeo aberta, os jogos e o placar afastam-se dela
+    if opts["viewport"]["width"] > 900:
+        page.evaluate("document.querySelector('#discoWin').classList.remove('off')")
+        for seletor in JOGOS:
+            ir_para(page, seletor)
+            page.wait_for_timeout(700)
+            tapa = page.evaluate(TAPA_JOGO, seletor)
+            res.check(nome, f"janela do vídeo não tapa {seletor.split('=')[-1].strip('#]\"')}", not tapa, ", ".join(tapa))
+        page.screenshot(path=pasta / "09-placar-com-video.png")
+        page.evaluate("document.querySelector('#discoWin').classList.add('off')")
 
     e = page.evaluate(ESTANTE)
     res.check(nome, "estante: livros dentro das prateleiras", "erro" not in e and not e["fora"] and not e["finos"], json.dumps(e))
