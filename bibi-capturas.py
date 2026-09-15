@@ -272,6 +272,12 @@ def correr(p, base, nome, opts, res):
     # nos dados de teste a Bibi resolveu o Swandoku do dia 6 dias seguidos, até hoje
     seq = page.evaluate("[document.querySelector('#sdStreak').hidden, document.querySelector('#sdStreak').textContent, [...document.querySelectorAll('.pl-streak')].map(e => e.textContent)]")
     res.check(nome, "sequência do Swandoku no tabuleiro e no placar", not seq[0] and seq[1].startswith("6 dias seguidos") and "6 dias seguidos no Swandoku" in seq[2], json.dumps(seq, ensure_ascii=False))
+    # almanaque: a folha do diário não fica mais alta do que a do calendário
+    if opts["viewport"]["width"] > 900:
+        ir_para(page, 'section[aria-label="Almanaque"]')
+        alt = page.evaluate("[...document.querySelectorAll('.almanac .alm-page')].map(e => Math.round([...e.children].filter(c => c.offsetParent && !c.classList.contains('plate')).pop().getBoundingClientRect().bottom - e.getBoundingClientRect().top))")
+        res.check(nome, "almanaque: diário da altura do calendário", alt[1] <= alt[0] + 4, f"calendário {alt[0]} px, diário {alt[1]} px")
+
     # cartas: a do Louzy aparece em «Para ti»; em «As que mandaste» não há nenhuma
     ir_para(page, 'section[aria-label="Cartas"]')
     caixa = page.evaluate("document.querySelectorAll('#board .env').length")
