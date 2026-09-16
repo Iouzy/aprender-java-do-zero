@@ -477,6 +477,17 @@ body[data-mode=bibi] .menu{display:none}
 .seg button[aria-pressed=true]{background:rgba(255,255,255,.08);color:var(--text)}
 .count{margin-left:auto;font:400 13px var(--mono);color:var(--dim)}
 
+/* a lista dos exercícios, arrumada pelas pastas do repositório */
+.gr{margin-bottom:16px}
+.gr-head{display:flex;align-items:center;gap:10px;padding:8px 4px;cursor:pointer;list-style:none;user-select:none}
+.gr-head::-webkit-details-marker{display:none}
+.gr-head::marker{content:""}
+.gr-seta{width:13px;height:13px;flex:none;color:var(--dim);transition:transform .2s var(--ease-out)}
+.gr[open] .gr-seta{transform:rotate(90deg)}
+.gr-num{font:500 12px var(--mono);color:var(--accent);border:1px solid var(--line2);border-radius:6px;padding:2px 7px}
+.gr-head b{font-size:14px;font-weight:600;color:var(--text)}
+.gr-conta{margin-left:auto;font-size:12px;color:var(--dim)}
+@media (hover:hover) and (pointer:fine){.gr-head:hover .gr-seta{color:var(--muted)}}
 .ex{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:8px;overflow:hidden;transition:border-color .2s ease,transform .18s var(--ease-out)}
 .ex.open{border-color:var(--line2);box-shadow:var(--sh-2)}
 @media (hover:hover) and (pointer:fine){.ex:not(.open):hover{border-color:var(--line2)}}
@@ -488,7 +499,6 @@ body[data-mode=bibi] .menu{display:none}
 .ex-name{font:500 14px var(--mono);display:block}
 .ex.done .ex-name{color:var(--muted)}
 .ex-desc{color:var(--muted);font-size:13px;display:block;margin-top:2px}
-.ex-folder{font:400 11px var(--mono);color:var(--dim);margin-left:8px}
 .ex-date{display:block;margin-top:3px;font-size:12px;color:var(--accent)}
 .ex-date.none{color:var(--dim)}
 .open-btn{font-size:13px;font-weight:500;color:var(--muted);border:1px solid var(--line2);border-radius:999px;padding:7px 13px;white-space:nowrap;transition:color .2s ease,border-color .2s ease}
@@ -1013,6 +1023,8 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 .pl-rev:active{transform:scale(.96)}
 @media (hover:hover) and (pointer:fine){.pl-rev:not(:disabled):hover{background:rgba(106,28,41,.1)}}
 .pl-rev:disabled{border-color:transparent;font-style:italic;font-weight:400;color:var(--parch-soft);cursor:default}
+/* o dia de hoje, ganho por um mas ainda à espera do outro */
+.pl-aberto{display:block;margin-top:4px;font-family:var(--book);font-style:italic;font-size:14px;line-height:1.25;color:var(--burgundy);opacity:.85;text-wrap:balance}
 .pl-note{margin-top:16px;text-align:center;font-style:italic;color:var(--parch-soft);font-size:15px}
 .pl-note:empty{display:none}
 /* atalhos no topo do Modo Bibi: jogos, placar e cartas */
@@ -2748,7 +2760,7 @@ const Placar = (() => {
     const out = {};
     JOGADORES.forEach(j => {
       const minhas = todas.filter(r => r.nome === j), sem = minhas.filter(r => r.dia >= semana);
-      out[j] = {sempre:bestOf(c, minhas), semana:bestOf(c, sem), jogos:sem.length, dias:0};
+      out[j] = {sempre:bestOf(c, minhas), semana:bestOf(c, sem), jogos:sem.length, dias:0, hojeAberto:false};
     });
     if(c.jogo === "swandoku"){
       // cada dia ganha quem foi mais depressa; um dia só de um conta quando o dia já acabou
@@ -2756,6 +2768,8 @@ const Placar = (() => {
         const t = JOGADORES.map(j => { const r = todas.find(x => x.dia === d && x.nome === j); return r ? r.valor : null; });
         if(t[0] !== null && t[1] !== null){ if(t[0] !== t[1]) out[JOGADORES[t[0] < t[1] ? 0 : 1]].dias++; }
         else if(d < hoje) out[JOGADORES[t[0] !== null ? 0 : 1]].dias++;
+        // hoje, só um jogou: o dia é dele, mas só fecha à meia-noite ou quando o outro jogar
+        else out[JOGADORES[t[0] !== null ? 0 : 1]].hojeAberto = true;
       });
     }
     return out;
@@ -2813,6 +2827,14 @@ const Placar = (() => {
     }
   });
 
+  // «hoje é teu, falta a Bibi jogar»: quem vê a página é sempre um dos dois
+  const DA = j => j === "bibi" ? "a Bibi" : "o Louzy";
+  function emAberto(j){
+    const me = Conta.user(), outro = OTHER_NAME(j);
+    if(me && me.nome === j) return `hoje é teu, falta ${DA(outro)} jogar`;
+    if(me && me.nome === outro) return `hoje é ${j === "bibi" ? "da Bibi" : "do Louzy"}, faltas tu`;
+    return `hoje é ${j === "bibi" ? "da Bibi" : "do Louzy"}, falta ${DA(outro)} jogar`;
+  }
   const CROWN = '<svg class="pl-crown" viewBox="0 0 36 24" aria-hidden="true"><path d="M3 20 5 6l8 7 5-11 5 11 8-7 2 14Z" fill="currentColor"/><path d="M3 22h30" stroke="currentColor" stroke-width="2"/></svg>';
   function render(){
     const duel = $("#plDuel"), list = $("#plRows"), note = $("#plNote");
@@ -2830,11 +2852,13 @@ const Placar = (() => {
           sub = v !== null ? `melhor <span class="pl-time">${tempo(v)}</span>` : "ainda não jogou";
         } else if(v === null){ main = "—"; sub = view === "semana" ? "ainda não jogou" : ""; }
         else { main = valorTxt(c, v); if(c.maior) sub = view === "semana" ? `${x.jogos} ${x.jogos === 1 ? "jogo" : "jogos"}` : c.unidade; }
-        const none = main === "—" || (view === "semana" && c.jogo === "swandoku" && !x.dias && v === null);
+        const none = main === "—" || (view === "semana" && c.jogo === "swandoku" && !x.dias && !x.hojeAberto && v === null);
+        // o dia de hoje já está ganho mas ainda não conta: sem isto parecia que não tinha jogado
+        const aberto = view === "semana" && x.hojeAberto ? `<em class="pl-aberto">${emAberto(j)}</em>` : "";
         // quem está a perder nesta categoria pode pedir revanche ao outro, com uma carta já escrita
         const pede = me && me.nome === j && w && w !== j;
         const rv = pede ? `<button type="button" class="pl-rev" data-rev="${idCat(c)}" ${revEnviada(c) ? "disabled" : ""}>${revEnviada(c) ? "carta enviada" : "Revanche"}</button>` : "";
-        return `<div class="pl-v ${w === j ? "win" : ""} ${none ? "none" : ""}"><span class="pl-main"><b>${main}</b>${sub ? `<small>${sub}</small>` : ""}</span>${rv}</div>`;
+        return `<div class="pl-v ${w === j ? "win" : ""} ${none ? "none" : ""}"><span class="pl-main"><b>${main}</b>${sub ? `<small>${sub}</small>` : ""}${aberto}</span>${rv}</div>`;
       };
       const legenda = c.jogo === "swandoku" ? (view === "semana" ? "dias ganhos" : "melhor tempo") : (view === "semana" ? "melhor da semana" : "recorde");
       return `<li>${cell("bibi")}<div class="pl-cat">${c.nome}<small>${legenda}</small></div>${cell("louzy")}</li>`;
@@ -3811,6 +3835,10 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
   // ordem dos 12 exercícios da versão anterior, para migrar as marcações
   const OLD_ORDER = ["Ola.java","Tipos.java","Iva.java","Saudacao.java","Contagem.java","ContagemR.java","Pares.java","Pares2.java","Tabuada.java","Metodos.java","Pessoa.java","Programa.java"];
   const FOLDER = n => { const f = n.toLowerCase(); const hit = COMMITS.flatMap(c => c.f).find(p => p.toLowerCase().endsWith("/" + f)); return hit ? hit.split("/")[1] : ""; };
+  // as pastas do repositório, com nome de gente
+  const GRUPOS = {"01-fundamentos":"Fundamentos", "02-ciclos":"Ciclos", "03-metodos-poo":"Métodos e POO", "04-reforco":"Reforço"};
+  const grNome = f => GRUPOS[f] || f.replace(/^\d+-/, "").replace(/-/g, " ") || "Sem pasta";
+  const grNum = f => (f.match(/^\d+/) || ["··"])[0];
   const st = store(KEY);
 
   let state = st.get();
@@ -3819,6 +3847,7 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
     state = {done:{}, notes:(old && old.notes) || ""};
     if(old && Array.isArray(old.done)) old.done.forEach((v, i) => { if(v && OLD_ORDER[i]) state.done[OLD_ORDER[i]] = true; });
   }
+  if(!Array.isArray(state.fechados)) state.fechados = [];   // as pastas que ficaram fechadas
   const save = () => st.set(state);
   // data do commit de cada exercício; serve para datar a lista, não para marcar
   const gitDate = n => { const it = HISTORY.items.find(i => i.kind === "ex" && i.file === n.toLowerCase()); return it ? it.at : null; };
@@ -3879,8 +3908,10 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
   /* ---------- lista ---------- */
   function visible(){
     const q = query.trim().toLowerCase();
+    // o tema é a pasta: procurar "ciclos" ou "fundamentos" também tem de dar
+    const tema = e => { const f = FOLDER(e.n); return (f + " " + grNome(f)).toLowerCase(); };
     return EXERCISES.map((e, i) => ({e, i})).filter(({e}) =>
-      (!q || e.n.toLowerCase().includes(q) || e.d.toLowerCase().includes(q)) &&
+      (!q || e.n.toLowerCase().includes(q) || e.d.toLowerCase().includes(q) || tema(e).includes(q)) &&
       (filter === "all" || (filter === "done") === isDone(e)));
   }
 
@@ -3891,16 +3922,37 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
       $("#list").innerHTML = `<div class="card"><p class="desc" style="margin:0">Nada com esse filtro. Limpa a pesquisa ou volta a "Todos".</p></div>`;
       return;
     }
-    $("#list").innerHTML = items.map(({e, i}) => `
+    const cartao = ({e, i}) => `
       <article class="ex ${isDone(e) ? "done" : ""} ${openSet.has(i) ? "open" : ""}">
         <div class="ex-head">
           <input type="checkbox" class="check" data-check="${i}" ${isDone(e) ? "checked" : ""} aria-label="Marcar ${esc(e.n)} como feito">
-          <span style="min-width:0"><span class="ex-name" translate="no">${esc(e.n)}<span class="ex-folder">${esc(FOLDER(e.n))}</span></span><span class="ex-desc">${esc(e.d)}</span><span class="ex-date ${gitDate(e.n) ? "" : "none"}">${esc(dateLabel(e))}</span></span>
+          <span style="min-width:0"><span class="ex-name" translate="no">${esc(e.n)}</span><span class="ex-desc">${esc(e.d)}</span><span class="ex-date ${gitDate(e.n) ? "" : "none"}">${esc(dateLabel(e))}</span></span>
           <button type="button" class="open-btn" data-toggle="${i}" aria-expanded="${openSet.has(i)}">${openSet.has(i) ? "Fechar" : "Abrir código"}</button>
         </div>
         <div class="ex-body" ${openSet.has(i) ? "" : "hidden"} id="body-${i}"></div>
-      </article>`).join("");
+      </article>`;
+    // um grupo por pasta, pela ordem do currículo; a filtrar ficam todos abertos
+    const grupos = new Map();
+    items.forEach(it => { const f = FOLDER(it.e.n); if(!grupos.has(f)) grupos.set(f, []); grupos.get(f).push(it); });
+    const aFiltrar = !!query.trim() || filter !== "all";
+    $("#list").innerHTML = [...grupos].map(([f, its]) => `
+      <details class="gr" data-gr="${esc(f)}" ${aFiltrar || !state.fechados.includes(f) ? "open" : ""}>
+        <summary class="gr-head">
+          <svg class="gr-seta" viewBox="0 0 12 12" aria-hidden="true"><path d="m4 2 5 4-5 4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span class="gr-num" translate="no">${esc(grNum(f))}</span><b>${esc(grNome(f))}</b>
+          <small class="gr-conta"></small>
+        </summary>
+        ${its.map(cartao).join("")}
+      </details>`).join("");
+    contaGrupos();
     openSet.forEach(i => { const b = document.getElementById("body-" + i); if(b) mount(b, i); });
+  }
+  // «3/4 feitos» em cada pasta, lido do próprio DOM para não repetir a conta
+  function contaGrupos(){
+    document.querySelectorAll("#list .gr").forEach(g => {
+      const cx = [...g.querySelectorAll("[data-check]")];
+      g.querySelector(".gr-conta").textContent = `${cx.filter(c => c.checked).length}/${cx.length} feitos`;
+    });
   }
 
   /* ---------- simulador ---------- */
@@ -4084,6 +4136,14 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
     if(e.target.id === "expMd"){ setMenu(false); download("java-estado.md", makeMd(), "text/markdown"); }
   });
 
+  $("#list").addEventListener("toggle", e => {
+    const g = e.target.closest(".gr");
+    if(!g) return;
+    const f = g.dataset.gr, fechados = state.fechados.filter(x => x !== f);
+    if(!g.open) fechados.push(f);
+    state.fechados = fechados; save();
+  }, true);
+
   document.addEventListener("change", e => {
     const c = e.target.closest("[data-check]");
     if(!c) return;
@@ -4092,7 +4152,7 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
     save();
     c.closest(".ex").classList.toggle("done", c.checked);
     renderTop();
-    if(filter !== "all") renderList();
+    if(filter !== "all") renderList(); else contaGrupos();
   });
 
   document.addEventListener("keydown", e => {
