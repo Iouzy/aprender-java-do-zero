@@ -39,36 +39,15 @@ Português de Portugal.
 
 ## 3. Estado atual
 
-### Já escrito (10 ficheiros, do zero, sem copiar)
+O estado vive na **bancada** (`java-bancada.html`), não aqui. Separador
+"Agora": o que está sólido, o que falta automatizar, o ponto fraco da vez.
 
-| Ficheiro | Treinou |
-|---|---|
-| `Tipos.java` | tipos primitivos, casts, divisão inteira |
-| `Iva.java` | variáveis, concatenação |
-| `Saudacao.java` | Scanner, `hasNextInt`, if/else if aninhados, validação de input |
-| `Contagem.java` / `ContagemR.java` | `for` crescente e decrescente |
-| `Pares.java` / `Pares2.java` | passo do ciclo vs. filtro com `%` |
-| `Tabuada.java` | ciclo + input + cálculo |
-| `Metodos.java` | parâmetros, `return`, `void` vs. tipo, `boolean` como condição |
-| `Pessoa.java` + `Programa.java` | classe, campos, método de instância, `this`, construtor, `private`, setter com validação |
+Havia aqui uma segunda lista e as duas discordavam — este ficheiro dizia que
+o próximo passo era `List<Pessoa>` enquanto o trabalho real era `while`. Duas
+fontes de verdade sobre onde estou é o mesmo que nenhuma.
 
-### Sólido
-Sintaxe de classe e `main`; tipos; `if`/`else if` e a importância da ordem;
-`for`; Scanner; métodos com parâmetros e retorno; criação de objetos;
-construtor; `private`; setter com validação. Ler mensagens do compilador e
-corrigir a partir delas.
-
-### Compreendido mas não automático
-`this`; âmbito de variáveis; `equals()` vs `==`; a divisão entre o que pertence
-à classe e o que pertence a quem a usa; buffer do Scanner (`nextInt` seguido de
-`nextLine`).
-
-### Ainda por tocar
-`switch`, `while`, `do-while`, arrays, listas, herança, interfaces, exceções,
-e tudo o que vem depois.
-
-### Ponto de partida da próxima sessão
-`List<Pessoa>` — criar uma lista, meter lá as pessoas, percorrer com `for-each`.
+Este ficheiro guarda só o que não muda: o contexto, o método de ensino e a
+ordem das fases.
 
 ---
 
@@ -76,18 +55,15 @@ e tudo o que vem depois.
 
 Estimativas para 10–20h/semana. Contam com o tempo de esquecer e reaprender.
 
-### Fase 1 — Fundamentos · 2-3 semanas · **quase feito**
+### Fase 1 — Fundamentos · 2-3 semanas
 Tipos, operadores, casting. `if`/`else if`, **`switch`**. `for`, **`while`**,
 **`do-while`**, `break`, `continue`. Métodos: parâmetros, retorno, `void`,
 âmbito, sobrecarga. **Arrays** e iteração.
 
-*Falta-me: `switch`, `while`, `do-while`, arrays.*
 
-### Fase 2 — POO · 4-6 semanas · **a meio**
-Feito: classes, objetos, campos, métodos de instância, `this`, construtores,
-`private`, encapsulamento.
-
-Falta: sobrecarga de construtores · `static` · `final` · herança (`extends`,
+### Fase 2 — POO · 4-6 semanas
+Classes, objetos, campos, métodos de instância, `this`, construtores,
+`private`, encapsulamento · sobrecarga de construtores · `static` · `final` · herança (`extends`,
 `super`, `@Override`) · classes abstratas · interfaces · polimorfismo ·
 composição vs. herança · `equals()` + `hashCode()` + `toString()` · enums ·
 packages · records.
@@ -226,7 +202,7 @@ fazer 10.000 queries à base de dados — o que pode estar a acontecer?"*
 
 | Fase | Semanas | Acumulado |
 |---|---|---|
-| 1. Fundamentos | 2-3 | ✅ |
+| 1. Fundamentos | 2-3 | mês 1 |
 | 2. POO | 4-6 | mês 1-2 |
 | 3. Core Java | 3-4 | mês 2-3 |
 | 4. Git + Maven | 1-2 | mês 3 |
