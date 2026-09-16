@@ -25,7 +25,59 @@ Bibi ou o Louzy, mandar gestos falsos ("torcida", "desafio", convites de
 música) e ver em tempo real o que cada um está a fazer no site. Depois do
 `private:true`, só entra quem tiver sessão numa das duas contas.
 
-## 2. Reforçar quem pode dizer que é quem, dentro do canal já privado
+## 2. Placar do Swanrejas preso no primeiro recorde do dia (bug, causa provável identificada)
+
+Reportado: o recorde no placar do Swanrejas ficou parado em 317 e não sobe,
+mesmo depois de jogos com pontuação maior.
+
+O que encontrei no código (`java-bancada.html`, `Placar.registar`, à volta da
+linha 2714): cada partida de Swanrejas é gravada na tabela `partidas` do
+Supabase sem indicar o campo `dia` — só o Swandoku manda esse campo de
+propósito (é o que lhe permite um só tabuleiro por dia). Para o resumo
+semanal do Swanrejas funcionar (`resumo()`, linha ~2725, filtra por
+`r.dia >= semana` em todos os jogos, não só no Swandoku), a coluna `dia` tem
+de vir preenchida sozinha pelo servidor com a data de hoje.
+
+A função `registar()` já sabe lidar com "repetida" — quando a base de dados
+recusa a gravação por duplicado, mas isso está pensado só para o Swandoku
+("o Swandoku do dia já estava registado", diz o próprio comentário no
+código). Se o índice/constraint que impede duplicados no Supabase for
+único por (conta, jogo, nível, dia) sem excluir o Swanrejas, a base de dados
+está a recusar em silêncio qualquer segunda partida de Swanrejas no mesmo
+dia — o pedido falha, o `catch` interpreta como "repetida", e a pontuação
+nova nunca chega a gravar-se nem a aparecer no placar. Achas 317 porque foi
+a primeira pontuação do dia a entrar; tudo o que jogaste depois, no mesmo
+dia, foi silenciosamente ignorado. (O jogo "Adivinha a música" tem
+exatamente o mesmo problema, pela mesma razão — vale a pena reparar se
+notaste o mesmo lá.)
+
+Não consigo confirmar isto com certeza nem corrigi-lo sozinho: o SQL dessa
+tabela vive em `bibi/placar.sql`, que está no `.gitignore` de propósito —
+não faz parte deste repositório e eu não tenho acesso ao teu projeto
+Supabase. Para confirmar e corrigir, no SQL Editor do Supabase:
+
+```sql
+-- confirmar o nome do índice/constraint responsável
+select conname, pg_get_constraintdef(oid)
+from pg_constraint
+where conrelid = 'public.partidas'::regclass and contype in ('u', 'p');
+-- ou, se for um índice em vez de constraint:
+select indexname, indexdef from pg_indexes where tablename = 'partidas';
+```
+
+Se aparecer algo como `unique (autor, jogo, nivel, dia)` sem filtro por jogo,
+o arranjo é trocá-lo por um índice parcial só para o Swandoku:
+
+```sql
+alter table public.partidas drop constraint nome_encontrado_acima;
+create unique index partidas_swandoku_dia_unico on public.partidas (autor, jogo, nivel, dia)
+  where jogo = 'swandoku';
+```
+
+Isto mantém o Swandoku a um tabuleiro por dia e deixa o Swanrejas e o
+Adivinha a música gravarem quantas partidas quiseres no mesmo dia.
+
+## 3. Reforçar quem pode dizer que é quem, dentro do canal já privado
 
 Mesmo depois do `private:true`, o campo `nome` de cada mensagem continua a vir
 do que quem envia decidir mandar — o código só confere que é "bibi" ou "louzy"
@@ -35,7 +87,7 @@ gesto a dizer que é o Louzy. Como são só duas contas de confiança mútua, o
 risco é baixo — mas dava para fechar de vez amarrando o `nome` à sessão
 (`Conta.user().nome`) em vez de confiar no campo que vem no payload.
 
-## 3. Impedir que o `bibi-atualizar.py` volte a partir-se com um clone raso
+## 4. Impedir que o `bibi-atualizar.py` volte a partir-se com um clone raso
 
 Já corrigido o guarda-costas no próprio script (aborta se
 `git rev-parse --is-shallow-repository` for `true`), que foi a causa das datas
@@ -46,7 +98,7 @@ silêncio. Vale a pena, no entanto, pensar num hook `post-commit` (o próprio
 cabeçalho do script já sugere isto) para deixar de depender de correr o
 script à mão.
 
-## 4. "Repor marcações do Git" — comportamento a confirmar
+## 5. "Repor marcações do Git" — comportamento a confirmar
 
 Corrigi o botão do menu "Repor marcações do Git": antes apagava todas as
 marcações (`state.done = {}`), ao contrário do que o próprio texto do
@@ -63,7 +115,7 @@ simulador que a regra da bancada pede) — ou se preferes um botão separado só
 para "marcar como feito os que já têm commit, mas nunca desmarcar os que já
 tinhas marcado à mão".
 
-## 5. Vídeo trocado no gira-discos (bug a confirmar, não corrigi sozinho)
+## 6. Vídeo trocado no gira-discos (bug a confirmar, não corrigi sozinho)
 
 No álbum "Norman Fucking Rockwell!" (`java-bancada.html`, à volta da linha
 2879), o id de vídeo do YouTube `LrSX_OcpeJg` aparece duas vezes na mesma
@@ -82,7 +134,7 @@ faixas para a identificação ficar certa, precisas de escolher um vídeo (ou
 greatest"), mas não confirmei que é o oficial que queres usar, por isso é
 melhor confirmares tu antes de trocar o id.
 
-## 6. Registo de novas contas no Supabase
+## 7. Registo de novas contas no Supabase
 
 O `bibi/supabase.sql` assume "registo de contas novas desligado" nas
 definições de Authentication do projeto. Não dá para confirmar isso a partir
