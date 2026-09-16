@@ -5840,6 +5840,14 @@ function initGame(data, saveData, hearts, centerOf){
   // recomeçar a meio: a partida abandonada não vai para o placar
   function restart(){ if(running) start(); }
   const tempo = s => Math.floor(s / 60) + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+  // o recorde da conta (placar partilhado) manda; "data.best" é só o retrocesso
+  // para quando não há sessão — sem isto, um aparelho partilhado pelos dois
+  // mostra a um o recorde que o outro fez lá
+  function meuRecorde(){
+    const me = Conta.user();
+    if(me && Placar.ligado()){ const r = Placar.recordes("cerejas", 0)[me.nome]; if(r !== null && r !== undefined) return r; }
+    return data.best || 0;
+  }
   function records(){
     const el = $("#gRec"), me = Conta.user();
     if(!el || !me || !Placar.ligado()){ if(el) el.innerHTML = ""; return; }
@@ -5855,10 +5863,10 @@ function initGame(data, saveData, hearts, centerOf){
     running = false; $("#gRestart").hidden = true;
     Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"acabou", em:Date.now()}});
     if(natural) Placar.registar("cerejas", 0, score);   // só conta a partida jogada até ao fim
-    const record = score > (data.best || 0);
-    if(record){ data.best = score; saveData(); }
+    const record = score > meuRecorde();
+    if(score > (data.best || 0)){ data.best = score; saveData(); }
     $("#gTitle").textContent = `Apanhaste ${score} ${score === 1 ? "cereja" : "cerejas"}!`;
-    $("#gText").textContent = `${tempo(played)} de jogo, nível ${level}, ${bestCombo} seguidas no máximo. ${record && score > 0 ? "Novo recorde neste aparelho." : "Mais uma?"}`;
+    $("#gText").textContent = `${tempo(played)} de jogo, nível ${level}, ${bestCombo} seguidas no máximo. ${record && score > 0 ? "Novo recorde!" : "Mais uma?"}`;
     $("#gStart").textContent = "Jogar outra vez";
     ui.dataset.show = "true"; records();
     if(record && score > 0) hearts(...centerOf(cv), 16);
@@ -5881,7 +5889,7 @@ function initGame(data, saveData, hearts, centerOf){
   document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { if(running && b.dataset.mode !== "bibi"){ left = 0; running = false; ui.dataset.show = "true"; $("#gRestart").hidden = true; Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"parado", em:Date.now()}}); } }));
   // só anima com o jogo à vista (e pausa a partida quando sai do ecrã)
   new IntersectionObserver(([en]) => { visible = en.isIntersecting && !$("#mBibi").hidden; }, {threshold:.35}).observe(cv);
-  if(data.best) $("#gText").textContent = `Começas com 30 segundos. Cada cereja dá mais tempo, as douradas valem 5 e as podres roubam 4 segundos. O teu recorde é ${data.best}.`;
+  { const recordeInicial = meuRecorde(); if(recordeInicial) $("#gText").textContent = `Começas com 30 segundos. Cada cereja dá mais tempo, as douradas valem 5 e as podres roubam 4 segundos. O teu recorde é ${recordeInicial}.`; }
   records();
   const ready = () => { prepareBg(); };
   bg.decode ? bg.decode().then(ready, ready) : (bg.onload = ready);

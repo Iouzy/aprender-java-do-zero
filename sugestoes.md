@@ -25,57 +25,32 @@ Bibi ou o Louzy, mandar gestos falsos ("torcida", "desafio", convites de
 música) e ver em tempo real o que cada um está a fazer no site. Depois do
 `private:true`, só entra quem tiver sessão numa das duas contas.
 
-## 2. Placar do Swanrejas preso no primeiro recorde do dia (bug, causa provável identificada)
+## 2. Recorde do Swanrejas a mostrar o número errado (bug, já corrigido)
 
-Reportado: o recorde no placar do Swanrejas ficou parado em 317 e não sobe,
-mesmo depois de jogos com pontuação maior.
+Reportado: a caixa "Pronto?" do Swanrejas dizia "O teu recorde é 317", mas
+esse número nunca subia nem batia certo com o cartão do placar ao lado
+(que mostrava 170, certinho com a base de dados).
 
-O que encontrei no código (`java-bancada.html`, `Placar.registar`, à volta da
-linha 2714): cada partida de Swanrejas é gravada na tabela `partidas` do
-Supabase sem indicar o campo `dia` — só o Swandoku manda esse campo de
-propósito (é o que lhe permite um só tabuleiro por dia). Para o resumo
-semanal do Swanrejas funcionar (`resumo()`, linha ~2725, filtra por
-`r.dia >= semana` em todos os jogos, não só no Swandoku), a coluna `dia` tem
-de vir preenchida sozinha pelo servidor com a data de hoje.
+Descartei primeiro a hipótese de ser a base de dados (não há constraint nem
+índice a bloquear partidas repetidas do Swanrejas no mesmo dia — só existe
+o `partidas_swandoku_uma_vez`, e esse já vem com condição própria, só para
+o Swandoku). A tabela `partidas` só tinha 19 linhas ao todo, e o valor mais
+alto lá registado em cerejas era 221 (Bibi) e 170 (Louzy) — o 317 não
+existia em lado nenhum da base de dados.
 
-A função `registar()` já sabe lidar com "repetida" — quando a base de dados
-recusa a gravação por duplicado, mas isso está pensado só para o Swandoku
-("o Swandoku do dia já estava registado", diz o próprio comentário no
-código). Se o índice/constraint que impede duplicados no Supabase for
-único por (conta, jogo, nível, dia) sem excluir o Swanrejas, a base de dados
-está a recusar em silêncio qualquer segunda partida de Swanrejas no mesmo
-dia — o pedido falha, o `catch` interpreta como "repetida", e a pontuação
-nova nunca chega a gravar-se nem a aparecer no placar. Achas 317 porque foi
-a primeira pontuação do dia a entrar; tudo o que jogaste depois, no mesmo
-dia, foi silenciosamente ignorado. (O jogo "Adivinha a música" tem
-exatamente o mesmo problema, pela mesma razão — vale a pena reparar se
-notaste o mesmo lá.)
+A causa real: o "317" vinha do `data.best`, guardado em `localStorage` sob
+uma chave única (`BIBI_KEY = "java-bibi-v1"`, `java-bancada.html:2408`) que
+**não distingue quem está autenticado** — é do aparelho, não da conta. Um
+número desse aparelho, de outra sessão (provavelmente da Bibi, ou de antes
+de existir login por conta), ficava a aparecer como "o teu recorde" a quem
+quer que estivesse com sessão aberta nesse browser, e como estava sempre
+acima do que a conta realmente tinha feito, nunca "subia" — parecia preso.
 
-Não consigo confirmar isto com certeza nem corrigi-lo sozinho: o SQL dessa
-tabela vive em `bibi/placar.sql`, que está no `.gitignore` de propósito —
-não faz parte deste repositório e eu não tenho acesso ao teu projeto
-Supabase. Para confirmar e corrigir, no SQL Editor do Supabase:
-
-```sql
--- confirmar o nome do índice/constraint responsável
-select conname, pg_get_constraintdef(oid)
-from pg_constraint
-where conrelid = 'public.partidas'::regclass and contype in ('u', 'p');
--- ou, se for um índice em vez de constraint:
-select indexname, indexdef from pg_indexes where tablename = 'partidas';
-```
-
-Se aparecer algo como `unique (autor, jogo, nivel, dia)` sem filtro por jogo,
-o arranjo é trocá-lo por um índice parcial só para o Swandoku:
-
-```sql
-alter table public.partidas drop constraint nome_encontrado_acima;
-create unique index partidas_swandoku_dia_unico on public.partidas (autor, jogo, nivel, dia)
-  where jogo = 'swandoku';
-```
-
-Isto mantém o Swandoku a um tabuleiro por dia e deixa o Swanrejas e o
-Adivinha a música gravarem quantas partidas quiseres no mesmo dia.
+Corrigido: a caixa "Pronto?" e a deteção de "novo recorde" no fim do jogo
+passam a usar primeiro o recorde da conta que já vem certo do placar
+partilhado (`Placar.recordes`), só caindo para o valor local do aparelho
+quando não há sessão ou o Supabase está em baixo. O `data.best` continua a
+existir só como retrocesso para esse caso.
 
 ## 3. Reforçar quem pode dizer que é quem, dentro do canal já privado
 
