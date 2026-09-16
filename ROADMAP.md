@@ -37,17 +37,48 @@ Português de Portugal.
 
 ---
 
-## 3. Estado atual
+## 3. Onde estou e o que vem a seguir
 
-O estado vive na **bancada** (`java-bancada.html`), não aqui. Separador
-"Agora": o que está sólido, o que falta automatizar, o ponto fraco da vez.
+O estado detalhado vive na **bancada** (`java-bancada.html`, separador "Agora").
+Esta secção é o resumo curto, para colar numa conversa. **Atualizar no fim de
+cada sessão** — se estiver desatualizada, não vale nada.
 
-Havia aqui uma segunda lista e as duas discordavam — este ficheiro dizia que
-o próximo passo era `List<Pessoa>` enquanto o trabalho real era `while`. Duas
-fontes de verdade sobre onde estou é o mesmo que nenhuma.
+**Fase 1 — Fundamentos.**
+Feito: tipos e casts · `if`/`else if` · `for` · `while` · Scanner · métodos com
+parâmetros e retorno · classe, construtor, `this`, `private`, setter com validação.
+Falta: `switch` · `do-while` · `break`/`continue` · arrays.
 
-Este ficheiro guarda só o que não muda: o contexto, o método de ensino e a
-ordem das fases.
+Últimos ficheiros (`exercicios/04-reforco/`): `aquecimento1`, `exContagem`,
+`somaPares`, `somaIntervalo` — validação com `while` e acumuladores.
+
+### Por corrigir antes de avançar
+
+Bugs no meu próprio código. **Não me dês código para nenhum destes.**
+
+1. **`Pessoa.java`** — `new Pessoa("X","M",-5)` passa, mas o `setIdade()` recusa
+   negativos. O construtor escreve direto no campo em vez de passar pelo porteiro.
+2. **`Pessoa.java`** — `genero.equals("M")` parte-se em dois casos: um dá
+   `NullPointerException`; o outro é `"m"` minúsculo, que devolve a resposta
+   errada em silêncio.
+3. **`somaIntervalo.java`** — o `while` de validação só volta a pedir o número
+   inicial. Se o erro foi no final, fico preso a corrigir a coisa errada.
+4. **`somaPares.java`** — começo em `contagem = 1` e incremento antes de testar,
+   por isso o próprio número entra na soma. Pergunta-me primeiro se era isso que
+   eu queria: se foi de propósito não é bug, se não sabia é.
+
+Ordem: o 4 primeiro (é só responder), depois 1, 2, 3, com um commit cada.
+
+### Depois disto
+
+`switch` · `do-while` · `break`/`continue` · arrays.
+
+### Regras de trabalho
+
+- Um commit por ideia. Mensagem com o **porquê**, não o quê — o quê vê-se no diff.
+- Nada de `git add .` Nomear os ficheiros um a um.
+- Nenhum commit na bancada sem um commit em `exercicios/` no mesmo dia.
+- Um exercício só fica marcado como feito depois de acertar dez previsões
+  seguidas no simulador. Ter commit não é saber.
 
 ---
 
