@@ -2497,7 +2497,7 @@ const Live = (() => {
     // a sala: o que cada um está a fazer, sem passar pela base de dados
     chSala = client.channel("sala", {config:{broadcast:{self:false, ack:false}}});
     chSala.on("broadcast", {event:"estado"}, ({payload}) => emit("estado", payload))
-      .on("broadcast", {event:"gesto"}, ({payload}) => emit("gesto", payload))
+      .on("broadcast", {event:"gesto"}, ({payload}) => emit("gesto", payload))   // revisto no Sala/quem o recebe
       .subscribe();
     chPres = client.channel("lago-presenca", {config:{presence:{key:me.nome}}});
     chPres.on("presence", {event:"sync"}, () => { onlineNames = Object.keys(chPres.presenceState()); emit("presenca", onlineNames); })
@@ -2562,7 +2562,39 @@ const Sala = (() => {
     if(me && Live.enviar("gesto", Object.assign({nome:me.nome, tipo, em:Date.now()}, extra || {}))) marca();
   }
   const avisa = () => document.dispatchEvent(new CustomEvent("sala:estado", {detail:deles}));
-  function recebe(p){ deles = p; delesAt = Date.now(); marca(); avisa(); }
+  /* O canal é aberto: quem tiver a chave da página pode escrever lá dentro.
+     Por isso nada do que chega é aproveitado como vem — só passam os campos
+     conhecidos, com o tipo e os limites certos. O resto cai. */
+  const num = (v, min, max) => { const n = +v; return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : null; };
+  const umDe = (v, lista) => lista.includes(v) ? v : null;
+  const fracao = v => { const n = +v; return Number.isFinite(n) ? Math.min(1.5, Math.max(-.5, n)) : null; };
+  function limpa(p){
+    if(!p || typeof p !== "object") return null;
+    const nome = umDe(p.nome, ["bibi", "louzy"]);
+    if(!nome) return null;
+    const out = {nome, em:num(p.em, 0, 4e12) || Date.now()};
+    const j = p.jogo;
+    if(j && typeof j === "object" && umDe(j.j, ["cerejas", "swandoku", "musica"]) && umDe(j.e, ["a jogar", "acabou", "resolveu", "parado"]))
+      out.jogo = {j:j.j, e:j.e, s:num(j.s, 0, 99999) || 0, n:num(j.n, 0, 999) || 0, r:num(j.r, 0, 99) || 0,
+        m:/^\d{1,2}×\d{1,2}$/.test(j.m) ? j.m : "", t0:num(j.t0, 0, 4e12) || Date.now(), t:num(j.t, 0, 86400) || 0,
+        dia:!!j.dia, em:num(j.em, 0, 4e12) || Date.now()};
+    ["onde", "rato"].forEach(k => {
+      const v = p[k];
+      // a chave da secção vai parar a um seletor CSS: só se aceita o formato que nós próprios geramos
+      if(v && typeof v === "object" && umDe(v.m, ["bibi", "bancada"]) && (v.s === null || v.s === undefined || /^[bj]\d{1,3}$/.test(v.s)))
+        out[k] = {m:v.m, s:v.s || null, x:fracao(v.x), y:fracao(v.y)};
+    });
+    const mu = p.musica;
+    if(mu && typeof mu === "object")
+      out.musica = {a:num(mu.a, 0, 99) || 0, i:num(mu.i, 0, 99) || 0, t:num(mu.t, 0, 36000) || 0, p:!!mu.p, em:num(mu.em, 0, 4e12) || 0};
+    if(p.escreve) out.escreve = num(p.escreve, 0, 4e12) || 0;
+    return out;
+  }
+  function recebe(p){
+    const bom = limpa(p);
+    if(!bom) return;
+    deles = bom; delesAt = Date.now(); marca(); avisa();
+  }
   Live.on("estado", recebe);
   Live.on("presenca", nomes => {
     const me = Conta.user();
@@ -3372,6 +3404,7 @@ const Disco = (() => {
   }
   function aplicaMusica(m){
     if(!juntos || !m || m.em === ultimoAplicado) return;
+    if(!ALBUMS[m.a] || !ALBUMS[m.a][5][m.i]) return;   // veio um disco que não existe: ignora-se
     ultimoAplicado = m.em;
     aplicando = Date.now() + 1800;   // não devolver o eco do que acabou de se aplicar
     const alvo = m.t + (m.p ? (Date.now() - m.em) / 1000 : 0);
@@ -3408,9 +3441,12 @@ const Disco = (() => {
 })();
 
 /* ---------- convites para ouvir juntos ---------- */
+const GESTOS = ["musica-convite", "musica-sim", "musica-fim", "torcida", "desafio"];
 Live.on("gesto", g => {
   const me = Conta.user();
-  if(!me || g.nome === me.nome) return;
+  if(!me || !g || typeof g !== "object") return;
+  if(!["bibi", "louzy"].includes(g.nome) || g.nome === me.nome) return;
+  if(!GESTOS.includes(g.tipo)) return;
   if(g.tipo === "musica-convite"){
     if(Disco.aJuntos()) return Disco.aplicar(g);   // já estavam ligados: isto é só um acerto
     Aviso.toast(`${NICE(g.nome)} quer ouvir música contigo`, "Ficam na mesma música, ao mesmo tempo.",
@@ -3479,11 +3515,11 @@ function renderAoVivo(){
       // está no site mas não neste jogo: fica o convite
       txt = a ? `está ${esc(a.texto)}` : "está aqui";
       botao = `<button type="button" class="ao-vivo-btn" data-desafio="${j}">Desafiar para ${esc(nome)}</button>`;
-    } else if(j === "cerejas") txt = a.vivo ? `está a jogar agora — ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}, nível ${d.n}`
-      : `acabou agora com ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}`;
-    else if(j === "swandoku") txt = a.vivo ? `está no ${d.m} — ${Atividade.rel(Date.now() - d.t0)}${d.dia ? " (o do dia)" : ""}`
-      : `resolveu o ${d.m} em ${Atividade.rel((d.t || 0) * 1000)}`;
-    else txt = a.vivo ? `está a jogar — ${d.s} ${d.s === 1 ? "ponto" : "pontos"}` : `acabou com ${d.s} ${d.s === 1 ? "ponto" : "pontos"}`;
+    } else if(j === "cerejas") txt = a.vivo ? `está a jogar agora — ${esc(d.s)} ${d.s === 1 ? "cereja" : "cerejas"}, nível ${esc(d.n)}`
+      : `acabou agora com ${esc(d.s)} ${d.s === 1 ? "cereja" : "cerejas"}`;
+    else if(j === "swandoku") txt = a.vivo ? `está no ${esc(d.m)} — ${esc(Atividade.rel(Date.now() - d.t0))}${d.dia ? " (o do dia)" : ""}`
+      : `resolveu o ${esc(d.m)} em ${esc(Atividade.rel((d.t || 0) * 1000))}`;
+    else txt = a.vivo ? `está a jogar — ${esc(d.s)} ${d.s === 1 ? "ponto" : "pontos"}` : `acabou com ${esc(d.s)} ${d.s === 1 ? "ponto" : "pontos"}`;
     if(aqui && a.vivo) botao = `<button type="button" class="ao-vivo-btn" data-torcer="${j}">Torcer</button>`;
     el.innerHTML = `<i class="${aqui && a.vivo ? "viva" : ""}" aria-hidden="true"></i><span>${esc(dela)} ${txt}</span>${botao || ""}`;
   });
