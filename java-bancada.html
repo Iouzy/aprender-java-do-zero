@@ -1797,14 +1797,19 @@ const RUNNERS = {
   const nome = yield {l:8, ask:true, note:"nextLine() lê a linha inteira, espaços incluídos."};
   yield {l:9, out:"Olá " + nome + ", bem-vindo", vars:{nome:'"'+nome+'"'}};
   yield {l:11, out:"Qual é a sua idade? "};
-  const bruto = yield {l:13, ask:true, note:"hasNextInt() espreita o que vem a seguir sem o consumir."};
-  const inteiro = /^[+-]?\d+$/.test(bruto.trim());
-  if(!inteiro){
-    yield {l:13, note:'"'+bruto+'" não é um int — hasNextInt() dá false.'};
+  const bruto = yield {l:13, ask:true, note:"hasNextInt() espreita o token seguinte sem o consumir. Token = o que vem até ao próximo espaço."};
+  const token = bruto.trim().split(/\s+/)[0] || "";
+  const resto = bruto.trim().slice(token.length).trim();
+  const cabe = /^[+-]?\d+$/.test(token) && Number(token) >= -2147483648 && Number(token) <= 2147483647;
+  if(!cabe){
+    yield {l:13, note: /^[+-]?\d+$/.test(token)
+      ? '"'+token+'" é um número, mas não cabe num int (máximo 2147483647) — hasNextInt() dá false.'
+      : '"'+token+'" não é um int — hasNextInt() dá false.'};
     yield {l:32, out:"Idade inválida."};
     return;
   }
-  const idade = parseInt(bruto,10);
+  if(resto) yield {l:13, note:'Escreveste "'+bruto.trim()+'", mas o Scanner só olha para o primeiro token: "'+token+'". O resto fica no buffer à espera.'};
+  const idade = parseInt(token,10);
   yield {l:15, note:"Agora sim, nextInt() consome o número.", vars:{idade:idade}};
   if(idade < 0){
     yield {l:18, note:idade+" < 0 → true"};
