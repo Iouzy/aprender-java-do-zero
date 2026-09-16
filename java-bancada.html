@@ -727,7 +727,13 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 .ao-vivo[hidden]{display:none}
 .ao-vivo i{width:8px;height:8px;border-radius:50%;background:var(--parch-3);flex:none}
 .ao-vivo i.viva{background:var(--cherry);box-shadow:0 0 0 0 rgba(161,38,58,.5);animation:pulse-cherry 2.4s ease-out infinite}
-.mu-card .ao-vivo{background:rgba(161,38,58,.10);border-color:rgba(51,36,26,.18);color:var(--parch-ink)}
+.mu-card .ao-vivo,.letter-form .ao-vivo{background:rgba(161,38,58,.10);border-color:rgba(51,36,26,.18);color:var(--parch-ink)}
+.letter-form .ao-vivo{margin:0 0 10px}
+.ao-vivo-btn{font:600 14px var(--book);font-style:normal;padding:3px 12px;border-radius:999px;color:var(--parch);
+  background:radial-gradient(120% 140% at 30% 20%,#C23A50,var(--burgundy) 60%,#3E0E17);box-shadow:inset 0 1px 0 rgba(255,210,200,.3);
+  transition:filter .2s ease,transform .12s ease}
+.ao-vivo-btn:active{transform:scale(.96)}
+@media (hover:hover) and (pointer:fine){.ao-vivo-btn:hover{filter:brightness(1.1)}}
 .sd-side .ao-vivo{margin:0 0 4px;font-size:15px}
 
 /* ---------- caderno de bordo: os commits dele, à medida que acontecem ---------- */
@@ -1884,6 +1890,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <form class="parchment letter-form" id="noteForm">
         <label for="noteText">Querido…</label>
         <p class="sub">Só vocês os dois conseguem ler as cartas, em qualquer aparelho onde tenham entrado.</p>
+        <p class="ao-vivo escrevendo" id="cartaLive" hidden aria-live="polite"></p>
         <textarea id="noteText" name="recado" maxlength="240" autocomplete="off" placeholder="estou orgulhosa de ti…"></textarea>
         <div class="seals" role="group" aria-label="Escolhe o lacre">
           <button type="button" class="seal-btn" data-stk="swan" aria-pressed="true" aria-label="Lacre com cisne"><svg aria-hidden="true"><use href="#s-swan"/></svg></button>
@@ -2466,6 +2473,7 @@ const Conta = (() => {
 /* ---------- tempo real: cartas que chegam, quem está no site ---------- */
 const OTHER_NAME = me => me === "bibi" ? "louzy" : "bibi";
 const NICE = n => n === "bibi" ? "Bibi" : n === "louzy" ? "Louzy" : n;
+const O_NOME = n => (n === "bibi" ? "A " : "O ") + NICE(n);
 const Live = (() => {
   let client = null, chCartas = null, chPres = null, chPartidas = null, chSala = null, beat = 0, authT = 0;
   const handlers = {carta:[], presenca:[], partida:[], estado:[], gesto:[]};
@@ -3410,6 +3418,18 @@ Live.on("gesto", g => {
     Aviso.notify(`${NICE(g.nome)} quer ouvir música contigo`, "Abre o site para ouvirem ao mesmo tempo.");
   } else if(g.tipo === "musica-sim"){
     Aviso.toast(`${NICE(g.nome)} está a ouvir contigo`, "", null);
+  } else if(g.tipo === "torcida"){
+    Aviso.toast(`${NICE(g.nome)} está a torcer por ti!`, "", null);
+    document.dispatchEvent(new CustomEvent("sala:torcida", {detail:g}));
+  } else if(g.tipo === "desafio"){
+    const onde = {cerejas:'section[aria-labelledby="gameTitle"]', swandoku:'section[aria-labelledby="sdTitle"]', musica:"#musica"}[g.jogo];
+    const nome = {cerejas:"Swanrejas", swandoku:"Swandoku", musica:"adivinhar músicas"}[g.jogo] || "um jogo";
+    Aviso.toast(`${NICE(g.nome)} desafiou-te para o ${nome}`, "Quem faz melhor?",
+      {label:"Aceitar", run:() => {
+        if(document.body.dataset.mode !== "bibi") setMode("bibi");
+        setTimeout(() => { const el = document.querySelector(onde); if(el) el.scrollIntoView({behavior:reduceMotion.matches ? "auto" : "smooth", block:"start"}); }, 500);
+      }});
+    Aviso.notify(`${NICE(g.nome)} desafiou-te para o ${nome}`, "Abre o site para jogar.");
   } else if(g.tipo === "musica-fim"){
     if(Disco.aJuntos()) Disco.juntos(false, false);
     Aviso.toast(`${NICE(g.nome)} passou a ouvir sozinho`, "", null);
@@ -3446,24 +3466,50 @@ async function renderPresence(){
 /* o aviso ao lado de cada jogo: «ela está a jogar agora» */
 function renderAoVivo(){
   const me = Conta.user(), a = Atividade.ler(Sala.deles());
-  const outro = me ? NICE(OTHER_NAME(me.nome)) : "";
-  const dela = outro === "Bibi" ? "A Bibi" : "O " + outro;
-  [["cerejas", "#gLive"], ["swandoku", "#sdLive"], ["musica", "#muLive"]].forEach(([j, sel]) => {
+  const dela = me ? O_NOME(OTHER_NAME(me.nome)) : "";
+  const juntos = !!me && Live.online().includes(OTHER_NAME(me.nome));
+  [["cerejas", "#gLive", "Swanrejas"], ["swandoku", "#sdLive", "Swandoku"], ["musica", "#muLive", "as músicas"]].forEach(([j, sel, nome]) => {
     const el = $(sel);
     if(!el) return;
-    const on = !!(a && a.jogo === j);
-    el.hidden = !on;
-    if(!on) return;
-    const d = a.dados;
-    let txt;
-    if(j === "cerejas") txt = a.vivo ? `está a jogar agora — ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}, nível ${d.n}`
+    el.hidden = !juntos;
+    if(!juntos) return;
+    const aqui = !!(a && a.jogo === j), d = aqui ? a.dados : null;
+    let txt, botao;
+    if(!aqui){
+      // está no site mas não neste jogo: fica o convite
+      txt = a ? `está ${esc(a.texto)}` : "está aqui";
+      botao = `<button type="button" class="ao-vivo-btn" data-desafio="${j}">Desafiar para ${esc(nome)}</button>`;
+    } else if(j === "cerejas") txt = a.vivo ? `está a jogar agora — ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}, nível ${d.n}`
       : `acabou agora com ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}`;
     else if(j === "swandoku") txt = a.vivo ? `está no ${d.m} — ${Atividade.rel(Date.now() - d.t0)}${d.dia ? " (o do dia)" : ""}`
       : `resolveu o ${d.m} em ${Atividade.rel((d.t || 0) * 1000)}`;
     else txt = a.vivo ? `está a jogar — ${d.s} ${d.s === 1 ? "ponto" : "pontos"}` : `acabou com ${d.s} ${d.s === 1 ? "ponto" : "pontos"}`;
-    el.innerHTML = `<i class="${a.vivo ? "viva" : ""}" aria-hidden="true"></i><span>${esc(dela)} ${esc(txt)}</span>`;
+    if(aqui && a.vivo) botao = `<button type="button" class="ao-vivo-btn" data-torcer="${j}">Torcer</button>`;
+    el.innerHTML = `<i class="${aqui && a.vivo ? "viva" : ""}" aria-hidden="true"></i><span>${esc(dela)} ${txt}</span>${botao || ""}`;
   });
 }
+/* «está a escrever…»: uma marca no envelope, renovada de dois em dois segundos */
+let ultimoEscreve = 0;
+document.addEventListener("input", e => {
+  if(e.target.id !== "noteText") return;
+  if(Date.now() - ultimoEscreve < 2000) return;
+  ultimoEscreve = Date.now();
+  Sala.poe({escreve:ultimoEscreve});
+});
+function renderEscreve(){
+  const el = $("#cartaLive"), me = Conta.user(), p = Sala.deles();
+  if(!el) return;
+  const on = !!(me && p && p.escreve && Date.now() - p.escreve < 6000);
+  el.hidden = !on;
+  if(on) el.innerHTML = `<i class="viva" aria-hidden="true"></i><span>${esc(O_NOME(OTHER_NAME(me.nome)))} está a escrever-te…</span>`;
+}
+
+/* torcer e desafiar: um gesto solto, fora do envelope do estado */
+document.addEventListener("click", e => {
+  const tor = e.target.closest("[data-torcer]"), des = e.target.closest("[data-desafio]");
+  if(tor){ Sala.gesto("torcida", {jogo:tor.dataset.torcer}); Aviso.toast("Torcida enviada", "", null); }
+  if(des){ Sala.gesto("desafio", {jogo:des.dataset.desafio}); Aviso.toast("Desafio enviado", "", null); }
+});
 /* ---------- rastros: o rato do outro e o sítio da página onde ele está ----------
    Os ecrãs são diferentes, por isso não se mandam pixéis: manda-se a secção
    («o almanaque») e a posição dentro dela em fração. Do outro lado, isso
@@ -3574,10 +3620,10 @@ const Rastros = (() => {
   return {marca, pinta:pede};
 })();
 
-Live.on("presenca", renderPresence);
-document.addEventListener("sala:estado", () => { renderPresence(); renderAoVivo(); });
+Live.on("presenca", () => { renderPresence(); renderAoVivo(); });
+document.addEventListener("sala:estado", () => { renderPresence(); renderAoVivo(); renderEscreve(); });
 // o relógio do Swandoku do outro lado anda aqui, sem gastar mensagens
-setInterval(() => { const a = Atividade.ler(Sala.deles()); if(a){ renderPresence(); renderAoVivo(); } }, 1000);
+setInterval(() => { const a = Atividade.ler(Sala.deles()); if(a){ renderPresence(); renderAoVivo(); } renderEscreve(); }, 1000);
 // carregar na presença leva ao sítio onde ele ou ela está
 $("#presence").addEventListener("click", () => {
   const onde = $("#presence").dataset.onde;
@@ -4191,6 +4237,11 @@ function initBibi(){
   }
 
   /* ---------- corações ---------- */
+  document.addEventListener("sala:torcida", e => {
+    const alvo = {cerejas:"#game", swandoku:"#sdBoard", musica:"#musica"}[e.detail && e.detail.jogo] || "#game";
+    const el = document.querySelector(alvo);
+    if(el && el.getBoundingClientRect().height) hearts(...centerOf(el), 14);
+  });
   function hearts(x, y, n = 8){
     if(reduceMotion.matches) return;
     for(let i = 0; i < n; i++){
@@ -4824,6 +4875,7 @@ function initBibi(){
     env.setAttribute("aria-label", env.getAttribute("aria-label").replace(/: (abrir|fechar)$/, open ? ": fechar" : ": abrir"));
   });
   $("#noteForm").addEventListener("submit", async e => {
+    Sala.poe({escreve:0});
     e.preventDefault();
     const ta = $("#noteText"), msg = ta.value.trim(), btn = $("#noteForm button[type=submit]");
     if(!msg){ formMsg.textContent = "Escreve alguma coisa primeiro, nem que seja só um olá."; ta.focus(); return; }
