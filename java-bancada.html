@@ -87,6 +87,29 @@ body[data-mode=bibi] .modes .thumb{transform:translateX(100%)}
 body[data-mode=bibi] .presence{font-family:var(--display);font-style:italic;font-size:16px;color:var(--on-dark-2)}
 body[data-mode=bibi] .presence.on{color:var(--gold-2)}
 body[data-mode=bibi] .presence.on i{background:var(--candle)}
+/* ---------- o rato do outro e o trilho do lado direito ---------- */
+.rastro{position:fixed;left:0;top:0;z-index:95;pointer-events:none;display:flex;align-items:flex-start;gap:6px;color:var(--accent);will-change:transform}
+.rastro[hidden]{display:none}
+.rastro svg{width:22px;height:22px;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
+.rastro b{margin-top:15px;font:600 11.5px var(--sans);padding:3px 9px;border-radius:999px;background:var(--accent);color:var(--accent-ink);
+  white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.7)}
+body[data-mode=bibi] .rastro{color:#D8455F}
+body[data-mode=bibi] .rastro b{background:var(--burgundy);color:var(--parch);font:italic 500 14px var(--book)}
+
+/* uma calha fina no bordo direito: a página inteira, com o ponto onde o outro está */
+.trilho{position:fixed;right:10px;top:12vh;bottom:12vh;width:2px;z-index:60;pointer-events:none;border-radius:2px;
+  background:linear-gradient(180deg,transparent,var(--line2) 10%,var(--line2) 90%,transparent)}
+.trilho[hidden]{display:none}
+.trilho i{position:absolute;right:-4px;top:0;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 3px rgba(9,11,17,.65);transition:transform .55s var(--ease-out),background-color .3s ease}
+.trilho i[data-perto=true]{background:var(--mint)}
+.trilho span{position:absolute;right:16px;top:0;margin-top:-13px;padding:5px 11px;border-radius:999px;font:500 12px var(--sans);
+  background:var(--glass);border:1px solid var(--line);color:var(--muted);white-space:nowrap;max-width:40vw;overflow:hidden;text-overflow:ellipsis;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .55s var(--ease-out)}
+body[data-mode=bibi] .trilho i{background:#C03049;box-shadow:0 0 0 3px rgba(20,15,12,.75)}
+body[data-mode=bibi] .trilho span{background:rgba(20,15,12,.72);border-color:rgba(201,165,95,.25);color:var(--on-dark);font:italic 400 15px var(--book)}
+@media(max-width:620px){.trilho span{display:none}.rastro{display:none}}
+
 /* ---------- gira-discos: o disco do canto, a estante e a janela do vídeo ---------- */
 .disco{position:fixed;left:16px;bottom:16px;z-index:88;display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:calc(100vw - 32px)}
 .disco[hidden],.vwin[hidden]{display:none}
@@ -1209,6 +1232,13 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 <body data-mode="bancada">
 <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+
+<!-- o rato do outro e o sítio da página onde ele está -->
+<div class="rastro" id="rastro" hidden aria-hidden="true">
+  <svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.6L9.6 19Z" fill="currentColor" stroke="rgba(0,0,0,.35)" stroke-width="1" stroke-linejoin="round"/></svg>
+  <b id="rastroNome"></b>
+</div>
+<div class="trilho" id="trilho" hidden aria-hidden="true"><i id="trilhoDot"></i><span id="trilhoLbl"></span></div>
 <!-- letra da música a tocar, por cima dos cisnes (no início do Modo Bibi e em «só o lago») -->
 <div class="amb-lyrics off" id="ambLyrics" hidden aria-hidden="true"><p class="al-line al-prev"></p><p class="al-line al-cur"></p><p class="al-line al-next"></p><p class="al-note"></p></div>
 <!-- gira-discos: só aparece com sessão iniciada -->
@@ -3372,6 +3402,116 @@ function renderAoVivo(){
     el.innerHTML = `<i class="${a.vivo ? "viva" : ""}" aria-hidden="true"></i><span>${esc(dela)} ${esc(txt)}</span>`;
   });
 }
+/* ---------- rastros: o rato do outro e o sítio da página onde ele está ----------
+   Os ecrãs são diferentes, por isso não se mandam pixéis: manda-se a secção
+   («o almanaque») e a posição dentro dela em fração. Do outro lado, isso
+   volta a ser um ponto no ecrã dele, seja qual for o tamanho. Rato e scroll
+   vão no mesmo envelope da Sala, que já está limitado a dez por segundo. */
+const Rastros = (() => {
+  const PARADO = 2000;     // sem mexer o rato: deixa de o mandar
+  const ESQUECE = 10000;   // sem notícias: o rato do outro desaparece
+  let seccoes = [], marcado = false;
+  const rastro = $("#rastro"), trilho = $("#trilho"), dot = $("#trilhoDot"), lbl = $("#trilhoLbl");
+  let alvo = null, agora = null, ultimoRato = 0, mandouParado = true, raf = 0;
+
+  /* cada secção ganha uma chave estável, igual nos dois aparelhos */
+  function marca(){
+    if(marcado) return;
+    marcado = true;
+    const lista = [
+      ...document.querySelectorAll("#mBancada > .wrap > .hero, #mBancada .pane"),
+      ...document.querySelectorAll("#mBibi > section")
+    ];
+    lista.forEach((el, i) => { el.dataset.sala = (el.closest("#mBibi") ? "b" : "j") + i; seccoes.push(el); });
+  }
+  const modo = () => document.body.dataset.mode === "bibi" ? "bibi" : "bancada";
+  const visivel = el => { const r = el.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; };
+  /* que secção está debaixo deste ponto do ecrã, e onde dentro dela */
+  function ondeEsta(clientY, clientX){
+    marca();
+    for(const el of seccoes){
+      if(el.closest("[hidden]") || !visivel(el)) continue;
+      const r = el.getBoundingClientRect();
+      if(clientY >= r.top - 1 && clientY <= r.bottom + 1 && r.height > 0)
+        return {s:el.dataset.sala, x:clientX === undefined ? .5 : (clientX - r.left) / Math.max(1, r.width), y:(clientY - r.top) / Math.max(1, r.height)};
+    }
+    return null;
+  }
+  const doMeuLado = p => p && p.onde && p.onde.m === modo();
+  /* o caminho de volta: chave + fração -> ponto no meu ecrã */
+  function paraEcra(pos){
+    if(!pos) return null;
+    const el = document.querySelector(`[data-sala="${pos.s}"]`);
+    if(!el || el.closest("[hidden]")) return null;
+    const r = el.getBoundingClientRect();
+    return {x:r.left + pos.x * r.width, y:r.top + pos.y * r.height, dentro:r.bottom > 0 && r.top < innerHeight};
+  }
+  const titulo = chave => {
+    const el = document.querySelector(`[data-sala="${chave}"]`);
+    const h = el && el.querySelector("h1,h2,h3");
+    return h ? h.textContent.trim() : "";
+  };
+
+  /* ---------- o que eu mando ---------- */
+  function mandaPos(){ Sala.poe({onde:Object.assign({m:modo()}, ondeEsta(innerHeight / 2) || {s:null, y:0})}); }
+  addEventListener("pointermove", e => {
+    if(e.pointerType === "touch") return;
+    ultimoRato = Date.now(); mandouParado = false;
+    Sala.poe({rato:Object.assign({m:modo()}, ondeEsta(e.clientY, e.clientX) || {})});
+  }, {passive:true});
+  addEventListener("scroll", () => mandaPos(), {passive:true});
+  addEventListener("resize", () => mandaPos());
+  window.addEventListener("bancada:show", mandaPos);
+  window.addEventListener("bibi:show", mandaPos);
+  setInterval(() => {
+    // parou de mexer: diz-lhe uma vez e cala-te
+    if(!mandouParado && Date.now() - ultimoRato > PARADO){ mandouParado = true; Sala.poe({rato:null}); }
+  }, 700);
+
+  /* ---------- o que eu recebo ---------- */
+  function pinta(){
+    raf = 0;
+    const p = Sala.deles(), me = Conta.user();
+    const fresco = p && Date.now() - Sala.quando() < ESQUECE;
+    // o rato
+    const r = fresco && p.rato && p.rato.m === modo() && p.rato.s ? paraEcra(p.rato) : null;
+    if(r && r.dentro){
+      alvo = r;
+      if(!agora || reduceMotion.matches) agora = {x:r.x, y:r.y};
+      else { agora.x += (alvo.x - agora.x) * .22; agora.y += (alvo.y - agora.y) * .22; }
+      rastro.hidden = false;
+      rastro.style.transform = `translate3d(${agora.x}px, ${agora.y}px, 0)`;
+      $("#rastroNome").textContent = me ? NICE(OTHER_NAME(me.nome)) : "";
+      if(Math.abs(alvo.x - agora.x) > .5 || Math.abs(alvo.y - agora.y) > .5) pede();
+    } else { rastro.hidden = true; agora = null; }
+    // o trilho: onde é que ele está na página
+    const pos = fresco && p.onde && p.onde.m === modo() && p.onde.s ? paraEcra(p.onde) : null;
+    const noutroModo = fresco && p.onde && p.onde.m && p.onde.m !== modo();
+    trilho.hidden = !(pos || noutroModo);
+    if(pos){
+      // a calha é mais curta do que o ecrã: a posição dele vira fração da calha
+      const alto = trilho.clientHeight || innerHeight;
+      const y = Math.max(0, Math.min(1, pos.y / innerHeight)) * alto;
+      dot.style.transform = `translateY(${y}px)`;
+      dot.dataset.perto = pos.y > 0 && pos.y < innerHeight ? "true" : "false";
+      lbl.style.transform = `translateY(${y}px)`;
+      const nome = me ? NICE(OTHER_NAME(me.nome)) : "";
+      const tit = titulo(p.onde.s);
+      lbl.textContent = tit ? `${nome} · ${tit}` : nome;
+    } else if(noutroModo){
+      dot.style.transform = "translateY(0px)";
+      dot.dataset.perto = "false";
+      lbl.style.transform = "translateY(0px)";
+      lbl.textContent = (me ? NICE(OTHER_NAME(me.nome)) : "") + (p.onde.m === "bibi" ? " · no Modo Bibi" : " · na bancada");
+    }
+  }
+  const pede = () => { if(!raf) raf = requestAnimationFrame(pinta); };
+  document.addEventListener("sala:estado", pede);
+  addEventListener("scroll", pede, {passive:true});
+  setInterval(pede, 1000);   // apaga-se sozinho quando as notícias envelhecem
+  return {marca, pinta:pede};
+})();
+
 Live.on("presenca", renderPresence);
 document.addEventListener("sala:estado", () => { renderPresence(); renderAoVivo(); });
 // o relógio do Swandoku do outro lado anda aqui, sem gastar mensagens
