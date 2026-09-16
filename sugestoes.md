@@ -3,27 +3,16 @@
 Rascunho de coisas que valeria a pena mudar. Nada disto foi feito — é para
 decidires amanhã o que faz sentido.
 
-## 1. Fechar o canal da sala aos estranhos (segurança, prioridade alta)
+## 1. Fechar o canal da sala aos estranhos (segurança) — feito
 
-Já está meio feito: o `bibi/supabase.sql` tem a política pronta e o
-`java-bancada.html` tem o sítio exato marcado com `@CANAL-PRIVADO` (perto da
-linha 2498) para ligar `private:true` nos canais `sala` e `lago-presenca`.
-Falta só:
-
-1. Correr a secção "Canal da sala" do `bibi/supabase.sql` no SQL Editor do
-   Supabase (a parte de cima, das cartas, já deve estar corrida).
-2. Só depois, acrescentar `private:true` ao `config` dos dois `client.channel(...)`
-   marcados no HTML.
-
-Não fiz isto sozinho porque a ordem importa — ligar `private:true` antes de
-a política existir parte o tempo real todo, e eu não tenho como confirmar
-daqui se o SQL já correu no teu projeto. Enquanto isto não acontece, quem tirar
-a chave publicável do HTML (é preciso estar visível, isso é normal) consegue
-ligar-se ao canal `sala` e ao `lago-presenca` e escrever lá dentro com um nome
-à escolha — não injeta HTML (isso já está tapado), mas consegue fingir ser o
-Bibi ou o Louzy, mandar gestos falsos ("torcida", "desafio", convites de
-música) e ver em tempo real o que cada um está a fazer no site. Depois do
-`private:true`, só entra quem tiver sessão numa das duas contas.
+A política em `realtime.messages` foi corrida no SQL Editor do Supabase
+(sem a linha `alter table ... enable row level security`, que dá erro de
+posse do lado do Supabase — a tabela já vem com RLS ligado de origem, só
+faltavam as políticas). Depois disso, `private:true` foi acrescentado ao
+`config` dos dois `client.channel(...)` (`sala` e `lago-presenca`,
+`java-bancada.html`). A partir de agora só entra no canal quem tiver
+sessão numa das duas contas — antes, quem tirasse a chave publicável do
+HTML conseguia ligar-se e escrever lá dentro com um nome à escolha.
 
 ## 2. Recorde do Swanrejas a mostrar o número errado (bug, já corrigido)
 

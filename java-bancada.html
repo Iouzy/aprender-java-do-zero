@@ -2495,14 +2495,13 @@ const Live = (() => {
       .on("postgres_changes", {event:"INSERT", schema:"public", table:"partidas"}, payload => emit("partida", payload.new))
       .subscribe();
     // a sala: o que cada um está a fazer, sem passar pela base de dados
-    // @CANAL-PRIVADO: depois de correr a parte do canal no bibi/supabase.sql,
-    // acrescentar `private:true` ao config aqui e no canal da presença — daí
-    // em diante só entra quem tem sessão numa das duas contas.
-    chSala = client.channel("sala", {config:{broadcast:{self:false, ack:false}}});
+    // canal privado: só entra quem tem sessão numa das duas contas (política
+    // em realtime.messages, bibi/supabase.sql)
+    chSala = client.channel("sala", {config:{broadcast:{self:false, ack:false}, private:true}});
     chSala.on("broadcast", {event:"estado"}, ({payload}) => emit("estado", payload))
       .on("broadcast", {event:"gesto"}, ({payload}) => emit("gesto", payload))   // revisto no Sala/quem o recebe
       .subscribe();
-    chPres = client.channel("lago-presenca", {config:{presence:{key:me.nome}}});
+    chPres = client.channel("lago-presenca", {config:{presence:{key:me.nome}, private:true}});
     chPres.on("presence", {event:"sync"}, () => { onlineNames = Object.keys(chPres.presenceState()); emit("presenca", onlineNames); })
       .subscribe(async status => { if(status === "SUBSCRIBED") await chPres.track({nome:me.nome, desde:Date.now()}); });
     markSeen();
