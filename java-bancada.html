@@ -303,11 +303,11 @@ body[data-mode=bibi] .toast b{font-family:"Cormorant Garamond",Georgia,serif;fon
 body[data-mode=bibi] .toast p{color:#6B5845;font-style:italic;font-size:16px}
 body[data-mode=bibi] .toast-go{background:#6A1C29;color:#EEE2C6;font-family:"Cormorant Garamond",Georgia,serif;font-size:16px}
 body[data-mode=bibi] .toast-x{color:#6B5845}
-/* abaixo dos 620px o resto do site já muda para o layout de telemóvel; mas o
-   texto da presença ("Fulano esteve cá há...") fica cortado a meio bem antes
-   disso, porque o topbar (marca + modos + menu) já não lhe deixa espaço —
-   por isso esta regra tem o seu próprio ponto de quebra, mais alto */
-@media(max-width:800px){.presence span{display:none}.presence{padding:0 4px}}
+/* esconder o texto quando não cabe: ver ajustaPresence() — um ponto de
+   quebra fixo em pixels não serve, porque o Modo Bibi usa outra fonte
+   (maior, itálica) e a frase muda de tamanho consoante há quanto tempo foi */
+.presence.tight span{display:none}
+.presence.tight{padding:0 4px}
 .menu{position:relative}
 .icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);transition:background-color .2s ease,color .2s ease}
 .icon-btn svg{width:18px;height:18px}
@@ -3481,6 +3481,17 @@ document.addEventListener("sala:estado", () => { const p = Sala.deles(); if(p &&
 
 /* quem está no site */
 let seenCache = [];
+// esconde o texto (não o ponto) quando não cabe — medido a sério, porque a
+// largura do texto muda com o modo (Bibi usa outra fonte, maior) e com o
+// tamanho da frase, e um ponto de quebra fixo em pixels não acompanha isso
+function ajustaPresence(){
+  const el = $("#presence");
+  if(!el || el.hidden) return;
+  el.classList.remove("tight");   // mostra tudo primeiro, senão nunca sai do "tight" (mede 0 contra 0)
+  const span = el.querySelector("span");
+  if(span.scrollWidth > span.clientWidth) el.classList.add("tight");
+}
+window.addEventListener("resize", ajustaPresence);
 async function renderPresence(){
   const el = $("#presence"), me = Conta.user();
   if(!me){ el.hidden = true; return; }
@@ -3493,17 +3504,20 @@ async function renderPresence(){
     el.classList.toggle("a-jogar", !!(act && act.vivo));
     el.dataset.onde = act ? act.onde : "";
     el.title = act ? "Ir ver" : "";
-    return;
+  } else {
+    el.classList.remove("a-jogar");
+    el.dataset.onde = "";
+    const row = seenCache.find(r => r.nome === other);
+    if(!row) el.querySelector("span").textContent = `${NICE(other)} ainda não entrou`;
+    else{
+      const mins = Math.round((Date.now() - new Date(row.visto)) / 60000);
+      el.querySelector("span").textContent = mins < 2 ? `${NICE(other)} esteve cá agora mesmo`
+        : mins < 60 ? `${NICE(other)} esteve cá há ${mins} min`
+        : mins < 1440 ? `${NICE(other)} esteve cá há ${Math.round(mins / 60)} h`
+        : `${NICE(other)} esteve cá a ${fmt.short.format(new Date(row.visto))}`;
+    }
   }
-  el.classList.remove("a-jogar");
-  el.dataset.onde = "";
-  const row = seenCache.find(r => r.nome === other);
-  if(!row){ el.querySelector("span").textContent = `${NICE(other)} ainda não entrou`; return; }
-  const mins = Math.round((Date.now() - new Date(row.visto)) / 60000);
-  el.querySelector("span").textContent = mins < 2 ? `${NICE(other)} esteve cá agora mesmo`
-    : mins < 60 ? `${NICE(other)} esteve cá há ${mins} min`
-    : mins < 1440 ? `${NICE(other)} esteve cá há ${Math.round(mins / 60)} h`
-    : `${NICE(other)} esteve cá a ${fmt.short.format(new Date(row.visto))}`;
+  ajustaPresence();
 }
 /* o aviso ao lado de cada jogo: «ela está a jogar agora» */
 function renderAoVivo(){
@@ -3700,6 +3714,7 @@ function setMode(mode, push){
   }
   if(bibi) Conta.loggedIn() ? openBibi() : showLock();
   if(!bibi){ renderBibiPeek(); window.dispatchEvent(new Event("bancada:show")); }
+  requestAnimationFrame(ajustaPresence);
 }
 function openBibi(){
   $("#bibiLock").hidden = true;
