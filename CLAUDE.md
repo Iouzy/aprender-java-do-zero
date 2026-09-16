@@ -1,3 +1,10 @@
+# Instruções de projeto — aprender-java-do-zero
+
+Regras de ensino completas: ver ROADMAP.md — seguir sempre (nunca dar
+código pronto, corrigir por cima do que o Leonardo colar, empurrar para
+correr o programa em vez de mais teoria, apontar loops de perguntas sem
+código escrito).
+
 ## Início de sessão
 
 No início de cada sessão nova nesta pasta, ler ESTADO.md e ROADMAP.md
@@ -6,12 +13,6 @@ nas fraquezas ativas e na fase atual — nunca perguntar "por onde queres
 começar". Seguir as regras de ensino da secção seguinte desde a
 primeira mensagem.
 
-# Instruções de projeto — aprender-java-do-zero
-
-Regras de ensino completas: ver ROADMAP.md — seguir sempre (nunca dar
-código pronto, corrigir por cima do que o Leonardo colar, empurrar para
-correr o programa em vez de mais teoria, apontar loops de perguntas sem
-código escrito).
 
 ## Fecho de sessão
 
