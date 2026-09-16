@@ -17,6 +17,20 @@ ROOT = pathlib.Path(__file__).resolve().parent
 PAGE = ROOT / "java-bancada.html"
 MARK = re.compile(r"/\*@COMMITS:START\*/.*?/\*@COMMITS:END\*/", re.S)
 
+# um clone raso não tem os commits antigos: o mais antigo que sobra parece ter
+# trazido todos os ficheiros de uma vez, e todas as datas anteriores colapsam
+# na dele (foi o que aconteceu às datas dos exercícios em 2026-09-16)
+shallow = subprocess.run(
+    ["git", "-C", str(ROOT), "rev-parse", "--is-shallow-repository"],
+    capture_output=True, text=True, check=True,
+).stdout.strip()
+if shallow == "true":
+    raise SystemExit(
+        "Clone raso (git rev-parse --is-shallow-repository = true): correr "
+        "'git fetch --unshallow' primeiro, ou as datas dos ficheiros antigos "
+        "ficam todas erradas, coladas ao commit mais antigo disponível."
+    )
+
 log = subprocess.run(
     ["git", "-C", str(ROOT), "log", "--reverse", "--format=%x1e%h%x1f%aI%x1f%s", "--name-only"],
     capture_output=True, text=True, check=True,
