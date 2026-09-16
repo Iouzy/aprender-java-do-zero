@@ -32,43 +32,52 @@
   parte difícil.
 - Não avances de tema só porque eu disse que percebi. Pede-me para escrever.
 - Sê direto. Prefiro avaliação honesta a encorajamento.
+- **Decide tu o próximo passo.** Não me perguntes por onde quero começar —
+  lê o estado, escolhe um exercício só e dá-mo. Escolher a matéria é trabalho
+  teu; se for meu, escolho sempre o que já sei fazer.
 
 Português de Portugal.
 
 ---
 
-## 3. Estado atual
+## 3. Onde estou
 
-### Já escrito (10 ficheiros, do zero, sem copiar)
+O estado detalhado vive na **bancada** (`java-bancada.html`, separador "Agora").
+Isto é o resumo. **Atualizar no fim de cada sessão** — desatualizado não vale nada.
 
-| Ficheiro | Treinou |
-|---|---|
-| `Tipos.java` | tipos primitivos, casts, divisão inteira |
-| `Iva.java` | variáveis, concatenação |
-| `Saudacao.java` | Scanner, `hasNextInt`, if/else if aninhados, validação de input |
-| `Contagem.java` / `ContagemR.java` | `for` crescente e decrescente |
-| `Pares.java` / `Pares2.java` | passo do ciclo vs. filtro com `%` |
-| `Tabuada.java` | ciclo + input + cálculo |
-| `Metodos.java` | parâmetros, `return`, `void` vs. tipo, `boolean` como condição |
-| `Pessoa.java` + `Programa.java` | classe, campos, método de instância, `this`, construtor, `private`, setter com validação |
+**Fase 1 — Fundamentos.**
+Sólido: tipos e casts · `if`/`else if` · `for` · `while` · Scanner · métodos com
+parâmetros e retorno · classe, construtor, `this`, `private`, setter com validação.
+Por tocar: `switch` · `do-while` · `break`/`continue` · arrays.
 
-### Sólido
-Sintaxe de classe e `main`; tipos; `if`/`else if` e a importância da ordem;
-`for`; Scanner; métodos com parâmetros e retorno; criação de objetos;
-construtor; `private`; setter com validação. Ler mensagens do compilador e
-corrigir a partir delas.
+Últimos ficheiros (`exercicios/04-reforco/`): `aquecimento1`, `exContagem`,
+`somaPares`, `somaIntervalo` — validação com `while` e acumuladores.
 
-### Compreendido mas não automático
-`this`; âmbito de variáveis; `equals()` vs `==`; a divisão entre o que pertence
-à classe e o que pertence a quem a usa; buffer do Scanner (`nextInt` seguido de
-`nextLine`).
+### Fraquezas conhecidas, para trabalhares em cima delas
 
-### Ainda por tocar
-`switch`, `while`, `do-while`, arrays, listas, herança, interfaces, exceções,
-e tudo o que vem depois.
+Não são tarefas para eu despachar. São a matéria que ainda não assentou —
+mete-as nos exercícios que me deres, quando fizer sentido.
 
-### Ponto de partida da próxima sessão
-`List<Pessoa>` — criar uma lista, meter lá as pessoas, percorrer com `for-each`.
+- **Limites de ciclos.** Decidir sozinho se o início e o fim do intervalo entram
+  na conta. No `somaPares` o próprio número entra na soma e não sei se foi de
+  propósito. Já dei 12550 como certo quando a resposta era 12750.
+- **Validação a meio.** No `somaIntervalo`, o `while` só volta a pedir o número
+  inicial; se o erro foi no final, fico preso.
+- **Encapsulamento furado.** No `Pessoa`, o construtor escreve direto nos campos
+  em vez de passar pelo `setIdade()`, por isso aceita uma idade negativa que o
+  setter recusaria.
+- **`equals()` e `null`.** `genero.equals("M")` rebenta com `null` e devolve a
+  resposta errada em silêncio com `"m"` minúsculo.
+- **Buffer do Scanner.** `nextInt()` seguido de `nextLine()` ainda me apanha.
+- **`this` e âmbito de variáveis.** Percebo quando vejo, não escrevo sem pensar.
+
+### Regras de trabalho
+
+- Um commit por ideia. Mensagem com o **porquê**, não o quê — o quê vê-se no diff.
+- Nada de `git add .` Nomear os ficheiros um a um.
+- Nenhum commit na bancada sem um commit em `exercicios/` no mesmo dia.
+- Um exercício só fica marcado como feito depois de acertar dez previsões
+  seguidas no simulador. Ter commit não é saber.
 
 ---
 
@@ -76,18 +85,15 @@ e tudo o que vem depois.
 
 Estimativas para 10–20h/semana. Contam com o tempo de esquecer e reaprender.
 
-### Fase 1 — Fundamentos · 2-3 semanas · **quase feito**
+### Fase 1 — Fundamentos · 2-3 semanas
 Tipos, operadores, casting. `if`/`else if`, **`switch`**. `for`, **`while`**,
 **`do-while`**, `break`, `continue`. Métodos: parâmetros, retorno, `void`,
 âmbito, sobrecarga. **Arrays** e iteração.
 
-*Falta-me: `switch`, `while`, `do-while`, arrays.*
 
-### Fase 2 — POO · 4-6 semanas · **a meio**
-Feito: classes, objetos, campos, métodos de instância, `this`, construtores,
-`private`, encapsulamento.
-
-Falta: sobrecarga de construtores · `static` · `final` · herança (`extends`,
+### Fase 2 — POO · 4-6 semanas
+Classes, objetos, campos, métodos de instância, `this`, construtores,
+`private`, encapsulamento · sobrecarga de construtores · `static` · `final` · herança (`extends`,
 `super`, `@Override`) · classes abstratas · interfaces · polimorfismo ·
 composição vs. herança · `equals()` + `hashCode()` + `toString()` · enums ·
 packages · records.
@@ -226,7 +232,7 @@ fazer 10.000 queries à base de dados — o que pode estar a acontecer?"*
 
 | Fase | Semanas | Acumulado |
 |---|---|---|
-| 1. Fundamentos | 2-3 | ✅ |
+| 1. Fundamentos | 2-3 | mês 1 |
 | 2. POO | 4-6 | mês 1-2 |
 | 3. Core Java | 3-4 | mês 2-3 |
 | 4. Git + Maven | 1-2 | mês 3 |

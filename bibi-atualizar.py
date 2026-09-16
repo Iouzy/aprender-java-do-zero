@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Atualiza o histórico de commits embutido no java-bancada.html.
 
-O Modo Bibi e o mapa de atividade leem estes dados. Corre depois de cada
-commit (ou deixa um hook post-commit fazer isso):
+O Modo Bibi e o mapa de atividade leem estes dados. O registo em direto vai
+buscar os commits ao GitHub sozinho, mas cai para esta lista quando não há
+rede — por isso vale a pena mantê-la fresca. Corre depois de cada commit (ou
+deixa um hook post-commit fazer isso):
 
     python3 bibi-atualizar.py
 """
@@ -14,6 +16,20 @@ import subprocess
 ROOT = pathlib.Path(__file__).resolve().parent
 PAGE = ROOT / "java-bancada.html"
 MARK = re.compile(r"/\*@COMMITS:START\*/.*?/\*@COMMITS:END\*/", re.S)
+
+# um clone raso não tem os commits antigos: o mais antigo que sobra parece ter
+# trazido todos os ficheiros de uma vez, e todas as datas anteriores colapsam
+# na dele (foi o que aconteceu às datas dos exercícios em 2026-09-16)
+shallow = subprocess.run(
+    ["git", "-C", str(ROOT), "rev-parse", "--is-shallow-repository"],
+    capture_output=True, text=True, check=True,
+).stdout.strip()
+if shallow == "true":
+    raise SystemExit(
+        "Clone raso (git rev-parse --is-shallow-repository = true): correr "
+        "'git fetch --unshallow' primeiro, ou as datas dos ficheiros antigos "
+        "ficam todas erradas, coladas ao commit mais antigo disponível."
+    )
 
 log = subprocess.run(
     ["git", "-C", str(ROOT), "log", "--reverse", "--format=%x1e%h%x1f%aI%x1f%s", "--name-only"],
