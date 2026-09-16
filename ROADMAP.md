@@ -32,45 +32,44 @@
   parte difícil.
 - Não avances de tema só porque eu disse que percebi. Pede-me para escrever.
 - Sê direto. Prefiro avaliação honesta a encorajamento.
+- **Decide tu o próximo passo.** Não me perguntes por onde quero começar —
+  lê o estado, escolhe um exercício só e dá-mo. Escolher a matéria é trabalho
+  teu; se for meu, escolho sempre o que já sei fazer.
 
 Português de Portugal.
 
 ---
 
-## 3. Onde estou e o que vem a seguir
+## 3. Onde estou
 
 O estado detalhado vive na **bancada** (`java-bancada.html`, separador "Agora").
-Esta secção é o resumo curto, para colar numa conversa. **Atualizar no fim de
-cada sessão** — se estiver desatualizada, não vale nada.
+Isto é o resumo. **Atualizar no fim de cada sessão** — desatualizado não vale nada.
 
 **Fase 1 — Fundamentos.**
-Feito: tipos e casts · `if`/`else if` · `for` · `while` · Scanner · métodos com
+Sólido: tipos e casts · `if`/`else if` · `for` · `while` · Scanner · métodos com
 parâmetros e retorno · classe, construtor, `this`, `private`, setter com validação.
-Falta: `switch` · `do-while` · `break`/`continue` · arrays.
+Por tocar: `switch` · `do-while` · `break`/`continue` · arrays.
 
 Últimos ficheiros (`exercicios/04-reforco/`): `aquecimento1`, `exContagem`,
 `somaPares`, `somaIntervalo` — validação com `while` e acumuladores.
 
-### Por corrigir antes de avançar
+### Fraquezas conhecidas, para trabalhares em cima delas
 
-Bugs no meu próprio código. **Não me dês código para nenhum destes.**
+Não são tarefas para eu despachar. São a matéria que ainda não assentou —
+mete-as nos exercícios que me deres, quando fizer sentido.
 
-1. **`Pessoa.java`** — `new Pessoa("X","M",-5)` passa, mas o `setIdade()` recusa
-   negativos. O construtor escreve direto no campo em vez de passar pelo porteiro.
-2. **`Pessoa.java`** — `genero.equals("M")` parte-se em dois casos: um dá
-   `NullPointerException`; o outro é `"m"` minúsculo, que devolve a resposta
-   errada em silêncio.
-3. **`somaIntervalo.java`** — o `while` de validação só volta a pedir o número
-   inicial. Se o erro foi no final, fico preso a corrigir a coisa errada.
-4. **`somaPares.java`** — começo em `contagem = 1` e incremento antes de testar,
-   por isso o próprio número entra na soma. Pergunta-me primeiro se era isso que
-   eu queria: se foi de propósito não é bug, se não sabia é.
-
-Ordem: o 4 primeiro (é só responder), depois 1, 2, 3, com um commit cada.
-
-### Depois disto
-
-`switch` · `do-while` · `break`/`continue` · arrays.
+- **Limites de ciclos.** Decidir sozinho se o início e o fim do intervalo entram
+  na conta. No `somaPares` o próprio número entra na soma e não sei se foi de
+  propósito. Já dei 12550 como certo quando a resposta era 12750.
+- **Validação a meio.** No `somaIntervalo`, o `while` só volta a pedir o número
+  inicial; se o erro foi no final, fico preso.
+- **Encapsulamento furado.** No `Pessoa`, o construtor escreve direto nos campos
+  em vez de passar pelo `setIdade()`, por isso aceita uma idade negativa que o
+  setter recusaria.
+- **`equals()` e `null`.** `genero.equals("M")` rebenta com `null` e devolve a
+  resposta errada em silêncio com `"m"` minúsculo.
+- **Buffer do Scanner.** `nextInt()` seguido de `nextLine()` ainda me apanha.
+- **`this` e âmbito de variáveis.** Percebo quando vejo, não escrevo sem pensar.
 
 ### Regras de trabalho
 
