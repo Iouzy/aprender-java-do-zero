@@ -2218,6 +2218,13 @@ const fmt = {
    Uma cereja conta no dia do commit que tem o nome do ficheiro na mensagem
    ("Contagem: for crescente"). Sem esse commit, conta no primeiro commit
    que tocou no ficheiro. Commits sem cereja são "arrumações". */
+/* Exercícios que entraram no repositório à boleia de outro commit: o histórico
+   não sabe quando foram feitos e apanhava a data do commit errado (o tipos.java
+   ficava «feito a 14 de setembro», que é o dia em que foi arrumado, não o dia em
+   que foi escrito). A data certa fica aqui à mão; havendo um commit próprio
+   («Tipos: ...»), é esse que manda e esta linha deixa de ser usada. */
+const FEITO_EM = {"tipos.java":"2026-09-07T22:45:00+01:00"};
+
 const HISTORY = (() => {
   const touches = new Map();
   COMMITS.forEach(c => c.f.forEach(p => {
@@ -2230,6 +2237,11 @@ const HISTORY = (() => {
   touches.forEach((cs, b) => {
     const stem = b.replace(/\.java$/, "");
     const named = cs.find(c => c.s.split(":")[0].toLowerCase().split(/\s+e\s+|,\s*/).map(s => s.trim()).includes(stem));
+    if(!named && FEITO_EM[b]){
+      // data à mão: o commit que trouxe o ficheiro continua a ser arrumação
+      items.push({kind:"ex", file:b, at:new Date(FEITO_EM[b]), commit:null});
+      return;
+    }
     const c = named || cs[0];
     used.add(c.h);
     items.push({kind:"ex", file:b, at:new Date(c.t), commit:c});
@@ -4279,7 +4291,7 @@ function initBibi(){
     "somapares.java":"Soma todos os números pares até um número. Contas de cabeça? Já não é contigo.",
     "somaintervalo.java":"Soma os pares entre dois números. Este deu luta, mas ganhaste."
   };
-  const cuteOf = it => { const c = CUTE[it.file] || [it.file, it.commit.s]; return isHim && CUTE_TU[it.file] ? [c[0], CUTE_TU[it.file]] : c; };
+  const cuteOf = it => { const c = CUTE[it.file] || [it.file, it.commit ? it.commit.s : ""]; return isHim && CUTE_TU[it.file] ? [c[0], CUTE_TU[it.file]] : c; };
   const tidyText = s => /readme/i.test(s) ? T("Escreveu a apresentação do projeto.", "Escreveste a apresentação do projeto.")
     : /roadmap|bancada|bibi|index/i.test(s) ? T("Arrumou o plano de estudo e esta página.", "Arrumaste o plano de estudo e esta página.")
     : /pessoa|dados pessoais/i.test(s) ? T("Tirou informações pessoais dos ficheiros, por segurança.", "Tiraste informações pessoais dos ficheiros, por segurança.")
