@@ -5304,11 +5304,11 @@ function initSwandoku(hearts, centerOf){
   const io = new IntersectionObserver(([en]) => {
     if(!game || game.done) return;
     if(en.isIntersecting && !$("#mBibi").hidden){ if(!startedAt) startedAt = Date.now(); }
-    else if(startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); }
+    else if(startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); eco(); }
   });
   io.observe(board);
   tick = setInterval(() => { if(game && startedAt && !game.done){ updateClock(); eco(); } }, 1000);
-  window.addEventListener("pagehide", () => { if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); } });
+  window.addEventListener("pagehide", () => { if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); eco(); } });
 
   openMode(mode, [4, 6, 9].includes(saved.n) ? saved.n : 6);
 }
@@ -5878,7 +5878,7 @@ function initGame(data, saveData, hearts, centerOf){
   cv.addEventListener("blur", () => { keys.left = keys.right = false; });
   $("#gStart").addEventListener("click", start);
   $("#gRestart").addEventListener("click", restart);
-  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { if(running && b.dataset.mode !== "bibi"){ left = 0; running = false; ui.dataset.show = "true"; $("#gRestart").hidden = true; } }));
+  document.querySelectorAll(".modes button").forEach(b => b.addEventListener("click", () => { if(running && b.dataset.mode !== "bibi"){ left = 0; running = false; ui.dataset.show = "true"; $("#gRestart").hidden = true; Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"parado", em:Date.now()}}); } }));
   // só anima com o jogo à vista (e pausa a partida quando sai do ecrã)
   new IntersectionObserver(([en]) => { visible = en.isIntersecting && !$("#mBibi").hidden; }, {threshold:.35}).observe(cv);
   if(data.best) $("#gText").textContent = `Começas com 30 segundos. Cada cereja dá mais tempo, as douradas valem 5 e as podres roubam 4 segundos. O teu recorde é ${data.best}.`;

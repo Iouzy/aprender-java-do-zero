@@ -63,7 +63,26 @@ simulador que a regra da bancada pede) — ou se preferes um botão separado só
 para "marcar como feito os que já têm commit, mas nunca desmarcar os que já
 tinhas marcado à mão".
 
-## 5. Registo de novas contas no Supabase
+## 5. Vídeo trocado no gira-discos (bug a confirmar, não corrigi sozinho)
+
+No álbum "Norman Fucking Rockwell!" (`java-bancada.html`, à volta da linha
+2879), o id de vídeo do YouTube `LrSX_OcpeJg` aparece duas vezes na mesma
+lista: na faixa 4 ("Fuck it I love you") e na faixa 11 ("The greatest"). O
+`TRACK` é um `Map()` indexado pelo id do vídeo, por isso a segunda entrada
+substitui a primeira — sempre que esse vídeo está a tocar, o site identifica-o
+como "The greatest", nunca como "Fuck it I love you" (afeta a letra em tempo
+real e o jogo "Adivinha a música").
+
+Não corrigi isto sozinho porque `LrSX_OcpeJg` é mesmo o vídeo oficial
+duplo "Fuck it I love you / The greatest" — as duas faixas partilham o
+mesmo vídeo de propósito, não foi copy-paste. Se quiseres separar as duas
+faixas para a identificação ficar certa, precisas de escolher um vídeo (ou
+áudio) só para "The greatest" — encontrei candidato em busca:
+`https://www.youtube.com/watch?v=EqOwBkxhSZI` ("Lana Del Rey - The
+greatest"), mas não confirmei que é o oficial que queres usar, por isso é
+melhor confirmares tu antes de trocar o id.
+
+## 6. Registo de novas contas no Supabase
 
 O `bibi/supabase.sql` assume "registo de contas novas desligado" nas
 definições de Authentication do projeto. Não dá para confirmar isso a partir
