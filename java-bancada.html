@@ -80,6 +80,9 @@ body[data-mode=bibi] .modes .thumb{transform:translateX(100%)}
 .presence i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}
 .presence.on{color:var(--text)}
 .presence.on i{background:var(--mint);box-shadow:0 0 0 0 rgba(116,224,181,.55);animation:pulse 2.2s ease-out infinite}
+.presence[data-onde]:not([data-onde=""]){cursor:pointer;border-radius:999px;padding:4px 10px;margin:-4px -10px;transition:background-color .2s ease}
+@media (hover:hover) and (pointer:fine){.presence[data-onde]:not([data-onde=""]):hover{background:rgba(255,255,255,.07)}}
+.presence.a-jogar i{background:var(--amber);box-shadow:0 0 0 0 rgba(244,190,123,.55)}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(116,224,181,.55)}70%{box-shadow:0 0 0 8px rgba(116,224,181,0)}100%{box-shadow:0 0 0 0 rgba(116,224,181,0)}}
 body[data-mode=bibi] .presence{font-family:var(--display);font-style:italic;font-size:16px;color:var(--on-dark-2)}
 body[data-mode=bibi] .presence.on{color:var(--gold-2)}
@@ -281,6 +284,7 @@ body[data-mode=bibi] .toast-x{color:#6B5845}
 .icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);transition:background-color .2s ease,color .2s ease}
 .icon-btn svg{width:18px;height:18px}
 @media (hover:hover) and (pointer:fine){.icon-btn:hover{background:rgba(255,255,255,.07);color:var(--text)}}
+.menu-note{padding:8px 12px;margin:0;font:400 12px var(--mono);color:var(--dim);border-bottom:1px solid var(--line);white-space:nowrap}
 .menu-list{position:absolute;right:0;top:calc(100% + 10px);min-width:220px;padding:6px;border-radius:14px;background:var(--surface2);border:1px solid var(--line2);
   box-shadow:0 20px 40px -12px rgba(0,0,0,.6);transform-origin:top right;transition:opacity .18s var(--ease-out),transform .18s var(--ease-out)}
 .menu-list[data-open=false]{opacity:0;transform:scale(.96) translateY(-4px);pointer-events:none}
@@ -691,6 +695,16 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 .fact{padding:16px 10px 0 0}
 .fact b{display:block;font-family:var(--display);font-weight:500;font-size:clamp(42px,5vw,60px);line-height:1;color:var(--burgundy)}
 .fact span{font-style:italic;color:var(--parch-soft);font-size:16px}
+
+/* ---------- «ela está a jogar agora», ao lado de cada jogo ---------- */
+.ao-vivo{display:inline-flex;align-items:center;gap:9px;margin-top:10px;padding:7px 14px;border-radius:999px;
+  font-family:var(--book);font-style:italic;font-size:16px;line-height:1.3;color:var(--on-dark);
+  background:rgba(161,38,58,.16);border:1px solid rgba(201,165,95,.28)}
+.ao-vivo[hidden]{display:none}
+.ao-vivo i{width:8px;height:8px;border-radius:50%;background:var(--parch-3);flex:none}
+.ao-vivo i.viva{background:var(--cherry);box-shadow:0 0 0 0 rgba(161,38,58,.5);animation:pulse-cherry 2.4s ease-out infinite}
+.mu-card .ao-vivo{background:rgba(161,38,58,.10);border-color:rgba(51,36,26,.18);color:var(--parch-ink)}
+.sd-side .ao-vivo{margin:0 0 4px;font-size:15px}
 
 /* ---------- caderno de bordo: os commits dele, à medida que acontecem ---------- */
 .livro{padding:clamp(26px,3.6vw,44px) clamp(22px,3.4vw,46px);max-width:920px}
@@ -1314,7 +1328,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 10h11v4a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-4Z" stroke="currentColor" stroke-width="1.7"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16" stroke="currentColor" stroke-width="1.7"/><path d="M9 3.5c-.8 1 .8 2 0 3M12.5 3.5c-.8 1 .8 2 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     <span class="bt">Java</span><small id="brandSub">~/java</small>
   </span>
-  <span class="presence" id="presence" hidden aria-live="polite"><i aria-hidden="true"></i><span></span></span>
+  <button type="button" class="presence" id="presence" hidden aria-live="polite"><i aria-hidden="true"></i><span></span></button>
   <span class="spacer"></span>
   <div class="modes" role="group" aria-label="Modo da página">
     <span class="thumb" aria-hidden="true"></span>
@@ -1340,6 +1354,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
     </button>
     <div class="menu-list" id="menuList" data-open="false" role="menu">
+      <p class="menu-note" id="usoSala">tempo real: —</p>
       <button type="button" role="menuitem" id="expMd">Guardar resumo .md</button>
       <button type="button" role="menuitem" id="expJson">Cópia de segurança .json</button>
       <button type="button" role="menuitem" class="danger" id="reset">Repor marcações do Git</button>
@@ -1725,6 +1740,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
           <p>O cisne apanha cerejas enquanto ele estuda. Arrasta o dedo ou usa as setas do teclado.</p>
         </div>
         <div class="g-records" id="gRec" aria-live="polite"></div>
+        <p class="ao-vivo" id="gLive" hidden aria-live="polite"></p>
       </div>
       <div class="game">
         <canvas id="game" width="1280" height="640" tabindex="0" aria-label="Jogo: move o cisne para apanhar cerejas"></canvas>
@@ -1763,6 +1779,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
             <button type="button" data-n="6" aria-pressed="true">6×6<small>médio</small></button>
             <button type="button" data-n="9" aria-pressed="false">9×9<small>clássico</small></button>
           </div>
+          <p class="ao-vivo" id="sdLive" hidden aria-live="polite"></p>
           <div><p class="sd-clock num" id="sdClock" aria-label="Tempo">0:00</p><p class="sd-best" id="sdBest"></p><p class="sd-best sd-rec" id="sdRec" hidden></p><p class="sd-streak" id="sdStreak" hidden></p></div>
           <div class="sd-palette" id="sdPalette" aria-label="Símbolos"></div>
           <div class="sd-actions">
@@ -1787,6 +1804,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       </div>
       <div class="parchment mu-card">
         <div class="mu-hud"><span id="muRound"></span><span id="muScore"></span></div>
+        <p class="ao-vivo" id="muLive" hidden aria-live="polite"></p>
         <div class="mu-fuse" aria-hidden="true"><i id="muFuse"></i></div>
         <div class="mu-body" id="muBody" aria-live="polite"></div>
       </div>
@@ -2417,8 +2435,8 @@ const Conta = (() => {
 const OTHER_NAME = me => me === "bibi" ? "louzy" : "bibi";
 const NICE = n => n === "bibi" ? "Bibi" : n === "louzy" ? "Louzy" : n;
 const Live = (() => {
-  let client = null, chCartas = null, chPres = null, chPartidas = null, beat = 0, authT = 0;
-  const handlers = {carta:[], presenca:[], partida:[]};
+  let client = null, chCartas = null, chPres = null, chPartidas = null, chSala = null, beat = 0, authT = 0;
+  const handlers = {carta:[], presenca:[], partida:[], estado:[], gesto:[]};
   let onlineNames = [];
   const emit = (k, v) => handlers[k].forEach(f => { try{ f(v); }catch(e){} });
   const markSeen = () => Conta.loggedIn() && Conta.api("presenca?on_conflict=autor", {method:"POST",
@@ -2436,6 +2454,11 @@ const Live = (() => {
     chPartidas = client.channel("partidas-novas")
       .on("postgres_changes", {event:"INSERT", schema:"public", table:"partidas"}, payload => emit("partida", payload.new))
       .subscribe();
+    // a sala: o que cada um está a fazer, sem passar pela base de dados
+    chSala = client.channel("sala", {config:{broadcast:{self:false, ack:false}}});
+    chSala.on("broadcast", {event:"estado"}, ({payload}) => emit("estado", payload))
+      .on("broadcast", {event:"gesto"}, ({payload}) => emit("gesto", payload))
+      .subscribe();
     chPres = client.channel("lago-presenca", {config:{presence:{key:me.nome}}});
     chPres.on("presence", {event:"sync"}, () => { onlineNames = Object.keys(chPres.presenceState()); emit("presenca", onlineNames); })
       .subscribe(async status => { if(status === "SUBSCRIBED") await chPres.track({nome:me.nome, desde:Date.now()}); });
@@ -2449,11 +2472,97 @@ const Live = (() => {
     clearInterval(beat); clearInterval(authT);
     document.removeEventListener("visibilitychange", markSeen);
     if(client){ try{ client.removeAllChannels(); }catch(e){} }
-    client = chCartas = chPres = chPartidas = null; onlineNames = [];
+    client = chCartas = chPres = chPartidas = chSala = null; onlineNames = [];
     emit("presenca", []);
   }
   const lastSeen = () => Conta.api("presenca?select=nome,visto").catch(() => []);
-  return {start, stop, on:(k, f) => handlers[k].push(f), online:() => onlineNames, lastSeen};
+  // só vale a pena falar quando há alguém do outro lado a ouvir
+  const acompanhado = () => !!chSala && onlineNames.length > 1;
+  function enviar(evento, payload){
+    if(!acompanhado()) return false;
+    try{ chSala.send({type:"broadcast", event:evento, payload}); }catch(e){ return false; }
+    return true;
+  }
+  return {start, stop, on:(k, f) => handlers[k].push(f), online:() => onlineNames, lastSeen, enviar, acompanhado};
+})();
+
+/* ---------- a sala: o que cada um está a fazer, ao vivo ----------
+   Tudo o que muda — jogo, sítio da página, rato — viaja num envelope só, no
+   máximo dez vezes por segundo, e só quando o outro está mesmo online. O
+   plano gratuito da Supabase dá dois milhões de mensagens por mês; o contador
+   aqui em baixo guarda uma estimativa do gasto, para não haver surpresas. */
+const Sala = (() => {
+  const RITMO = 100;
+  const LIMITE = 2e6;
+  let meu = {}, deles = null, delesAt = 0, sujo = false, timer = 0, ultimo = 0;
+  const cofre = store("java-sala-gasto");
+  let gasto = cofre.get() || {mes:"", n:0};
+  const mesAtual = () => new Date().toISOString().slice(0, 7);
+  function marca(){
+    const m = mesAtual();
+    if(gasto.mes !== m) gasto = {mes:m, n:0};
+    gasto.n++;
+    if(gasto.n % 20 === 0) cofre.set(gasto);   // gravar a cada mensagem seria escrever no disco 10 vezes por segundo
+  }
+  function envia(){
+    timer = 0;
+    if(!sujo || document.hidden) return;
+    const me = Conta.user();
+    if(!me) return;
+    if(Live.enviar("estado", Object.assign({nome:me.nome, em:Date.now()}, meu))){ sujo = false; ultimo = Date.now(); marca(); }
+  }
+  function agenda(){
+    if(timer || !Live.acompanhado()) return;
+    timer = setTimeout(envia, Math.max(0, RITMO - (Date.now() - ultimo)));
+  }
+  /* junta ao envelope e manda-o no próximo intervalo */
+  function poe(parcial){ Object.assign(meu, parcial); sujo = true; agenda(); }
+  function gesto(tipo, extra){
+    const me = Conta.user();
+    if(me && Live.enviar("gesto", Object.assign({nome:me.nome, tipo, em:Date.now()}, extra || {}))) marca();
+  }
+  const avisa = () => document.dispatchEvent(new CustomEvent("sala:estado", {detail:deles}));
+  function recebe(p){ deles = p; delesAt = Date.now(); marca(); avisa(); }
+  Live.on("estado", recebe);
+  Live.on("presenca", nomes => {
+    const me = Conta.user();
+    if(!me) return;
+    if(nomes.includes(OTHER_NAME(me.nome))){ sujo = true; agenda(); }   // entrou agora: diz-lhe já o que estás a fazer
+    else if(deles){ deles = null; avisa(); }
+  });
+  document.addEventListener("visibilitychange", () => { if(!document.hidden){ sujo = true; agenda(); } });
+  return {poe, gesto, recebe, deles:() => deles, quando:() => delesAt,
+    gasto:() => ({mes:gasto.mes, n:gasto.n, limite:LIMITE, pct:Math.round(gasto.n / LIMITE * 100)})};
+})();
+
+/* ---------- ler o envelope: o que é que o outro está a fazer ----------
+   O relógio do Swandoku não vem em cada mensagem: vem a hora a que a partida
+   começou e o relógio anda sozinho deste lado. Uma mensagem em vez de uma por
+   segundo. */
+const Atividade = (() => {
+  const JOGOS = {
+    cerejas:{nome:"Swanrejas", onde:'section[aria-labelledby="gameTitle"]'},
+    swandoku:{nome:"Swandoku", onde:'section[aria-labelledby="sdTitle"]'},
+    musica:{nome:"Adivinha a música", onde:"#musica"}
+  };
+  const rel = ms => Math.floor(ms / 60000) + ":" + String(Math.floor(ms / 1000) % 60).padStart(2, "0");
+  const VALIDADE = 3 * 60000;   // uma partida acabada fica à vista três minutos
+  function ler(p){
+    const j = p && p.jogo;
+    if(!j || !JOGOS[j.j]) return null;
+    if(!["a jogar", "acabou", "resolveu"].includes(j.e)) return null;
+    if(j.e !== "a jogar" && Date.now() - (j.em || 0) > VALIDADE) return null;
+    const info = JOGOS[j.j];
+    let texto, vivo = j.e === "a jogar";
+    if(j.j === "cerejas") texto = vivo ? `a jogar ${info.nome} · ${j.s} ${j.s === 1 ? "cereja" : "cerejas"}, nível ${j.n}`
+      : `acabou o ${info.nome} com ${j.s} ${j.s === 1 ? "cereja" : "cerejas"}`;
+    else if(j.j === "swandoku") texto = vivo ? `no ${info.nome} ${j.m} · ${rel(Date.now() - j.t0)}`
+      : `resolveu o ${info.nome} ${j.m} em ${rel((j.t || 0) * 1000)}`;
+    else texto = vivo ? `a adivinhar músicas · ${j.s} ${j.s === 1 ? "ponto" : "pontos"}`
+      : `acabou o jogo das músicas com ${j.s} ${j.s === 1 ? "ponto" : "pontos"}`;
+    return {texto, vivo, onde:info.onde, jogo:j.j, nome:info.nome, dados:j};
+  }
+  return {ler, rel};
 })();
 
 /* avisos na página e notificações do navegador */
@@ -3224,7 +3333,16 @@ async function renderPresence(){
   const other = OTHER_NAME(me.nome), on = Live.online().includes(other);
   el.hidden = false;
   el.classList.toggle("on", on);
-  if(on){ el.querySelector("span").textContent = `${NICE(other)} está aqui`; return; }
+  if(on){
+    const act = Atividade.ler(Sala.deles());
+    el.querySelector("span").textContent = act ? `${NICE(other)} ${act.texto}` : `${NICE(other)} está aqui`;
+    el.classList.toggle("a-jogar", !!(act && act.vivo));
+    el.dataset.onde = act ? act.onde : "";
+    el.title = act ? "Ir ver" : "";
+    return;
+  }
+  el.classList.remove("a-jogar");
+  el.dataset.onde = "";
   const row = seenCache.find(r => r.nome === other);
   if(!row){ el.querySelector("span").textContent = `${NICE(other)} ainda não entrou`; return; }
   const mins = Math.round((Date.now() - new Date(row.visto)) / 60000);
@@ -3233,7 +3351,38 @@ async function renderPresence(){
     : mins < 1440 ? `${NICE(other)} esteve cá há ${Math.round(mins / 60)} h`
     : `${NICE(other)} esteve cá a ${fmt.short.format(new Date(row.visto))}`;
 }
+/* o aviso ao lado de cada jogo: «ela está a jogar agora» */
+function renderAoVivo(){
+  const me = Conta.user(), a = Atividade.ler(Sala.deles());
+  const outro = me ? NICE(OTHER_NAME(me.nome)) : "";
+  const dela = outro === "Bibi" ? "A Bibi" : "O " + outro;
+  [["cerejas", "#gLive"], ["swandoku", "#sdLive"], ["musica", "#muLive"]].forEach(([j, sel]) => {
+    const el = $(sel);
+    if(!el) return;
+    const on = !!(a && a.jogo === j);
+    el.hidden = !on;
+    if(!on) return;
+    const d = a.dados;
+    let txt;
+    if(j === "cerejas") txt = a.vivo ? `está a jogar agora — ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}, nível ${d.n}`
+      : `acabou agora com ${d.s} ${d.s === 1 ? "cereja" : "cerejas"}`;
+    else if(j === "swandoku") txt = a.vivo ? `está no ${d.m} — ${Atividade.rel(Date.now() - d.t0)}${d.dia ? " (o do dia)" : ""}`
+      : `resolveu o ${d.m} em ${Atividade.rel((d.t || 0) * 1000)}`;
+    else txt = a.vivo ? `está a jogar — ${d.s} ${d.s === 1 ? "ponto" : "pontos"}` : `acabou com ${d.s} ${d.s === 1 ? "ponto" : "pontos"}`;
+    el.innerHTML = `<i class="${a.vivo ? "viva" : ""}" aria-hidden="true"></i><span>${esc(dela)} ${esc(txt)}</span>`;
+  });
+}
 Live.on("presenca", renderPresence);
+document.addEventListener("sala:estado", () => { renderPresence(); renderAoVivo(); });
+// o relógio do Swandoku do outro lado anda aqui, sem gastar mensagens
+setInterval(() => { const a = Atividade.ler(Sala.deles()); if(a){ renderPresence(); renderAoVivo(); } }, 1000);
+// carregar na presença leva ao sítio onde ele ou ela está
+$("#presence").addEventListener("click", () => {
+  const onde = $("#presence").dataset.onde;
+  if(!onde) return;
+  if(document.body.dataset.mode !== "bibi") setMode("bibi");
+  setTimeout(() => { const el = document.querySelector(onde); if(el) el.scrollIntoView({behavior:reduceMotion.matches ? "auto" : "smooth", block:"start"}); }, 400);
+});
 async function refreshSeen(){ if(Conta.loggedIn()){ seenCache = await Live.lastSeen(); renderPresence(); } }
 setInterval(refreshSeen, 60000);
 function startLive(){ if(Conta.loggedIn()){ Live.start(); refreshSeen(); Placar.load(); } else { Live.stop(); renderPresence(); Placar.limpar(); } Disco.sync(); }
@@ -3552,7 +3701,15 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
 
   /* ---------- menu ---------- */
   const menuBtn = $("#menuBtn"), menuList = $("#menuList");
-  const setMenu = open => { menuList.dataset.open = open; menuBtn.setAttribute("aria-expanded", open); if(open) menuList.querySelector("button").focus(); };
+  const setMenu = open => {
+    menuList.dataset.open = open; menuBtn.setAttribute("aria-expanded", open);
+    if(open){ mostraUso(); menuList.querySelector("button").focus(); }
+  };
+  /* quanto do tempo real do mês já foi gasto (estimativa deste aparelho) */
+  function mostraUso(){
+    const g = Sala.gasto();
+    $("#usoSala").textContent = g.n ? `tempo real: ${g.n.toLocaleString("pt-PT")} de ${(g.limite / 1e6)} M mensagens este mês (${g.pct}%)` : "tempo real: nada gasto este mês";
+  }
   menuBtn.addEventListener("click", e => { e.stopPropagation(); setMenu(menuList.dataset.open !== "true"); });
   document.addEventListener("click", e => { if(!e.target.closest(".menu")) setMenu(false); });
   document.addEventListener("keydown", e => { if(e.key === "Escape" && menuList.dataset.open === "true"){ setMenu(false); menuBtn.focus(); } });
@@ -4634,7 +4791,7 @@ function initSwandoku(hearts, centerOf){
   const doneText = g => g.placar === "ok" ? `Resolvido em ${time(Math.round(g.elapsed))}. Já está no placar; amanhã há outro.`
     : g.placar === "repetida" ? "Já tinhas resolvido este noutro aparelho: conta o primeiro tempo." : `Resolvido em ${time(Math.round(g.elapsed))}. Amanhã há outro.`;
   function openMode(m, n){
-    if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; }
+    if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; eco(); }
     mode = m;
     document.querySelectorAll("#sdMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
     if(m === "dia") return openDaily(n);
@@ -4733,6 +4890,19 @@ function initSwandoku(hearts, centerOf){
   document.addEventListener("placar:atualizado", updateBest);
 
   function updateClock(){ clock.textContent = time(elapsedNow()); }
+  /* o outro lado precisa de saber a que horas começou: o relógio anda sozinho lá,
+     em vez de gastar uma mensagem por segundo */
+  let ecoSD = "";
+  function eco(){
+    if(!game) return;
+    const vivo = !!startedAt && !game.done;
+    const e = game.done ? "resolveu" : vivo ? "a jogar" : "parado";
+    const chave = e + game.n + Math.round(game.elapsed);
+    if(chave === ecoSD) return;
+    ecoSD = chave;
+    Sala.poe({jogo:{j:"swandoku", m:game.n + "×" + game.n, t0:Date.now() - elapsedNow() * 1000,
+      e, t:Math.round(elapsedNow()), dia:!!game.dia, em:Date.now()}});
+  }
 
   // o histórico guarda também o rascunho, para «Anular» o desfazer
   const snap = i => [i, game.cur[i], game.notes.slice()];
@@ -4761,6 +4931,7 @@ function initSwandoku(hearts, centerOf){
   function checkWin(){
     if(game.cur.every((v, i) => v === game.sol[i])){
       game.elapsed = elapsedNow(); startedAt = 0; game.done = true;
+      eco();
       const t = Math.round(game.elapsed), n = game.n, record = !best[n] || t < best[n];
       hearts(...centerOf(board), 18);
       if(game.dia){
@@ -4839,7 +5010,7 @@ function initSwandoku(hearts, centerOf){
     else if(startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); }
   });
   io.observe(board);
-  tick = setInterval(() => { if(game && startedAt && !game.done) updateClock(); }, 1000);
+  tick = setInterval(() => { if(game && startedAt && !game.done){ updateClock(); eco(); } }, 1000);
   window.addEventListener("pagehide", () => { if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); } });
 
   openMode(mode, [4, 6, 9].includes(saved.n) ? saved.n : 6);
@@ -4909,6 +5080,7 @@ function initMusica(hearts, centerOf){
     $("#muRound").textContent = jogo ? `pergunta ${r + 1} de ${RONDAS}` : `${RONDAS} perguntas · ${SEGUNDOS} segundos cada`;
     $("#muScore").innerHTML = jogo || estado === "fim" ? `<b class="num">${pontos}</b> pontos` : saved.best ? `recorde <b class="num">${saved.best}</b>` : "";
     if(!jogo) fuse.style.transform = "scaleX(0)";
+    if(jogo || estado === "fim") Sala.poe({jogo:{j:"musica", s:pontos, r:r + 1, e:jogo ? "a jogar" : "acabou", em:Date.now()}});
   }
   function inicio(msg){
     estado = "inicio"; hud();
@@ -5300,6 +5472,11 @@ function initGame(data, saveData, hearts, centerOf){
     if(scoreEl.textContent !== s) scoreEl.textContent = s;
     if(timeEl.textContent !== tm) timeEl.textContent = tm;
     if(levelEl.textContent !== lv) levelEl.textContent = lv;
+    // do outro lado vê-se a partida a acontecer (a Sala junta tudo num envelope só)
+    if(running && (score !== ecoScore || level !== ecoNivel)){
+      ecoScore = score; ecoNivel = level;
+      Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"a jogar", em:Date.now()}});
+    }
     fuse.style.transform = `scaleX(${clamp(left / MAX_LEFT, 0, 1)})`;
     fuse.parentElement.classList.toggle("low", left < 6);
   }
@@ -5352,9 +5529,12 @@ function initGame(data, saveData, hearts, centerOf){
     draw(t);
     raf = requestAnimationFrame(loop);   // o lago continua vivo depois de a partida acabar (antes o ciclo parava aqui e a partida seguinte ficava congelada)
   }
+  let ecoScore = -1, ecoNivel = -1;
   function start(){
     fitScale();
     running = true; left = START; score = 0; caught = 0; level = 1; combo = 0; bestCombo = 0; played = 0;
+    ecoScore = -1; ecoNivel = -1;
+    Sala.poe({jogo:{j:"cerejas", s:0, n:1, e:"a jogar", em:Date.now()}});
     drops = []; sparks = []; rings = []; texts = []; spawnIn = .3; shake = 0; flash = null;
     ui.dataset.show = "false"; hud();
     $("#gRestart").hidden = false;
@@ -5376,6 +5556,7 @@ function initGame(data, saveData, hearts, centerOf){
   function end(){
     const natural = left <= 0;
     running = false; $("#gRestart").hidden = true;
+    Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"acabou", em:Date.now()}});
     if(natural) Placar.registar("cerejas", 0, score);   // só conta a partida jogada até ao fim
     const record = score > (data.best || 0);
     if(record){ data.best = score; saveData(); }
