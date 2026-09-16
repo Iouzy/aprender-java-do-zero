@@ -3021,9 +3021,10 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
     if(old && Array.isArray(old.done)) old.done.forEach((v, i) => { if(v && OLD_ORDER[i]) state.done[OLD_ORDER[i]] = true; });
   }
   const save = () => st.set(state);
-  // data do commit de cada exercício; com data conta como feito, a menos que o desmarques
+  // data do commit de cada exercício; serve para datar a lista, não para marcar
   const gitDate = n => { const it = HISTORY.items.find(i => i.kind === "ex" && i.file === n.toLowerCase()); return it ? it.at : null; };
-  const isDone = e => e.n in state.done ? !!state.done[e.n] : !!gitDate(e.n);
+  // ter commit não é saber. Só conta quando marcas à mão, depois de acertares a previsão.
+  const isDone = e => !!state.done[e.n];
   const dateLabel = e => { const d = gitDate(e.n); return d ? `feito a ${fmt.short.format(d)}, ${fmt.time(d)}` : "ainda sem commit"; };
   const decode = b64 => new TextDecoder("utf-8").decode(Uint8Array.from(atob(b64), c => c.charCodeAt(0)));
   let filter = "all", query = "";
