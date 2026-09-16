@@ -52,3 +52,27 @@ drop trigger if exists cartas_limite on public.cartas;
 create trigger cartas_limite
   before insert on public.cartas
   for each row execute function public.cartas_limite();
+
+-- ---------------------------------------------------------------------------
+-- Canal da sala (o tempo real entre os dois), fechado a estranhos.
+--
+-- Sem isto o canal é aberto: a chave publicável está no HTML, como tem de
+-- estar em qualquer site, e quem a tirar de lá entra no canal, ouve o que
+-- passa e também consegue escrever lá dentro com um nome à escolha.
+-- Com isto, o Realtime passa a exigir o token de uma das duas contas.
+--
+-- ORDEM: correr este SQL PRIMEIRO. Só depois ligar o `private: true` no
+-- java-bancada.html (está assinalado com «@CANAL-PRIVADO»). Ao contrário,
+-- o tempo real deixa de funcionar até a política existir.
+
+alter table realtime.messages enable row level security;
+
+drop policy if exists "sala: ouvir" on realtime.messages;
+create policy "sala: ouvir" on realtime.messages
+  for select to authenticated
+  using (realtime.topic() in ('sala', 'lago-presenca') and extension in ('broadcast', 'presence'));
+
+drop policy if exists "sala: falar" on realtime.messages;
+create policy "sala: falar" on realtime.messages
+  for insert to authenticated
+  with check (realtime.topic() in ('sala', 'lago-presenca') and extension in ('broadcast', 'presence'));
