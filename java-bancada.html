@@ -1028,6 +1028,12 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 .jump-btn svg{width:21px;height:14px}
 /* sem espaço para os nomes: só os ícones */
 @media(max-width:1219px){.jump button{width:38px;padding:0;justify-content:center}.jump span{display:none}}
+/* o mesmo, mas por medida: a frase da presença vale mais do que os nomes
+   dos atalhos, por isso são estes que cedem primeiro — ver ajustaPresence() */
+@media(min-width:901px){
+  .wrap.squeeze .jump button{width:38px;padding:0;justify-content:center}
+  .wrap.squeeze .jump span{display:none}
+}
 /* ecrãs estreitos: um só botão, que abre a lista */
 @media(max-width:900px){
   .jump-btn{display:inline-flex}
@@ -3487,11 +3493,24 @@ let seenCache = [];
 function ajustaPresence(){
   const el = $("#presence");
   if(!el || el.hidden) return;
-  el.classList.remove("tight");   // mostra tudo primeiro, senão nunca sai do "tight" (mede 0 contra 0)
+  const barra = el.closest(".wrap");
+  // mostra tudo primeiro, senão nunca sai do "tight" (mede 0 contra 0)
+  el.classList.remove("tight");
+  if(barra) barra.classList.remove("squeeze");
   const span = el.querySelector("span");
-  if(span.scrollWidth > span.clientWidth) el.classList.add("tight");
+  const cabe = () => span.scrollWidth <= span.clientWidth + 1;   // +1: a largura real é fracionária
+  if(cabe()) return;
+  // no Modo Bibi a barra leva também os atalhos e é a presença que encolhe;
+  // tira-se os nomes dos atalhos e só se ainda assim não couber é que a frase cai
+  if(barra){
+    barra.classList.add("squeeze");
+    if(cabe()) return;
+    barra.classList.remove("squeeze");
+  }
+  el.classList.add("tight");
 }
 window.addEventListener("resize", ajustaPresence);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(ajustaPresence);   // as fontes do Modo Bibi chegam depois
 async function renderPresence(){
   const el = $("#presence"), me = Conta.user();
   if(!me){ el.hidden = true; return; }
