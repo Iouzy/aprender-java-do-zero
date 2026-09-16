@@ -65,14 +65,19 @@ create trigger cartas_limite
 -- java-bancada.html (está assinalado com «@CANAL-PRIVADO»). Ao contrário,
 -- o tempo real deixa de funcionar até a política existir.
 
-alter table realtime.messages enable row level security;
+-- A RLS já vem ligada de origem na realtime.messages, e a tabela é do
+-- supabase_realtime_admin: um «alter table ... enable row level security»
+-- rebenta com «must be owner of table messages». As políticas, essas,
+-- criam-se à vontade.
 
 drop policy if exists "sala: ouvir" on realtime.messages;
 create policy "sala: ouvir" on realtime.messages
   for select to authenticated
-  using (realtime.topic() in ('sala', 'lago-presenca') and extension in ('broadcast', 'presence'));
+  using ((select realtime.topic()) in ('sala', 'lago-presenca')
+    and realtime.messages.extension in ('broadcast', 'presence'));
 
 drop policy if exists "sala: falar" on realtime.messages;
 create policy "sala: falar" on realtime.messages
   for insert to authenticated
-  with check (realtime.topic() in ('sala', 'lago-presenca') and extension in ('broadcast', 'presence'));
+  with check ((select realtime.topic()) in ('sala', 'lago-presenca')
+    and realtime.messages.extension in ('broadcast', 'presence'));
