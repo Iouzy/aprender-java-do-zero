@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Atualiza o histórico de commits embutido no java-bancada.html.
 
-O Modo Bibi e o mapa de atividade leem estes dados. Corre depois de cada
-commit (ou deixa um hook post-commit fazer isso):
+O Modo Bibi e o mapa de atividade leem estes dados. O registo em direto vai
+buscar os commits ao GitHub sozinho, mas cai para esta lista quando não há
+rede — por isso vale a pena mantê-la fresca. Corre depois de cada commit (ou
+deixa um hook post-commit fazer isso):
 
     python3 bibi-atualizar.py
 """

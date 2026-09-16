@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0E1016" id="themeColor">
+<meta name="theme-color" content="#090B11" id="themeColor">
 <meta name="color-scheme" content="dark light">
 <title>Java — bancada de trabalho</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,16 +14,19 @@
    Tokens — modo bancada (escuro, moderno)
    ========================================================= */
 :root{
-  --bg:#0E1016; --bg2:#12151D; --surface:#161A23; --surface2:#1C212C; --raise:#252B38;
-  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.13);
-  --text:#ECEEF4; --muted:#9AA1B2; --dim:#687084;
-  --accent:#A3B0FF; --accent-2:#7C8CF5; --accent-ink:#141833;
-  --mint:#74E0B5; --amber:#F7C07A; --red:#FF8D8D;
+  --bg:#090B11; --bg2:#0D1018; --surface:#12161F; --surface2:#181D28; --raise:#222938;
+  --line:rgba(176,188,255,.10); --line2:rgba(176,188,255,.18);
+  --text:#EBEEF6; --muted:#98A1B8; --dim:#646C82;
+  --accent:#A9B6FF; --accent-2:#7C8CF5; --accent-ink:#0F1229;
+  --mint:#6FE3B6; --amber:#F4BE7B; --red:#FF8F93;
+  --glass:rgba(18,22,31,.72);
+  --sh-1:0 1px 2px rgba(0,0,0,.4);
+  --sh-2:0 22px 48px -26px rgba(0,0,0,.9),0 2px 6px rgba(0,0,0,.35);
   --sans:"Geist",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"Geist Mono",ui-monospace,SFMono-Regular,Consolas,monospace;
   --ease-out:cubic-bezier(.23,1,.32,1);
   --ease-io:cubic-bezier(.77,0,.175,1);
-  --r-shell:22px; --r-card:16px; --r-ctl:10px;
+  --r-shell:22px; --r-card:18px; --r-ctl:12px;
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;color-scheme:dark}
@@ -35,6 +38,11 @@ button{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .skip:focus{top:12px}
 section,[id]{scroll-margin-top:96px}
 body{margin:0;background:var(--bg);color:var(--text);font:15px/1.55 var(--sans);-webkit-font-smoothing:antialiased;min-height:100dvh}
+body[data-mode=bancada]{background:
+  radial-gradient(1100px 620px at 12% -8%,rgba(124,140,245,.16),transparent 62%),
+  radial-gradient(900px 560px at 96% 6%,rgba(111,227,182,.07),transparent 58%),
+  radial-gradient(900px 700px at 50% 108%,rgba(163,110,200,.10),transparent 60%),
+  var(--bg);background-attachment:fixed}
 button,input,select,textarea{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:none;padding:0}
 h1,h2,h3{margin:0;font-weight:600;letter-spacing:-.02em;text-wrap:balance}
@@ -72,10 +80,36 @@ body[data-mode=bibi] .modes .thumb{transform:translateX(100%)}
 .presence i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}
 .presence.on{color:var(--text)}
 .presence.on i{background:var(--mint);box-shadow:0 0 0 0 rgba(116,224,181,.55);animation:pulse 2.2s ease-out infinite}
+.presence[data-onde]:not([data-onde=""]){cursor:pointer;border-radius:999px;padding:4px 10px;margin:-4px -10px;transition:background-color .2s ease}
+@media (hover:hover) and (pointer:fine){.presence[data-onde]:not([data-onde=""]):hover{background:rgba(255,255,255,.07)}}
+.presence.a-jogar i{background:var(--amber);box-shadow:0 0 0 0 rgba(244,190,123,.55)}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(116,224,181,.55)}70%{box-shadow:0 0 0 8px rgba(116,224,181,0)}100%{box-shadow:0 0 0 0 rgba(116,224,181,0)}}
 body[data-mode=bibi] .presence{font-family:var(--display);font-style:italic;font-size:16px;color:var(--on-dark-2)}
 body[data-mode=bibi] .presence.on{color:var(--gold-2)}
 body[data-mode=bibi] .presence.on i{background:var(--candle)}
+/* ---------- o rato do outro e o trilho do lado direito ---------- */
+.rastro{position:fixed;left:0;top:0;z-index:95;pointer-events:none;display:flex;align-items:flex-start;gap:6px;color:var(--accent);will-change:transform}
+.rastro[hidden]{display:none}
+.rastro svg{width:22px;height:22px;flex:none;filter:drop-shadow(0 2px 4px rgba(0,0,0,.55))}
+.rastro b{margin-top:15px;font:600 11.5px var(--sans);padding:3px 9px;border-radius:999px;background:var(--accent);color:var(--accent-ink);
+  white-space:nowrap;box-shadow:0 6px 14px -6px rgba(0,0,0,.7)}
+body[data-mode=bibi] .rastro{color:#D8455F}
+body[data-mode=bibi] .rastro b{background:var(--burgundy);color:var(--parch);font:italic 500 14px var(--book)}
+
+/* uma calha fina no bordo direito: a página inteira, com o ponto onde o outro está */
+.trilho{position:fixed;right:10px;top:12vh;bottom:12vh;width:2px;z-index:60;pointer-events:none;border-radius:2px;
+  background:linear-gradient(180deg,transparent,var(--line2) 10%,var(--line2) 90%,transparent)}
+.trilho[hidden]{display:none}
+.trilho i{position:absolute;right:-4px;top:0;width:10px;height:10px;margin-top:-5px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 3px rgba(9,11,17,.65);transition:transform .55s var(--ease-out),background-color .3s ease}
+.trilho i[data-perto=true]{background:var(--mint)}
+.trilho span{position:absolute;right:16px;top:0;margin-top:-13px;padding:5px 11px;border-radius:999px;font:500 12px var(--sans);
+  background:var(--glass);border:1px solid var(--line);color:var(--muted);white-space:nowrap;max-width:40vw;overflow:hidden;text-overflow:ellipsis;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);transition:transform .55s var(--ease-out)}
+body[data-mode=bibi] .trilho i{background:#C03049;box-shadow:0 0 0 3px rgba(20,15,12,.75)}
+body[data-mode=bibi] .trilho span{background:rgba(20,15,12,.72);border-color:rgba(201,165,95,.25);color:var(--on-dark);font:italic 400 15px var(--book)}
+@media(max-width:620px){.trilho span{display:none}.rastro{display:none}}
+
 /* ---------- gira-discos: o disco do canto, a estante e a janela do vídeo ---------- */
 .disco{position:fixed;left:16px;bottom:16px;z-index:88;display:flex;flex-direction:column;align-items:flex-start;gap:10px;max-width:calc(100vw - 32px)}
 .disco[hidden],.vwin[hidden]{display:none}
@@ -104,6 +138,7 @@ body[data-mode=bibi] .presence.on i{background:var(--candle)}
 .disco-ic{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:rgba(241,230,207,.82);transition:background-color .2s ease,color .2s ease}
 .disco-ic svg{width:18px;height:18px}
 .disco-ic[aria-pressed=true]{color:#E9B8C0}
+.disco-juntos.juntos-on{color:#E9B8C0;background:rgba(233,184,192,.16);box-shadow:inset 0 0 0 1px rgba(233,184,192,.35)}
 @media (hover:hover) and (pointer:fine){.disco-ic:hover{background:rgba(241,230,207,.08);color:#F6ECD6}}
 .disco-play{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(120% 140% at 30% 20%,#C23A50,#6A1C29 60%,#3E0E17);color:#F4E9D2;transition:transform .12s ease}
 .disco-play:active{transform:scale(.94)}
@@ -273,6 +308,7 @@ body[data-mode=bibi] .toast-x{color:#6B5845}
 .icon-btn{width:38px;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted);transition:background-color .2s ease,color .2s ease}
 .icon-btn svg{width:18px;height:18px}
 @media (hover:hover) and (pointer:fine){.icon-btn:hover{background:rgba(255,255,255,.07);color:var(--text)}}
+.menu-note{padding:8px 12px;margin:0;font:400 12px var(--mono);color:var(--dim);border-bottom:1px solid var(--line);white-space:nowrap}
 .menu-list{position:absolute;right:0;top:calc(100% + 10px);min-width:220px;padding:6px;border-radius:14px;background:var(--surface2);border:1px solid var(--line2);
   box-shadow:0 20px 40px -12px rgba(0,0,0,.6);transform-origin:top right;transition:opacity .18s var(--ease-out),transform .18s var(--ease-out)}
 .menu-list[data-open=false]{opacity:0;transform:scale(.96) translateY(-4px);pointer-events:none}
@@ -285,19 +321,25 @@ body[data-mode=bibi] .menu{display:none}
    Modo bancada
    ========================================================= */
 .m-bancada[hidden],.m-bibi[hidden]{display:none!important}
-.hero{padding:34px 0 26px}
-.hero h1{font-size:clamp(28px,4.4vw,46px);line-height:1.05;max-width:18ch}
-.hero .sub{color:var(--muted);margin-top:12px;max-width:58ch;font-size:16px}
+.hero{padding:40px 0 28px;display:grid;gap:14px}
+.eyebrow{display:flex;align-items:center;gap:10px;font:500 11px/1 var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.eyebrow::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--line2),transparent)}
+.hero h1{font-size:clamp(30px,5vw,54px);line-height:1.01;letter-spacing:-.035em;max-width:17ch}
+.hero h1 em{font-style:normal;background:linear-gradient(100deg,var(--accent),#C9B5FF 55%,var(--mint));-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .sub{color:var(--muted);max-width:60ch;font-size:16.5px;line-height:1.6}
 
-.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:14px;margin-top:28px}
-.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:var(--r-card);padding:20px;position:relative;min-width:0}
-.card h2{font-size:15px;font-weight:600;color:var(--text)}
+.bento{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:12px;margin-top:22px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012));border:1px solid var(--line);border-radius:var(--r-card);padding:20px;position:relative;min-width:0;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.05),var(--sh-1)}
+.card h2{font-size:15px;font-weight:600;color:var(--text);letter-spacing:-.01em}
 .card .hint{color:var(--dim);font-size:13px;margin-top:2px}
-.c-progress{grid-column:span 5;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}
+.c-progress{grid-column:span 5;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center;
+  background:linear-gradient(150deg,rgba(124,140,245,.16),rgba(255,255,255,.02) 46%),var(--surface);box-shadow:inset 0 1px 0 rgba(255,255,255,.07),var(--sh-2)}
 .c-activity{grid-column:span 7}
-.c-stat{grid-column:span 3}
-.c-bibi{grid-column:span 3;cursor:pointer;text-align:left;transition:border-color .2s ease}
-@media (hover:hover) and (pointer:fine){.c-bibi:hover{border-color:rgba(255,160,190,.35)}}
+/* as três contas são mostradores, não cartões: régua fina em cima em vez de moldura */
+.c-stat{grid-column:span 3;background:none;border:none;border-top:2px solid var(--line2);border-radius:0;padding:16px 2px 0;box-shadow:none}
+.c-bibi{grid-column:span 3;cursor:pointer;text-align:left;background:none;border:none;border-top:2px solid rgba(255,160,190,.4);border-radius:0;padding:16px 2px 0;box-shadow:none;transition:border-color .2s ease,transform .18s var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.c-bibi:hover{border-top-color:rgba(255,160,190,.9);transform:translateY(-2px)}}
 
 .ring{position:relative;width:132px;height:132px}
 .ring svg{width:100%;height:100%;transform:rotate(-90deg)}
@@ -317,19 +359,75 @@ body[data-mode=bibi] .menu{display:none}
 .heat-scroll{overflow-x:auto;margin-top:16px;padding-bottom:4px}
 .heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,14px);gap:4px;width:max-content}
 .heat i{width:14px;height:14px;border-radius:4px;background:rgba(255,255,255,.05);display:block}
-.heat i[data-l="1"]{background:#3B4380}.heat i[data-l="2"]{background:#5E6BD6}.heat i[data-l="3"]{background:var(--accent)}
+.heat i[data-l="1"]{background:#39407A}.heat i[data-l="2"]{background:#5C68D4}.heat i[data-l="3"]{background:var(--accent);box-shadow:0 0 12px -2px rgba(169,182,255,.55)}
 .heat i.today{outline:1px solid var(--line2);outline-offset:1px}
 .heat-legend{display:flex;align-items:center;gap:6px;color:var(--dim);font-size:12px;margin-top:10px}
 .heat-legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
 
-.stat b{display:block;font-size:28px;font-weight:600;letter-spacing:-.03em;margin-top:6px}
-.stat span{color:var(--muted);font-size:13px}
+.stat b{display:block;font-size:32px;font-weight:600;letter-spacing:-.04em;margin-top:4px;line-height:1}
+.stat b:not(.num){font-size:21px;letter-spacing:-.02em;margin-top:8px}
+.stat span{color:var(--muted);font-size:12px;letter-spacing:.02em}
+
+/* ---------- registo em direto: a barra por baixo do bento ---------- */
+.live{display:flex;align-items:center;gap:16px;margin-top:24px;padding:14px 18px;border-radius:var(--r-card);
+  background:linear-gradient(90deg,rgba(111,227,182,.09),rgba(255,255,255,.02) 42%);border:1px solid var(--line);
+  border-left:2px solid var(--mint);flex-wrap:wrap}
+.live-now{display:flex;align-items:center;gap:14px;flex:1;min-width:min(100%,260px)}
+.live-txt{min-width:0}
+.live-eyebrow{font:500 11px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.live-eyebrow .live-state{color:var(--mint);letter-spacing:.06em}
+.live-eyebrow .live-state[data-s=parado]{color:var(--amber)}
+.live-msg{font-size:15.5px;font-weight:500;margin-top:5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.live-meta{display:flex;gap:14px;font:400 12.5px var(--mono);color:var(--muted);flex-wrap:wrap}
+.live-meta b{color:var(--text);font-weight:500}
+.live-go{font-size:13px;font-weight:600;color:var(--accent);border:1px solid var(--line2);border-radius:999px;padding:8px 15px;white-space:nowrap;transition:background-color .2s ease}
+@media (hover:hover) and (pointer:fine){.live-go:hover{background:rgba(169,182,255,.12)}}
+.pulse{width:9px;height:9px;border-radius:50%;background:var(--mint);flex:none;box-shadow:0 0 0 0 rgba(111,227,182,.6);animation:pulse 2.2s ease-out infinite}
+.pulse[data-s=parado]{background:var(--amber);animation:none;box-shadow:none}
+.pulse[data-s=ligar]{background:var(--dim);animation:none;box-shadow:none}
+
+/* ---------- registo em direto: o separador ---------- */
+.live-card{padding:0;overflow:hidden}
+.live-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:20px 20px 16px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.live-head .desc{margin:4px 0 0}
+.live-pill{display:inline-flex;align-items:center;gap:8px;padding:7px 13px;border-radius:999px;background:rgba(111,227,182,.1);color:var(--mint);font:500 12.5px var(--mono);white-space:nowrap}
+.live-pill[data-s=parado]{background:rgba(244,190,123,.1);color:var(--amber)}
+.live-pill[data-s=ligar]{background:rgba(255,255,255,.05);color:var(--dim)}
+.feed{list-style:none;margin:0;padding:6px 0;max-height:min(66vh,620px);overflow:auto}
+.feed-day{position:sticky;top:0;z-index:1;padding:10px 20px 6px;font:500 11px var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+  background:linear-gradient(180deg,var(--surface) 70%,transparent);backdrop-filter:blur(6px)}
+.fe{display:grid;grid-template-columns:82px minmax(0,1fr);gap:16px;padding:14px 20px;border-top:1px solid var(--line);position:relative}
+.fe:first-child{border-top:none}
+.fe-when{font:400 12.5px var(--mono);color:var(--dim);padding-top:2px}
+.fe-when b{display:block;color:var(--muted);font-weight:500}
+.fe-main{min-width:0}
+.fe-title{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.fe-title b{font-size:15px;font-weight:600;letter-spacing:-.01em}
+.fe-sha{font:400 11.5px var(--mono);color:var(--dim);border:1px solid var(--line);border-radius:6px;padding:2px 6px;text-decoration:none}
+@media (hover:hover) and (pointer:fine){.fe-sha:hover{color:var(--accent);border-color:var(--line2)}}
+.fe-body{color:var(--muted);font-size:13.5px;margin-top:6px;white-space:pre-wrap;max-width:74ch}
+.fe-files{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.chip{font:400 11.5px var(--mono);padding:4px 9px;border-radius:7px;background:rgba(255,255,255,.05);color:var(--muted);border:1px solid transparent}
+.chip.java{background:rgba(169,182,255,.12);color:var(--accent);border-color:rgba(169,182,255,.18)}
+.chip.mais{background:none;color:var(--dim)}
+.fe-stat{font:400 12px var(--mono);color:var(--dim);margin-top:8px;display:flex;gap:12px;flex-wrap:wrap}
+.fe-stat .add{color:var(--mint)} .fe-stat .del{color:var(--red)}
+.fe-tag{font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px}
+.fe-tag.ex{background:rgba(111,227,182,.12);color:var(--mint)}
+.fe-tag.site{background:rgba(169,182,255,.12);color:var(--accent)}
+.fe-tag.plano{background:rgba(244,190,123,.12);color:var(--amber)}
+.fe.novo{animation:chegou 2.6s var(--ease-out)}
+@keyframes chegou{0%{background:rgba(111,227,182,.16)}100%{background:transparent}}
+.feed-foot{display:flex;align-items:center;gap:14px;padding:14px 20px;border-top:1px solid var(--line);flex-wrap:wrap}
+.feed-note{font:400 12px var(--mono);color:var(--dim)}
+.feed-empty{padding:26px 20px;color:var(--muted);font-size:14px}
 
 /* separadores com indicador deslizante */
 .tabs{position:sticky;top:74px;z-index:30;margin-top:26px;display:flex;gap:2px;padding:4px;border-radius:14px;background:rgba(22,26,35,.8);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);overflow-x:auto;scrollbar-width:none;width:max-content;max-width:100%}
 .tabs::-webkit-scrollbar{display:none}
-.tab-ind{position:absolute;top:4px;bottom:4px;left:0;border-radius:10px;background:rgba(255,255,255,.08);transition:transform .35s var(--ease-out),width .35s var(--ease-out)}
+.tab-ind{position:absolute;top:4px;bottom:4px;left:0;border-radius:10px;background:linear-gradient(180deg,rgba(169,182,255,.20),rgba(169,182,255,.09));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.12);transition:transform .35s var(--ease-out),width .35s var(--ease-out)}
 .tab{position:relative;z-index:1;padding:9px 15px;border-radius:10px;font-weight:500;font-size:14px;color:var(--muted);white-space:nowrap;transition:color .2s ease}
 .tab[aria-selected=true]{color:var(--text)}
 .pane{padding:26px 0 70px}
@@ -375,8 +473,9 @@ body[data-mode=bibi] .menu{display:none}
 .seg button[aria-pressed=true]{background:rgba(255,255,255,.08);color:var(--text)}
 .count{margin-left:auto;font:400 13px var(--mono);color:var(--dim)}
 
-.ex{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:8px;overflow:hidden;transition:border-color .2s ease}
-.ex.open{border-color:var(--line2)}
+.ex{border:1px solid var(--line);border-radius:14px;background:var(--surface);margin-bottom:8px;overflow:hidden;transition:border-color .2s ease,transform .18s var(--ease-out)}
+.ex.open{border-color:var(--line2);box-shadow:var(--sh-2)}
+@media (hover:hover) and (pointer:fine){.ex:not(.open):hover{border-color:var(--line2)}}
 .ex-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:14px;align-items:center;padding:13px 16px}
 .check{appearance:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--line2);display:grid;place-items:center;cursor:pointer;transition:background-color .2s ease,border-color .2s ease,transform .12s ease}
 .check:active{transform:scale(.9)}
@@ -436,6 +535,9 @@ footer{padding:26px 0 44px;color:var(--dim);font-size:12px}
 @media(max-width:980px){
   .c-progress,.c-activity{grid-column:span 12}
   .c-stat,.c-bibi{grid-column:span 6}
+  .fe{grid-template-columns:1fr;gap:6px}
+  .fe-when{padding-top:0}
+  .fe-when b{display:inline;margin-left:6px}
   .cols{grid-template-columns:1fr}
   .ex-body{grid-template-columns:1fr}
   .src{border-right:none;border-bottom:1px solid var(--line)}
@@ -617,6 +719,51 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 .fact{padding:16px 10px 0 0}
 .fact b{display:block;font-family:var(--display);font-weight:500;font-size:clamp(42px,5vw,60px);line-height:1;color:var(--burgundy)}
 .fact span{font-style:italic;color:var(--parch-soft);font-size:16px}
+
+/* ---------- «ela está a jogar agora», ao lado de cada jogo ---------- */
+.ao-vivo{display:inline-flex;align-items:center;gap:9px;margin-top:10px;padding:7px 14px;border-radius:999px;
+  font-family:var(--book);font-style:italic;font-size:16px;line-height:1.3;color:var(--on-dark);
+  background:rgba(161,38,58,.16);border:1px solid rgba(201,165,95,.28)}
+.ao-vivo[hidden]{display:none}
+.ao-vivo i{width:8px;height:8px;border-radius:50%;background:var(--parch-3);flex:none}
+.ao-vivo i.viva{background:var(--cherry);box-shadow:0 0 0 0 rgba(161,38,58,.5);animation:pulse-cherry 2.4s ease-out infinite}
+.mu-card .ao-vivo,.letter-form .ao-vivo{background:rgba(161,38,58,.10);border-color:rgba(51,36,26,.18);color:var(--parch-ink)}
+.letter-form .ao-vivo{margin:0 0 10px}
+.ao-vivo-btn{font:600 14px var(--book);font-style:normal;padding:3px 12px;border-radius:999px;color:var(--parch);
+  background:radial-gradient(120% 140% at 30% 20%,#C23A50,var(--burgundy) 60%,#3E0E17);box-shadow:inset 0 1px 0 rgba(255,210,200,.3);
+  transition:filter .2s ease,transform .12s ease}
+.ao-vivo-btn:active{transform:scale(.96)}
+@media (hover:hover) and (pointer:fine){.ao-vivo-btn:hover{filter:brightness(1.1)}}
+.sd-side .ao-vivo{margin:0 0 4px;font-size:15px}
+
+/* ---------- caderno de bordo: os commits dele, à medida que acontecem ---------- */
+.livro{padding:clamp(26px,3.6vw,44px) clamp(22px,3.4vw,46px);max-width:920px}
+.livro-topo{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  padding-bottom:16px;border-bottom:1px solid rgba(51,36,26,.22)}
+.livro-topo h3{font-family:var(--display);font-weight:600;font-size:clamp(24px,2.6vw,32px);color:var(--parch-ink);line-height:1.1}
+.livro-estado{display:inline-flex;align-items:center;gap:9px;font-family:var(--book);font-style:italic;font-size:17px;color:var(--parch-soft)}
+.livro-estado i{width:9px;height:9px;border-radius:50%;background:var(--cherry);flex:none;
+  box-shadow:0 0 0 0 rgba(161,38,58,.5);animation:pulse-cherry 2.4s ease-out infinite}
+@keyframes pulse-cherry{0%{box-shadow:0 0 0 0 rgba(161,38,58,.5)}70%{box-shadow:0 0 0 9px rgba(161,38,58,0)}100%{box-shadow:0 0 0 0 rgba(161,38,58,0)}}
+.livro-estado[data-s=parado] i,.livro-estado[data-s=ligar] i{background:var(--parch-3);animation:none;box-shadow:none}
+.livro-lista{list-style:none;margin:0;padding:0;max-height:min(58vh,560px);overflow:auto}
+.lv{padding:18px 0 18px 26px;border-bottom:1px solid rgba(51,36,26,.16);position:relative}
+.lv:last-child{border-bottom:none}
+.lv::before{content:"";position:absolute;left:4px;top:26px;width:9px;height:9px;border-radius:50%;background:var(--parch-3);box-shadow:0 0 0 3px rgba(238,226,198,.9)}
+.lv[data-k=ex]::before{background:var(--cherry)}
+.lv[data-k=site]::before{background:var(--bottle)}
+.lv time{display:block;font-family:var(--book);font-style:italic;font-size:16px;color:var(--parch-soft)}
+.lv b{display:block;font-family:var(--display);font-weight:600;font-size:clamp(21px,2.1vw,25px);line-height:1.15;color:var(--parch-ink);margin-top:2px}
+.lv p{font-size:17px;line-height:1.55;color:#4A3A2C;margin-top:4px;max-width:60ch}
+.lv-selos{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+.selo{font-family:var(--book);font-size:14px;letter-spacing:.02em;padding:3px 11px;border-radius:999px;
+  background:rgba(51,36,26,.08);color:var(--parch-soft);border:1px solid rgba(51,36,26,.14)}
+.selo.ex{background:rgba(161,38,58,.10);color:var(--burgundy);border-color:rgba(161,38,58,.22)}
+.lv.novo{animation:chegou-carta 3s var(--slow)}
+@keyframes chegou-carta{0%{background:rgba(201,165,95,.35)}100%{background:transparent}}
+.livro-pe{margin-top:16px;padding-top:14px;border-top:1px solid rgba(51,36,26,.22);
+  font-family:var(--book);font-style:italic;font-size:16px;color:var(--parch-soft);display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+@media(max-width:620px){.lv b{font-size:20px}.lv p{font-size:16px}}
 
 /* ---------- almanaque ---------- */
 .almanac{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:0;overflow:hidden}
@@ -1092,6 +1239,13 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 <body data-mode="bancada">
 <a class="skip" href="#conteudo">Saltar para o conteúdo</a>
 <div class="toasts" id="toasts" aria-live="polite"></div>
+
+<!-- o rato do outro e o sítio da página onde ele está -->
+<div class="rastro" id="rastro" hidden aria-hidden="true">
+  <svg viewBox="0 0 24 24"><path d="M5 3l14 8-6 1.6L9.6 19Z" fill="currentColor" stroke="rgba(0,0,0,.35)" stroke-width="1" stroke-linejoin="round"/></svg>
+  <b id="rastroNome"></b>
+</div>
+<div class="trilho" id="trilho" hidden aria-hidden="true"><i id="trilhoDot"></i><span id="trilhoLbl"></span></div>
 <!-- letra da música a tocar, por cima dos cisnes (no início do Modo Bibi e em «só o lago») -->
 <div class="amb-lyrics off" id="ambLyrics" hidden aria-hidden="true"><p class="al-line al-prev"></p><p class="al-line al-cur"></p><p class="al-line al-next"></p><p class="al-note"></p></div>
 <!-- gira-discos: só aparece com sessão iniciada -->
@@ -1114,6 +1268,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <button type="button" class="disco-ic" data-act="prev" aria-label="Música anterior"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5v14M19 5 9 12l10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
       <button type="button" class="disco-play" data-act="play" aria-label="Tocar"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-play"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-pause"><path d="M7 5h4v14H7zM13 5h4v14h-4z" fill="currentColor"/></svg></button>
       <button type="button" class="disco-ic" data-act="next" aria-label="Música seguinte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 5v14M5 5l10 7-10 7Z" fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></button>
+      <button type="button" class="disco-ic disco-juntos" data-act="juntos" aria-pressed="false" aria-label="Ouvir juntos" title="Ouvir juntos: os dois ao mesmo tempo, na mesma música"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V7l9-2v10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="6.5" cy="17" r="2.5" fill="currentColor"/><circle cx="15.5" cy="15" r="2.5" fill="currentColor"/></svg></button>
       <button type="button" class="disco-ic" data-act="repeat" data-mode="off" aria-pressed="false" aria-label="Repetir: não"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11V9a3 3 0 0 1 3-3h12M16 3l3 3-3 3M20 13v2a3 3 0 0 1-3 3H5M8 21l-3-3 3-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><text x="12" y="15.4" text-anchor="middle" font-size="10.5" font-weight="700" fill="currentColor" font-family="Georgia,serif" class="rep-1">1</text></svg></button>
     </div>
     <div class="vol sh-vol"><button type="button" class="disco-ic" data-act="mute" aria-label="Sem som"><svg viewBox="0 0 24 24" aria-hidden="true" class="i-vol"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg><svg viewBox="0 0 24 24" aria-hidden="true" class="i-muted"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path d="M17 9.5l5 5M22 9.5l-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button><input type="range" min="0" max="100" step="1" data-act="volume" aria-label="Volume"></div>
@@ -1211,7 +1366,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
     <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 10h11v4a5 5 0 0 1-5 5h-1a5 5 0 0 1-5-5v-4Z" stroke="currentColor" stroke-width="1.7"/><path d="M16 11h1.5a2.5 2.5 0 0 1 0 5H16" stroke="currentColor" stroke-width="1.7"/><path d="M9 3.5c-.8 1 .8 2 0 3M12.5 3.5c-.8 1 .8 2 0 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
     <span class="bt">Java</span><small id="brandSub">~/java</small>
   </span>
-  <span class="presence" id="presence" hidden aria-live="polite"><i aria-hidden="true"></i><span></span></span>
+  <button type="button" class="presence" id="presence" hidden aria-live="polite"><i aria-hidden="true"></i><span></span></button>
   <span class="spacer"></span>
   <div class="modes" role="group" aria-label="Modo da página">
     <span class="thumb" aria-hidden="true"></span>
@@ -1228,6 +1383,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <button type="button" data-go='section[aria-labelledby="sdTitle"]' title="Swandoku"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16v16H4zM9.3 4v16M14.7 4v16M4 9.3h16M4 14.7h16" fill="none" stroke="currentColor" stroke-width="1.6"/></svg><span>Swandoku</span></button>
       <button type="button" data-go="#musica" title="Adivinha a música"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V6l11-2v12" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="6.5" cy="18" r="2.6" fill="currentColor"/><circle cx="17.5" cy="16" r="2.6" fill="currentColor"/></svg><span>Música</span></button>
       <button type="button" data-go="#placar" id="toPlacar" title="Placar"><svg viewBox="0 0 36 24" aria-hidden="true"><path d="M3 20 5 6l8 7 5-11 5 11 8-7 2 14Z" fill="currentColor"/></svg><span>Placar</span></button>
+      <button type="button" data-go="#agora" title="Caderno de bordo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h11l3 3v13H5z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 10h8M8 14h6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span>Agora</span></button>
       <button type="button" data-go='section[aria-label="Cartas"]' title="Cartas"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6.5h17v11h-17z M3.5 7l8.5 6.5L20.5 7" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg><span>Cartas</span></button>
     </nav>
   </div>
@@ -1236,6 +1392,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><circle cx="5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="19" cy="12" r="1.8"/></svg>
     </button>
     <div class="menu-list" id="menuList" data-open="false" role="menu">
+      <p class="menu-note" id="usoSala">tempo real: —</p>
       <button type="button" role="menuitem" id="expMd">Guardar resumo .md</button>
       <button type="button" role="menuitem" id="expJson">Cópia de segurança .json</button>
       <button type="button" role="menuitem" class="danger" id="reset">Repor marcações do Git</button>
@@ -1248,7 +1405,8 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 <span id="conteudo"></span>
 <div class="wrap">
   <section class="hero">
-    <h1 id="heroTitle">Onde é que o teu Java está hoje</h1>
+    <p class="eyebrow">bancada de trabalho · aprender-java-do-zero</p>
+    <h1 id="heroTitle">Onde é que o teu Java <em>está hoje</em></h1>
     <p class="sub">Marca o que já consegues repetir sozinho. Abre qualquer ficheiro para correr o teu código linha a linha, com o terminal ao lado.</p>
 
     <div class="bento">
@@ -1282,12 +1440,25 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <div class="card c-stat stat"><span>Fase atual</span><b id="phaseNow">—</b></div>
       <button type="button" class="card c-bibi stat" id="bibiPeek"><span>Recadinhos da Bibi</span><b class="num" id="bibiCount">0</b></button>
     </div>
+
+    <div class="live" id="liveStrip">
+      <div class="live-now">
+        <span class="pulse" id="livePulse" data-s="ligar" aria-hidden="true"></span>
+        <div class="live-txt">
+          <p class="live-eyebrow">último commit <span class="live-state" id="liveState" data-s="ligar">a ligar ao GitHub…</span></p>
+          <p class="live-msg" id="liveMsg">a ler o histórico…</p>
+        </div>
+      </div>
+      <div class="live-meta" id="liveMeta"></div>
+      <button type="button" class="live-go" id="liveGo">Ver o registo</button>
+    </div>
   </section>
 
   <div class="tabs" role="tablist" aria-label="Secções">
     <span class="tab-ind" id="tabInd" aria-hidden="true"></span>
     <button class="tab" role="tab" id="t-agora" aria-controls="p-agora" aria-selected="true">Agora</button>
     <button class="tab" role="tab" id="t-ex" aria-controls="p-ex" aria-selected="false" tabindex="-1">Exercícios</button>
+    <button class="tab" role="tab" id="t-live" aria-controls="p-live" aria-selected="false" tabindex="-1">Em direto</button>
     <button class="tab" role="tab" id="t-road" aria-controls="p-road" aria-selected="false" tabindex="-1">Percurso</button>
     <button class="tab" role="tab" id="t-reg" aria-controls="p-reg" aria-selected="false" tabindex="-1">Regras</button>
     <button class="tab" role="tab" id="t-notas" aria-controls="p-notas" aria-selected="false" tabindex="-1">Notas</button>
@@ -1334,6 +1505,23 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <span class="count" id="listCount"></span>
     </div>
     <div id="list"></div>
+  </section>
+
+  <section class="pane" id="p-live" role="tabpanel" aria-labelledby="t-live" hidden>
+    <div class="card live-card">
+      <div class="live-head">
+        <div>
+          <h2>Registo em direto</h2>
+          <p class="desc">Cada vez que guardas trabalho no GitHub, aparece aqui sozinho — sem recarregar a página. A lista diz o que mudou em cada commit.</p>
+        </div>
+        <span class="live-pill" id="livePill" data-s="ligar" aria-live="polite"><i class="pulse" data-s="ligar" aria-hidden="true"></i><span>a ligar…</span></span>
+      </div>
+      <ol class="feed" id="feed"><li class="feed-empty">A ler o histórico do GitHub…</li></ol>
+      <div class="feed-foot">
+        <button type="button" class="alt" id="liveRefresh">Procurar agora</button>
+        <span class="feed-note" id="feedNote"></span>
+      </div>
+    </div>
   </section>
 
   <section class="pane" id="p-road" role="tabpanel" aria-labelledby="t-road" hidden>
@@ -1489,6 +1677,24 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
     </div>
   </section>
 
+  <!-- caderno de bordo: o que ele acabou de fazer -->
+  <section class="sheet" id="agora" aria-labelledby="agoraTitle">
+    <div class="wrap">
+      <div class="sheet-head">
+        <h2 id="agoraTitle">O que ele está a fazer agora</h2>
+        <p>Esta folha escreve-se sozinha. Sempre que ele guarda trabalho novo, aparece aqui em poucos segundos — não precisas de fazer nada.</p>
+      </div>
+      <div class="parchment gilt livro">
+        <div class="livro-topo">
+          <h3>Caderno de bordo</h3>
+          <span class="livro-estado" id="livroEstado" data-s="ligar" aria-live="polite"><i aria-hidden="true"></i><span>a espreitar o caderno dele…</span></span>
+        </div>
+        <ul class="livro-lista" id="livroLista"></ul>
+        <p class="livro-pe" id="livroPe"></p>
+      </div>
+    </div>
+  </section>
+
   <!-- II · as cerejas -->
   <section class="chapter" id="chCerejas" aria-labelledby="calTitle">
     <div class="stage" data-film="cerejas" data-frames="120" data-focus="0.5" data-zoom="1.14">
@@ -1572,6 +1778,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
           <p>O cisne apanha cerejas enquanto ele estuda. Arrasta o dedo ou usa as setas do teclado.</p>
         </div>
         <div class="g-records" id="gRec" aria-live="polite"></div>
+        <p class="ao-vivo" id="gLive" hidden aria-live="polite"></p>
       </div>
       <div class="game">
         <canvas id="game" width="1280" height="640" tabindex="0" aria-label="Jogo: move o cisne para apanhar cerejas"></canvas>
@@ -1610,6 +1817,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
             <button type="button" data-n="6" aria-pressed="true">6×6<small>médio</small></button>
             <button type="button" data-n="9" aria-pressed="false">9×9<small>clássico</small></button>
           </div>
+          <p class="ao-vivo" id="sdLive" hidden aria-live="polite"></p>
           <div><p class="sd-clock num" id="sdClock" aria-label="Tempo">0:00</p><p class="sd-best" id="sdBest"></p><p class="sd-best sd-rec" id="sdRec" hidden></p><p class="sd-streak" id="sdStreak" hidden></p></div>
           <div class="sd-palette" id="sdPalette" aria-label="Símbolos"></div>
           <div class="sd-actions">
@@ -1634,6 +1842,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       </div>
       <div class="parchment mu-card">
         <div class="mu-hud"><span id="muRound"></span><span id="muScore"></span></div>
+        <p class="ao-vivo" id="muLive" hidden aria-live="polite"></p>
         <div class="mu-fuse" aria-hidden="true"><i id="muFuse"></i></div>
         <div class="mu-body" id="muBody" aria-live="polite"></div>
       </div>
@@ -1681,6 +1890,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
       <form class="parchment letter-form" id="noteForm">
         <label for="noteText">Querido…</label>
         <p class="sub">Só vocês os dois conseguem ler as cartas, em qualquer aparelho onde tenham entrado.</p>
+        <p class="ao-vivo escrevendo" id="cartaLive" hidden aria-live="polite"></p>
         <textarea id="noteText" name="recado" maxlength="240" autocomplete="off" placeholder="estou orgulhosa de ti…"></textarea>
         <div class="seals" role="group" aria-label="Escolhe o lacre">
           <button type="button" class="seal-btn" data-stk="swan" aria-pressed="true" aria-label="Lacre com cisne"><svg aria-hidden="true"><use href="#s-swan"/></svg></button>
@@ -1755,7 +1965,7 @@ body.ambient-on .topbar{opacity:0;pointer-events:none}
 const EXERCISES=[{"n": "Ola.java", "d": "Primeiro programa: classe, main e println.", "src": "cHVibGljIGNsYXNzIE9sYSB7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKSB7CQoJCVN5c3RlbS5vdXQucHJpbnRsbigiQm9yYSIpOwoJfQp9"}, {"n": "Tipos.java", "d": "Tipos primitivos, divisão inteira, resto e cast.", "src": "cHVibGljIGNsYXNzIFRpcG9zIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCQlpbnQgaW50ZWlybyA9IDc7CgkJaW50IG91dHJvID0gMjsKCgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gLyBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKGludGVpcm8gJSBvdXRybyk7CgkJU3lzdGVtLm91dC5wcmludGxuKChkb3VibGUpIGludGVpcm8gLyBvdXRybyk7CgoJCWRvdWJsZSBwcmVjbyA9IDE5Ljk5OwoJCWludCBwcmVjb0ludGVpcm8gPSAoaW50KSBwcmVjbzsKCQlTeXN0ZW0ub3V0LnByaW50bG4ocHJlY29JbnRlaXJvKTsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiT2xhICIgKyBub21lICsgIiwgdGVucyAiICsgMjUgKyAiIGFub3MiKTsKCX0KfQ=="}, {"n": "Iva.java", "d": "Variáveis String/int e concatenação.", "src": "cHVibGljIGNsYXNzIEl2YXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpIHsKCgkJU3RyaW5nIG5vbWUgPSAiTGVvbmFyZG8iOwoJCVN0cmluZyBjaWRhZGUgPSAiQ29pbWJyYSI7CgkJCgkJaW50IGlkYWRlID0gMjU7CgoJCVN5c3RlbS5vdXQucHJpbnRsbigiTm9tZTogIiArIG5vbWUpOwoJCVN5c3RlbS5vdXQucHJpbnRsbigiSWRhZGU6ICIgKyBpZGFkZSk7CgkJU3lzdGVtLm91dC5wcmludGxuKCJDaWRhZGU6ICIgKyBjaWRhZGUpOwoJfQp9"}, {"n": "Saudacao.java", "d": "Scanner, hasNextInt, if/else if e validação.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFNhdWRhY2FvewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIG8gc2V1IG5vbWU/ICIpOwogICAgICAgICAgICAgICAgU3RyaW5nIG5vbWUgPSBzYy5uZXh0TGluZSgpOwogICAgICAgICAgICAgICAgU3lzdGVtLm91dC5wcmludGxuKCJPbMOhICIgKyBub21lICsgIiwgYmVtLXZpbmRvIik7CgkJCQkKCQlTeXN0ZW0ub3V0LnByaW50bG4oIlF1YWwgw6kgYSBzdWEgaWRhZGU/ICIpOwoKCQlpZiAoc2MuaGFzTmV4dEludCgpKXsKCQkJCgkJCWludCBpZGFkZSA9IHNjLm5leHRJbnQoKTsKCQkJCgoJCQlpZiAoaWRhZGUgPCAwKXsJCgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkEgaWRhZGUgbsOjbyBwb2RlIHNlciBuZWdhdGl2YS4iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxMjApewogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFN5c3RlbS5vdXQucHJpbnRsbigiSsOhIGVzdMOhcyBubyBHdWluZXNzPz8iKTsKCQkJfQoJCQllbHNlIGlmIChpZGFkZSA+PSAxOCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1haW9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJCWVsc2V7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGNvbmZpcm1hZGEsIHRlbnMgIiArIGlkYWRlICsgIiBhbm9zIGUgw6lzIG1lbm9yIGRlIGlkYWRlLiIpOwoJCQl9CgkJfQoJCWVsc2UgewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIklkYWRlIGludsOhbGlkYS4iKTsKCQl9CQkKCX0KfQ=="}, {"n": "Contagem.java", "d": "for crescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtIHsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "ContagemR.java", "d": "for decrescente.", "src": "cHVibGljIGNsYXNzIENvbnRhZ2VtUnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDEwOyBuID49IDE7IG4tLSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbihuKTsKCQl9Cgl9Cn0="}, {"n": "Pares.java", "d": "Números pares alterando o passo do for.", "src": "cHVibGljIGNsYXNzIFBhcmVzewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJZm9yKGludCBuID0gMjsgbiA8PSAxMDsgbiArPSAyKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCX0KCX0KfQ=="}, {"n": "Pares2.java", "d": "Números pares usando % e if.", "src": "cHVibGljIGNsYXNzIFBhcmVzMnsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCWZvcihpbnQgbiA9IDE7IG4gPD0gMTA7IG4rKyl7CgkJCWlmKG4gJSAyID09IDApewoJCQkJU3lzdGVtLm91dC5wcmludGxuKG4pOwoJCQl9CgkJfQoJfQp9"}, {"n": "Tabuada.java", "d": "Scanner + for + cálculo da tabuada.", "src": "aW1wb3J0IGphdmEudXRpbC5TY2FubmVyOwoKcHVibGljIGNsYXNzIFRhYnVhZGF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQlTeXN0ZW0ub3V0LnByaW50bG4oIkJlbS12aW5kbyBhbyBUYWJ1YWRhLCBpbnRyb2R1emEgdW0gbnVtZXJvIGRvIHF1YWwgcXVlaXJhIHNhYmVyIGEgcmVzcGV0aXZhIHRhYnVhZGEiKTsKCQlpbnQgbiA9IHNjLm5leHRJbnQoKTsKCQkKCQlmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewoJCQlTeXN0ZW0ub3V0LnByaW50bG4obiArICIgKiAiICsgbyArICIgPSAiICsgKG4qbykpOwoJCX0KCX0KfQ=="}, {"n": "Metodos.java", "d": "Métodos, parâmetros, return, void e boolean.", "src": "CXB1YmxpYyBjbGFzcyBNZXRvZG9zewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJdGFidWFkYSg5KTsKCgkJaWYgKHZlcklkYWRlKDIwKSl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWFpb3IgZGUgaWRhZGUuIik7CgkJfQoJCWVsc2V7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiw4kgbWVub3IgZGUgaWRhZGUuIik7CgkJfQoKCQlTeXN0ZW0ub3V0LnByaW50bG4oc29tYXIoOSwyKSk7Cgl9CgoJcHVibGljIHN0YXRpYyBib29sZWFuIHZlcklkYWRlKGludCBhKXsKCQlyZXR1cm4gYSAgPj0gMTg7Cgl9CgoJcHVibGljIHN0YXRpYyBpbnQgc29tYXIoaW50IGEsIGludCBiKXsKCXJldHVybiBhICsgYjsKCX0KCQoJcHVibGljIHN0YXRpYyB2b2lkIHRhYnVhZGEoaW50IGEpewoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGFidWFkYSBkbyAiICsgYSArICIuIik7CiAgICAgICAgICAgICAgICBmb3IoaW50IG8gPSAxOyBvIDw9IDEwOyBvKyspewogICAgICAgICAgICAgICAgICAgICAgICAJU3lzdGVtLm91dC5wcmludGxuKGEgKyAiICogIiArIG8gKyAiID0gIiArIChhKm8pKTsKCQl9CgkJU3lzdGVtLm91dC5wcmludGxuKCItLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLSIpOwoJfQp9"}, {"n": "Pessoa.java", "d": "Classe, private, construtor, this, setter e métodos.", "src": "cHVibGljIGNsYXNzIFBlc3NvYXsKCXByaXZhdGUgU3RyaW5nIG5vbWU7Cglwcml2YXRlIFN0cmluZyBnZW5lcm87Cglwcml2YXRlIGludCBpZGFkZTsKCQoJcHVibGljIFBlc3NvYShTdHJpbmcgbm9tZSwgU3RyaW5nIGdlbmVybywgaW50IGlkYWRlKXsKCQl0aGlzLm5vbWUgPSBub21lOwoJCXRoaXMuZ2VuZXJvID0gZ2VuZXJvOwoJCXRoaXMuaWRhZGUgPSBpZGFkZTsKCX0KCQoJcHVibGljIGJvb2xlYW4gbWFpb3JEZUlkYWRlKCl7CiAgICAgICAgCXJldHVybiBpZGFkZSA+PSAxODsKCX0KCQoJcHVibGljIFN0cmluZyBkZXNjcmljYW8oKXsKICAgIAkgICAgCVN0cmluZyBlc3RhZG87CgkJU3RyaW5nIGFydGlnbzsKCQogICAgICAgCQlpZihtYWlvckRlSWRhZGUoKSl7CiAgICAgICAgICAgICAgIAkJZXN0YWRvID0gIsOpIG1haW9yIGRlIGlkYWRlLiI7CiAgICAgICAgCX0KICAgICAgICAJZWxzZXsKICAgICAgICAgICAgICAgIAllc3RhZG8gPSAiw6kgbWVub3IgZGUgaWRhZGUuIjsKICAgICAgICAJfQoKCQlpZiAoZ2VuZXJvLmVxdWFscygiTSIpKXsKCQkJYXJ0aWdvID0gIk8iOwoJCX0KCQllbHNlewoJCQlhcnRpZ28gID0gIkEiOwoJCX0KCQkKCQlyZXR1cm4gYXJ0aWdvICsgIiAiICsgbm9tZSArICIgdGVtICIgKyBpZGFkZSArICIgYW5vcyBlICIgKyBlc3RhZG87Cgl9CgoJcHVibGljIHZvaWQgc2V0SWRhZGUoaW50IGlkYWRlKXsKCQlpZihpZGFkZSA8IDApewoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIihBdGVuw6fDo286IEEgdGVudGF0aXZhIGRlIG11ZGFuw6dhIGRlIGlkYWRlICciICsgaWRhZGUgKyAiJyBwYXJhICIgKyBub21lICsgIiBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLikiKTsKCQl9CgkJZWxzZXsKCQkJdGhpcy5pZGFkZSA9IGlkYWRlOwoJCX0KCX0KfQ=="}, {"n": "Programa.java", "d": "Criação e utilização de objetos Pessoa.", "src": "cHVibGljIGNsYXNzIFByb2dyYW1hewoJcHVibGljIHN0YXRpYyB2b2lkIG1haW4oU3RyaW5nW10gYXJncyl7CgkJUGVzc29hIHAgPSBuZXcgUGVzc29hKCJMZW9uYXJkbyIsICJNIiwgMjUpOwkKCgkJUGVzc29hIHAxID0gbmV3IFBlc3NvYSgiQmlhIiwgIkYiLCAxOCk7CgkJCgkJcC5zZXRJZGFkZSgzMCk7CQoJCVN5c3RlbS5vdXQucHJpbnRsbihwLmRlc2NyaWNhbygpKTsKCQlwMS5zZXRJZGFkZSgtNSk7CgkJU3lzdGVtLm91dC5wcmludGxuKHAxLmRlc2NyaWNhbygpKTsKCX0KfQ=="}, {"n": "aquecimento1.java", "d": "Validação de input com while: insistir até a idade fazer sentido.", "src": "Ly8gYXF1ZWNpbWVudG8xLmphdmEg4oCUIDEwIHNldGVtYnJvIDIwMjYsIDE4OjEyCmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBhcXVlY2ltZW50bzF7CglwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkKCQlpbnQgaWRhZGU7CgkJCgkJU3lzdGVtLm91dC5wcmludGxuKCJRdWFsIMOpIGEgc3VhIGlkYWRlPyIpOwoJCWlkYWRlID0gc2MubmV4dEludCgpOwoJCQoJCXdoaWxlKGlkYWRlIDwgMCl7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiQSBpZGFkZSBuw6NvIHBvZGUgc2VyIG5lZ2F0aXZhLCByZWludHJvZHV6YSBhIGlkYWRlLiIpOyAKCQkJaWRhZGUgPSBzYy5uZXh0SW50KCk7CgkJfQoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiVGVucyAiICsgaWRhZGUgKyAiIGFub3MuIik7Cgl9Cn0K"}, {"n": "exContagem.java", "d": "Validar com while e contar só os pares até ao número.", "src": "Ly8gZXhDb250YWdlbS5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMTowOQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3MgZXhDb250YWdlbXsKCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCVNjYW5uZXIgc2MgPSAgbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCgkJaW50IG51bWVybzsKCQlpbnQgY29udGFnZW0gPSAwOwoJCQoJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG51bWVybyBwb3NpdGl2byBwYXJhIGNvbWXDp2FyIGEgY29udGFnZW0uIik7CgkJbnVtZXJvID0gc2MubmV4dEludCgpOwoKCQl3aGlsZShudW1lcm8gPCAxKXsKCQkJU3lzdGVtLm91dC5wcmludGxuKCJJbnRyb2R1emEgdW0gbnVtZXJvIHBvc2l0aXZvLiIpOwoJCQludW1lcm8gPSBzYy5uZXh0SW50KCk7CgkJfQoKCQl3aGlsZShjb250YWdlbSA8IG51bWVybyl7CgkJCWNvbnRhZ2VtKys7CgkJCQoJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQlTeXN0ZW0ub3V0LnByaW50bG4oY29udGFnZW0pOwoJCQl9CgkJCQoJCX0KCX0KfQo="}, {"n": "somaPares.java", "d": "Acumulador: somar os pares até um número.", "src": "Ly8gc29tYVBhcmVzLmphdmEg4oCUIDEzIHNldGVtYnJvIDIwMjYsIDIxOjM1CmltcG9ydCBqYXZhLnV0aWwuU2Nhbm5lcjsKCnB1YmxpYyBjbGFzcyBzb21hUGFyZXMJewoJCXB1YmxpYyBzdGF0aWMgdm9pZCBtYWluKFN0cmluZ1tdIGFyZ3MpewoJCQlTY2FubmVyIHNjID0gbmV3IFNjYW5uZXIoU3lzdGVtLmluKTsKCQkJCgkJCWludCBudW1lcm8gPSAwOwoJCQlpbnQgY29udGFnZW0gPSAxOwoJCQlpbnQgc29tYVBhcmVzID0gMDsKCQkJCgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIHVtIG7Dum1lcm86Iik7CgkJCW51bWVybyA9IHNjLm5leHRJbnQoKTsKCgkJCXdoaWxlKG51bWVybyA8PSAwKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBuw7ptZXJvIG7Do28gcG9kZSBzZXIgbmVnYXRpdm8sIGludHJvZHV6YSB1bSBuw7ptZXJvIHBvc2l0aXZvLiIpOwoJCQkJbnVtZXJvID0gc2MubmV4dEludCgpOwoJCQl9CgkJCQoJCQkKCQkJd2hpbGUoY29udGFnZW0gPCBudW1lcm8pewoJCQkJY29udGFnZW0rKzsgCgkJCQlpZihjb250YWdlbSAlIDIgPT0gMCl7CgkJCQkJc29tYVBhcmVzID0gY29udGFnZW0gKyBzb21hUGFyZXM7CgkJCQl9CgkJCQkKCQkJfQoJCQkKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgYXTDqSAiICsgbnVtZXJvICsgIiDDqSBkZSAiICsgc29tYVBhcmVzICsgIi4iKTsKCX0KfQoK"}, {"n": "somaIntervalo.java", "d": "Acumulador num intervalo, com validação do início e do fim.", "src": "Ly8gc29tYUludGVydmFsby5qYXZhIOKAlCAxMyBzZXRlbWJybyAyMDI2LCAyMjo0MQppbXBvcnQgamF2YS51dGlsLlNjYW5uZXI7CgpwdWJsaWMgY2xhc3Mgc29tYUludGVydmFsb3sKCQlwdWJsaWMgc3RhdGljIHZvaWQgbWFpbihTdHJpbmdbXSBhcmdzKXsKCQkJU2Nhbm5lciBzYyA9IG5ldyBTY2FubmVyKFN5c3RlbS5pbik7CgoJCQlpbnQgaW50ZXJ2YWxvSW5pY2lvID0gMDsKCQkJaW50IGludGVydmFsb0ZpbmFsID0gMDsKCQkJaW50IGNvbnRhZ2VtID0gMDsKCQkJaW50IHNvbWFQYXJlcyA9IDA7CgkJCQoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIGludGVydmFsbyBkZSBudW1lcm9zIGRvIHF1YWwgcXVlciBhIHNvbWE6ICIpOwoJCQlTeXN0ZW0ub3V0LnByaW50bG4oIkludHJvZHV6YSBvIG51bWVybyBkbyBpbmljaW86ICIpOwoJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCVN5c3RlbS5vdXQucHJpbnRsbigiSW50cm9kdXphIG8gbnVtZXJvIGRvIGZpbmFsOiAiKTsKCQkJaW50ZXJ2YWxvRmluYWwgPSBzYy5uZXh0SW50KCk7CgkJCgkJCXdoaWxlKGludGVydmFsb0luaWNpbyA+IGludGVydmFsb0ZpbmFsKXsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiTyBudW1lcm8gaW5pY2lhbCBuw6NvIHBvZGUgc2VyIHN1cGVyaW9yIGFvIG51bWVybyBmaW5hbC4iKTsKCQkJCVN5c3RlbS5vdXQucHJpbnRsbigiUmVpbnRyb2R1emEgbyBudW1lcm8gaW5pY2lhbDogIik7CgkJCQlpbnRlcnZhbG9JbmljaW8gPSBzYy5uZXh0SW50KCk7CgkJCX0KCQkJCgkJCWNvbnRhZ2VtID0gaW50ZXJ2YWxvSW5pY2lvOwoJCQkKCQkJd2hpbGUoY29udGFnZW0gPD0gaW50ZXJ2YWxvRmluYWwpewoJCQkJaWYoY29udGFnZW0gJSAyID09IDApewoJCQkJCXNvbWFQYXJlcyA9IGNvbnRhZ2VtICsgc29tYVBhcmVzOwoJCQkJfQoJCQkJY29udGFnZW0rKzsKCQkJfQoKCQkJU3lzdGVtLm91dC5wcmludGxuKCJBIHNvbWEgZGUgdG9kb3Mgb3MgcGFyZXMgbm8gaW50ZXJ2YWxvIGRlIG51bWVyb3MgZGUgIiArIGludGVydmFsb0luaWNpbyArICIgYSAiICsgaW50ZXJ2YWxvRmluYWwgKyAiIMOpIGRlOiAiICsgc29tYVBhcmVzKTsKCQl9CgoJCn0K"}];
 
 /* Histórico do Git. Não editar à mão: corre  python3 bibi-atualizar.py */
-const COMMITS=/*@COMMITS:START*/[{"h": "dc45cfd", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa", "f": [".gitignore", "ROADMAP.md", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "java-bancada.html"]}, {"h": "6aaa700", "t": "2026-09-07T22:29:00+01:00", "s": "Ola: primeiro programa, classe e main", "f": ["exercicios/01-fundamentos/Ola.java"]}, {"h": "b6e3610", "t": "2026-09-07T23:03:00+01:00", "s": "Iva: variáveis e concatenação", "f": ["exercicios/01-fundamentos/Iva.java"]}, {"h": "1e204ee", "t": "2026-09-08T17:37:00+01:00", "s": "Saudacao: Scanner, hasNextInt e if/else if", "f": ["exercicios/01-fundamentos/Saudacao.java"]}, {"h": "01d3589", "t": "2026-09-09T19:51:00+01:00", "s": "Contagem: for crescente", "f": ["exercicios/02-ciclos/Contagem.java"]}, {"h": "ee651f9", "t": "2026-09-09T20:00:00+01:00", "s": "ContagemR: for decrescente", "f": ["exercicios/02-ciclos/ContagemR.java"]}, {"h": "35ca10c", "t": "2026-09-09T20:14:00+01:00", "s": "Tabuada: ciclo com input e cálculo", "f": ["exercicios/02-ciclos/Tabuada.java"]}, {"h": "dffdbec", "t": "2026-09-09T20:20:00+01:00", "s": "Pares: pares pelo passo do ciclo", "f": ["exercicios/02-ciclos/Pares.java"]}, {"h": "27f0718", "t": "2026-09-09T20:33:00+01:00", "s": "Pares2: os mesmos pares por filtro com %", "f": ["exercicios/02-ciclos/Pares2.java"]}, {"h": "5343ea8", "t": "2026-09-09T23:30:00+01:00", "s": "Metodos: parâmetros, return e void", "f": ["exercicios/03-metodos-poo/Metodos.java"]}, {"h": "df2d621", "t": "2026-09-10T02:42:00+01:00", "s": "Pessoa e Programa: classe, construtor, this e encapsulamento", "f": ["exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java"]}, {"h": "01b1ff0", "t": "2026-09-10T18:12:00+01:00", "s": "aquecimento1: validação de input com while", "f": ["exercicios/04-reforco/aquecimento1.java"]}, {"h": "e274502", "t": "2026-09-13T21:09:00+01:00", "s": "exContagem: validar e contar com while", "f": ["exercicios/04-reforco/exContagem.java"]}, {"h": "bdd2175", "t": "2026-09-13T21:35:00+01:00", "s": "somaPares: acumulador de pares", "f": ["exercicios/04-reforco/somaPares.java"]}, {"h": "34d9f9f", "t": "2026-09-13T22:41:00+01:00", "s": "somaIntervalo: acumulador num intervalo", "f": ["exercicios/04-reforco/somaIntervalo.java"]}, {"h": "f6193d9", "t": "2026-09-14T16:18:47+01:00", "s": "Roadmap e bancada de trabalho", "f": ["exercicios/01-fundamentos/tipos.java"]}, {"h": "f55cb99", "t": "2026-09-14T17:50:50+01:00", "s": "Add README.MD", "f": ["README.md"]}, {"h": "f4d31bb", "t": "2026-09-14T17:58:53+01:00", "s": "Remover dados pessoais dos exercícios e da bancada", "f": []}, {"h": "284f382", "t": "2026-09-14T20:33:33+01:00", "s": "Modo Bibi e novo visual da bancada", "f": ["bibi-atualizar.py", "java-bancada.html"]}, {"h": "af98bf1", "t": "2026-09-14T20:36:12+01:00", "s": "index.html para o GitHub Pages", "f": ["index.html", "java-bancada.html"]}, {"h": "ff3f16c", "t": "2026-09-14T20:48:33+01:00", "s": "Datas do Git na lista de exercícios", "f": ["java-bancada.html"]}, {"h": "32dcd7c", "t": "2026-09-14T22:24:35+01:00", "s": "Modo Bibi redesenhado: cenas animadas com o scroll", "f": [".gitignore", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "java-bancada.html"]}, {"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": ["java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "12223a7", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "ea37d3a", "t": "2026-09-14T23:25:06+01:00", "s": "Cartas em tempo real, avisos e presença", "f": ["java-bancada.html"]}, {"h": "6df6ce4", "t": "2026-09-15T00:52:28+01:00", "s": "Gira-discos com os álbuns da Lana, e o lago sem texto", "f": ["java-bancada.html"]}, {"h": "3426572", "t": "2026-09-15T01:02:51+01:00", "s": "Gira-discos com as capas verdadeiras dos álbuns", "f": ["bibi/capas/blue-banisters.webp", "bibi/capas/born-to-die.webp", "bibi/capas/chemtrails.webp", "bibi/capas/honeymoon.webp", "bibi/capas/lust-for-life.webp", "bibi/capas/nfr.webp", "bibi/capas/ocean-blvd.webp", "bibi/capas/paradise.webp", "bibi/capas/ultraviolence.webp", "java-bancada.html"]}, {"h": "12b36bc", "t": "2026-09-15T01:15:30+01:00", "s": "Leitor que se arrasta, lago que pára nos cisnes e cerejas limpas", "f": ["bibi/gravuras/cerejas.svg", "java-bancada.html"]}, {"h": "e78f63f", "t": "2026-09-15T01:16:15+01:00", "s": "Diário: gravura da cerejeira com as proporções certas", "f": ["java-bancada.html"]}, {"h": "95b2d0e", "t": "2026-09-15T01:24:00+01:00", "s": "Gira-discos: letra em tempo real e leitor pequeno maior, com tamanho à escolha", "f": ["java-bancada.html"]}, {"h": "e527ac4", "t": "2026-09-15T01:32:19+01:00", "s": "Letra por cima dos cisnes e o lago em sossego", "f": ["java-bancada.html"]}, {"h": "1f92c32", "t": "2026-09-15T01:43:26+01:00", "s": "Gira-discos redesenhado: disco, estante com as músicas e janela do vídeo", "f": ["java-bancada.html"]}, {"h": "a7c673c", "t": "2026-09-15T01:50:29+01:00", "s": "Gira-discos: vídeo limpo, volume, setas nas capas e moldura para arrastar", "f": ["java-bancada.html"]}, {"h": "fe72cb9", "t": "2026-09-15T01:53:08+01:00", "s": "Gira-discos: botão da letra no canto da estante e repetir", "f": ["java-bancada.html"]}, {"h": "a10ad1d", "t": "2026-09-15T02:18:45+01:00", "s": "Gira-discos: janela do vídeo de 200×200", "f": ["java-bancada.html"]}, {"h": "35ff3e8", "t": "2026-09-15T02:27:42+01:00", "s": "Gira-discos: recolher e pausar; «só o lago» por cima da janela", "f": ["java-bancada.html"]}, {"h": "32243b6", "t": "2026-09-15T02:44:34+01:00", "s": "Letra não fica por cima dos textos da cena do lago", "f": ["java-bancada.html"]}, {"h": "b61d2ae", "t": "2026-09-15T03:02:09+01:00", "s": "Estante dos livros: prateleiras certas em todos os ecrãs", "f": ["java-bancada.html"]}, {"h": "2d940d3", "t": "2026-09-15T03:15:30+01:00", "s": "Placar: Bibi contra Louzy nos jogos", "f": [".gitignore", "java-bancada.html"]}, {"h": "13d608c", "t": "2026-09-15T11:51:15+01:00", "s": "«Olá, Bibi» desvia-se da janela do vídeo", "f": ["java-bancada.html"]}, {"h": "5622d53", "t": "2026-09-15T11:51:15+01:00", "s": "Capturas automáticas do site no computador e no telemóvel", "f": [".gitignore", "bibi-capturas.py", "java-bancada.html"]}, {"h": "57added", "t": "2026-09-15T11:53:48+01:00", "s": "Anel do progresso com classes próprias", "f": ["java-bancada.html"]}, {"h": "50aa8fe", "t": "2026-09-15T11:55:54+01:00", "s": "Atalho para o placar no topo do Modo Bibi", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "67ca35f", "t": "2026-09-15T11:57:56+01:00", "s": "Swandoku do dia: dias seguidos", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "c19ebd0", "t": "2026-09-15T12:03:56+01:00", "s": "Adivinha a música: terceiro jogo, ligado ao gira-discos", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "633ede1", "t": "2026-09-15T12:06:23+01:00", "s": "Placar: botão «Revanche»", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "0e6602c", "t": "2026-09-15T12:38:38+01:00", "s": "«1 dia seguido» e tempos maiores no placar da semana", "f": ["java-bancada.html"]}, {"h": "7093a51", "t": "2026-09-15T12:41:13+01:00", "s": "Cartas: «Para ti» e «As que mandaste» em abas", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "3b55fad", "t": "2026-09-15T12:42:11+01:00", "s": "O jogo das cerejas passa a chamar-se «Swanrejas»", "f": ["java-bancada.html"]}, {"h": "3d7c62f", "t": "2026-09-15T12:51:41+01:00", "s": "Modo Bibi com a conta dele: os textos falam com ele", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "8c47bee", "t": "2026-09-15T12:54:54+01:00", "s": "Swandoku: rascunho e símbolos que faltam", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "b68aa7b", "t": "2026-09-15T12:58:51+01:00", "s": "Gira-discos: barra bordeaux para andar na música", "f": ["java-bancada.html"]}, {"h": "cebef60", "t": "2026-09-15T13:17:25+01:00", "s": "Jogos e placar cabem num só ecrã do computador", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "563caf7", "t": "2026-09-15T13:23:34+01:00", "s": "Gira-discos: a barra da música passa para o fundo da página", "f": ["java-bancada.html"]}, {"h": "efddc6e", "t": "2026-09-15T13:37:01+01:00", "s": "Barra da música com o estilo do Modo Bibi", "f": ["java-bancada.html"]}, {"h": "5e898a6", "t": "2026-09-15T13:40:56+01:00", "s": "Almanaque: estudar e arrumar no mesmo dia, e um diário que não cresce", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "2ee360b", "t": "2026-09-15T13:43:51+01:00", "s": "Cartas: aba «Abraços»", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "0356686", "t": "2026-09-15T13:49:47+01:00", "s": "Atalhos no topo para os jogos, o placar e as cartas", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "2d779bc", "t": "2026-09-15T13:52:08+01:00", "s": "Swandoku: o recorde dos dois em cada tamanho", "f": ["java-bancada.html"]}, {"h": "e48c454", "t": "2026-09-15T13:58:37+01:00", "s": "Swanrejas novo: mais tempo a cada cereja, níveis e um lago com profundidade", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "b36ddaf", "t": "2026-09-15T14:10:27+01:00", "s": "Swandoku: espaço para a coluna do lado em ecrãs médios", "f": ["java-bancada.html"]}, {"h": "24f26c1", "t": "2026-09-15T14:23:31+01:00", "s": "Swanrejas: a segunda partida já não congela, e dá para recomeçar", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "30bfdcd", "t": "2026-09-15T14:29:19+01:00", "s": "Swanrejas: recordes dos dois ao lado do título", "f": ["java-bancada.html"]}, {"h": "d09306f", "t": "2026-09-15T15:00:49+01:00", "s": "Cartas: revanches numa aba à parte", "f": ["bibi-capturas.py", "java-bancada.html"]}]/*@COMMITS:END*/;
+const COMMITS=/*@COMMITS:START*/[{"h": "d6668d7", "t": "2026-09-14T22:26:29+01:00", "s": "Modo Bibi: legendas dos números mais legíveis sobre a névoa", "f": [".gitignore", "README.md", "ROADMAP.md", "bibi-atualizar.py", "bibi/frames/carta/000.webp", "bibi/frames/carta/001.webp", "bibi/frames/carta/002.webp", "bibi/frames/carta/003.webp", "bibi/frames/carta/004.webp", "bibi/frames/carta/005.webp", "bibi/frames/carta/006.webp", "bibi/frames/carta/007.webp", "bibi/frames/carta/008.webp", "bibi/frames/carta/009.webp", "bibi/frames/carta/010.webp", "bibi/frames/carta/011.webp", "bibi/frames/carta/012.webp", "bibi/frames/carta/013.webp", "bibi/frames/carta/014.webp", "bibi/frames/carta/015.webp", "bibi/frames/carta/016.webp", "bibi/frames/carta/017.webp", "bibi/frames/carta/018.webp", "bibi/frames/carta/019.webp", "bibi/frames/carta/020.webp", "bibi/frames/carta/021.webp", "bibi/frames/carta/022.webp", "bibi/frames/carta/023.webp", "bibi/frames/carta/024.webp", "bibi/frames/carta/025.webp", "bibi/frames/carta/026.webp", "bibi/frames/carta/027.webp", "bibi/frames/carta/028.webp", "bibi/frames/carta/029.webp", "bibi/frames/carta/030.webp", "bibi/frames/carta/031.webp", "bibi/frames/carta/032.webp", "bibi/frames/carta/033.webp", "bibi/frames/carta/034.webp", "bibi/frames/carta/035.webp", "bibi/frames/carta/036.webp", "bibi/frames/carta/037.webp", "bibi/frames/carta/038.webp", "bibi/frames/carta/039.webp", "bibi/frames/carta/040.webp", "bibi/frames/carta/041.webp", "bibi/frames/carta/042.webp", "bibi/frames/carta/043.webp", "bibi/frames/carta/044.webp", "bibi/frames/carta/045.webp", "bibi/frames/carta/046.webp", "bibi/frames/carta/047.webp", "bibi/frames/carta/048.webp", "bibi/frames/carta/049.webp", "bibi/frames/carta/050.webp", "bibi/frames/carta/051.webp", "bibi/frames/carta/052.webp", "bibi/frames/carta/053.webp", "bibi/frames/carta/054.webp", "bibi/frames/carta/055.webp", "bibi/frames/carta/056.webp", "bibi/frames/carta/057.webp", "bibi/frames/carta/058.webp", "bibi/frames/carta/059.webp", "bibi/frames/carta/060.webp", "bibi/frames/carta/061.webp", "bibi/frames/carta/062.webp", "bibi/frames/carta/063.webp", "bibi/frames/carta/064.webp", "bibi/frames/carta/065.webp", "bibi/frames/carta/066.webp", "bibi/frames/carta/067.webp", "bibi/frames/carta/068.webp", "bibi/frames/carta/069.webp", "bibi/frames/carta/070.webp", "bibi/frames/carta/071.webp", "bibi/frames/carta/072.webp", "bibi/frames/carta/073.webp", "bibi/frames/carta/074.webp", "bibi/frames/carta/075.webp", "bibi/frames/carta/076.webp", "bibi/frames/carta/077.webp", "bibi/frames/carta/078.webp", "bibi/frames/carta/079.webp", "bibi/frames/carta/080.webp", "bibi/frames/carta/081.webp", "bibi/frames/carta/082.webp", "bibi/frames/carta/083.webp", "bibi/frames/carta/084.webp", "bibi/frames/carta/085.webp", "bibi/frames/carta/086.webp", "bibi/frames/carta/087.webp", "bibi/frames/carta/088.webp", "bibi/frames/carta/089.webp", "bibi/frames/carta/090.webp", "bibi/frames/carta/091.webp", "bibi/frames/carta/092.webp", "bibi/frames/carta/093.webp", "bibi/frames/carta/094.webp", "bibi/frames/carta/095.webp", "bibi/frames/cerejas/000.webp", "bibi/frames/cerejas/001.webp", "bibi/frames/cerejas/002.webp", "bibi/frames/cerejas/003.webp", "bibi/frames/cerejas/004.webp", "bibi/frames/cerejas/005.webp", "bibi/frames/cerejas/006.webp", "bibi/frames/cerejas/007.webp", "bibi/frames/cerejas/008.webp", "bibi/frames/cerejas/009.webp", "bibi/frames/cerejas/010.webp", "bibi/frames/cerejas/011.webp", "bibi/frames/cerejas/012.webp", "bibi/frames/cerejas/013.webp", "bibi/frames/cerejas/014.webp", "bibi/frames/cerejas/015.webp", "bibi/frames/cerejas/016.webp", "bibi/frames/cerejas/017.webp", "bibi/frames/cerejas/018.webp", "bibi/frames/cerejas/019.webp", "bibi/frames/cerejas/020.webp", "bibi/frames/cerejas/021.webp", "bibi/frames/cerejas/022.webp", "bibi/frames/cerejas/023.webp", "bibi/frames/cerejas/024.webp", "bibi/frames/cerejas/025.webp", "bibi/frames/cerejas/026.webp", "bibi/frames/cerejas/027.webp", "bibi/frames/cerejas/028.webp", "bibi/frames/cerejas/029.webp", "bibi/frames/cerejas/030.webp", "bibi/frames/cerejas/031.webp", "bibi/frames/cerejas/032.webp", "bibi/frames/cerejas/033.webp", "bibi/frames/cerejas/034.webp", "bibi/frames/cerejas/035.webp", "bibi/frames/cerejas/036.webp", "bibi/frames/cerejas/037.webp", "bibi/frames/cerejas/038.webp", "bibi/frames/cerejas/039.webp", "bibi/frames/cerejas/040.webp", "bibi/frames/cerejas/041.webp", "bibi/frames/cerejas/042.webp", "bibi/frames/cerejas/043.webp", "bibi/frames/cerejas/044.webp", "bibi/frames/cerejas/045.webp", "bibi/frames/cerejas/046.webp", "bibi/frames/cerejas/047.webp", "bibi/frames/cerejas/048.webp", "bibi/frames/cerejas/049.webp", "bibi/frames/cerejas/050.webp", "bibi/frames/cerejas/051.webp", "bibi/frames/cerejas/052.webp", "bibi/frames/cerejas/053.webp", "bibi/frames/cerejas/054.webp", "bibi/frames/cerejas/055.webp", "bibi/frames/cerejas/056.webp", "bibi/frames/cerejas/057.webp", "bibi/frames/cerejas/058.webp", "bibi/frames/cerejas/059.webp", "bibi/frames/cerejas/060.webp", "bibi/frames/cerejas/061.webp", "bibi/frames/cerejas/062.webp", "bibi/frames/cerejas/063.webp", "bibi/frames/cerejas/064.webp", "bibi/frames/cerejas/065.webp", "bibi/frames/cerejas/066.webp", "bibi/frames/cerejas/067.webp", "bibi/frames/cerejas/068.webp", "bibi/frames/cerejas/069.webp", "bibi/frames/cerejas/070.webp", "bibi/frames/cerejas/071.webp", "bibi/frames/cerejas/072.webp", "bibi/frames/cerejas/073.webp", "bibi/frames/cerejas/074.webp", "bibi/frames/cerejas/075.webp", "bibi/frames/cerejas/076.webp", "bibi/frames/cerejas/077.webp", "bibi/frames/cerejas/078.webp", "bibi/frames/cerejas/079.webp", "bibi/frames/cerejas/080.webp", "bibi/frames/cerejas/081.webp", "bibi/frames/cerejas/082.webp", "bibi/frames/cerejas/083.webp", "bibi/frames/cerejas/084.webp", "bibi/frames/cerejas/085.webp", "bibi/frames/cerejas/086.webp", "bibi/frames/cerejas/087.webp", "bibi/frames/cerejas/088.webp", "bibi/frames/cerejas/089.webp", "bibi/frames/cerejas/090.webp", "bibi/frames/cerejas/091.webp", "bibi/frames/cerejas/092.webp", "bibi/frames/cerejas/093.webp", "bibi/frames/cerejas/094.webp", "bibi/frames/cerejas/095.webp", "bibi/frames/cerejas/096.webp", "bibi/frames/cerejas/097.webp", "bibi/frames/cerejas/098.webp", "bibi/frames/cerejas/099.webp", "bibi/frames/cerejas/100.webp", "bibi/frames/cerejas/101.webp", "bibi/frames/cerejas/102.webp", "bibi/frames/cerejas/103.webp", "bibi/frames/cerejas/104.webp", "bibi/frames/cerejas/105.webp", "bibi/frames/cerejas/106.webp", "bibi/frames/cerejas/107.webp", "bibi/frames/cerejas/108.webp", "bibi/frames/cerejas/109.webp", "bibi/frames/cerejas/110.webp", "bibi/frames/cerejas/111.webp", "bibi/frames/cerejas/112.webp", "bibi/frames/cerejas/113.webp", "bibi/frames/cerejas/114.webp", "bibi/frames/cerejas/115.webp", "bibi/frames/cerejas/116.webp", "bibi/frames/cerejas/117.webp", "bibi/frames/cerejas/118.webp", "bibi/frames/cerejas/119.webp", "bibi/frames/lago/000.webp", "bibi/frames/lago/001.webp", "bibi/frames/lago/002.webp", "bibi/frames/lago/003.webp", "bibi/frames/lago/004.webp", "bibi/frames/lago/005.webp", "bibi/frames/lago/006.webp", "bibi/frames/lago/007.webp", "bibi/frames/lago/008.webp", "bibi/frames/lago/009.webp", "bibi/frames/lago/010.webp", "bibi/frames/lago/011.webp", "bibi/frames/lago/012.webp", "bibi/frames/lago/013.webp", "bibi/frames/lago/014.webp", "bibi/frames/lago/015.webp", "bibi/frames/lago/016.webp", "bibi/frames/lago/017.webp", "bibi/frames/lago/018.webp", "bibi/frames/lago/019.webp", "bibi/frames/lago/020.webp", "bibi/frames/lago/021.webp", "bibi/frames/lago/022.webp", "bibi/frames/lago/023.webp", "bibi/frames/lago/024.webp", "bibi/frames/lago/025.webp", "bibi/frames/lago/026.webp", "bibi/frames/lago/027.webp", "bibi/frames/lago/028.webp", "bibi/frames/lago/029.webp", "bibi/frames/lago/030.webp", "bibi/frames/lago/031.webp", "bibi/frames/lago/032.webp", "bibi/frames/lago/033.webp", "bibi/frames/lago/034.webp", "bibi/frames/lago/035.webp", "bibi/frames/lago/036.webp", "bibi/frames/lago/037.webp", "bibi/frames/lago/038.webp", "bibi/frames/lago/039.webp", "bibi/frames/lago/040.webp", "bibi/frames/lago/041.webp", "bibi/frames/lago/042.webp", "bibi/frames/lago/043.webp", "bibi/frames/lago/044.webp", "bibi/frames/lago/045.webp", "bibi/frames/lago/046.webp", "bibi/frames/lago/047.webp", "bibi/frames/lago/048.webp", "bibi/frames/lago/049.webp", "bibi/frames/lago/050.webp", "bibi/frames/lago/051.webp", "bibi/frames/lago/052.webp", "bibi/frames/lago/053.webp", "bibi/frames/lago/054.webp", "bibi/frames/lago/055.webp", "bibi/frames/lago/056.webp", "bibi/frames/lago/057.webp", "bibi/frames/lago/058.webp", "bibi/frames/lago/059.webp", "bibi/frames/lago/060.webp", "bibi/frames/lago/061.webp", "bibi/frames/lago/062.webp", "bibi/frames/lago/063.webp", "bibi/frames/lago/064.webp", "bibi/frames/lago/065.webp", "bibi/frames/lago/066.webp", "bibi/frames/lago/067.webp", "bibi/frames/lago/068.webp", "bibi/frames/lago/069.webp", "bibi/frames/lago/070.webp", "bibi/frames/lago/071.webp", "bibi/frames/lago/072.webp", "bibi/frames/lago/073.webp", "bibi/frames/lago/074.webp", "bibi/frames/lago/075.webp", "bibi/frames/lago/076.webp", "bibi/frames/lago/077.webp", "bibi/frames/lago/078.webp", "bibi/frames/lago/079.webp", "bibi/frames/lago/080.webp", "bibi/frames/lago/081.webp", "bibi/frames/lago/082.webp", "bibi/frames/lago/083.webp", "bibi/frames/lago/084.webp", "bibi/frames/lago/085.webp", "bibi/frames/lago/086.webp", "bibi/frames/lago/087.webp", "bibi/frames/lago/088.webp", "bibi/frames/lago/089.webp", "bibi/frames/lago/090.webp", "bibi/frames/lago/091.webp", "bibi/frames/lago/092.webp", "bibi/frames/lago/093.webp", "bibi/frames/lago/094.webp", "bibi/frames/lago/095.webp", "bibi/frames/lago/096.webp", "bibi/frames/lago/097.webp", "bibi/frames/lago/098.webp", "bibi/frames/lago/099.webp", "bibi/frames/lago/100.webp", "bibi/frames/lago/101.webp", "bibi/frames/lago/102.webp", "bibi/frames/lago/103.webp", "bibi/frames/lago/104.webp", "bibi/frames/lago/105.webp", "bibi/frames/lago/106.webp", "bibi/frames/lago/107.webp", "bibi/frames/lago/108.webp", "bibi/frames/lago/109.webp", "bibi/frames/lago/110.webp", "bibi/frames/lago/111.webp", "bibi/frames/lago/112.webp", "bibi/frames/lago/113.webp", "bibi/frames/lago/114.webp", "bibi/frames/lago/115.webp", "bibi/frames/lago/116.webp", "bibi/frames/lago/117.webp", "bibi/frames/lago/118.webp", "bibi/frames/lago/119.webp", "bibi/gravuras/cereja-kohler.webp", "bibi/gravuras/cereja-par.webp", "bibi/gravuras/cisne-audubon.webp", "bibi/lago-fim.webp", "exercicios/01-fundamentos/Iva.java", "exercicios/01-fundamentos/Ola.java", "exercicios/01-fundamentos/Saudacao.java", "exercicios/01-fundamentos/tipos.java", "exercicios/02-ciclos/Contagem.java", "exercicios/02-ciclos/ContagemR.java", "exercicios/02-ciclos/Pares.java", "exercicios/02-ciclos/Pares2.java", "exercicios/02-ciclos/Tabuada.java", "exercicios/03-metodos-poo/Metodos.java", "exercicios/03-metodos-poo/Pessoa.java", "exercicios/03-metodos-poo/Programa.java", "exercicios/04-reforco/aquecimento1.java", "exercicios/04-reforco/exContagem.java", "exercicios/04-reforco/somaIntervalo.java", "exercicios/04-reforco/somaPares.java", "index.html", "java-bancada.html"]}, {"h": "0848558", "t": "2026-09-14T22:38:40+01:00", "s": "Swandoku e recadinhos encriptados no Supabase", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "5a849ab", "t": "2026-09-14T22:41:43+01:00", "s": "supabase.sql: validação do tamanho fora da expressão regular", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "12223a7", "t": "2026-09-14T22:52:54+01:00", "s": "Modo Bibi com login por nome de utilizador", "f": ["bibi/supabase.sql", "java-bancada.html"]}, {"h": "ea37d3a", "t": "2026-09-14T23:25:06+01:00", "s": "Cartas em tempo real, avisos e presença", "f": ["java-bancada.html"]}, {"h": "6df6ce4", "t": "2026-09-15T00:52:28+01:00", "s": "Gira-discos com os álbuns da Lana, e o lago sem texto", "f": ["java-bancada.html"]}, {"h": "3426572", "t": "2026-09-15T01:02:51+01:00", "s": "Gira-discos com as capas verdadeiras dos álbuns", "f": ["bibi/capas/blue-banisters.webp", "bibi/capas/born-to-die.webp", "bibi/capas/chemtrails.webp", "bibi/capas/honeymoon.webp", "bibi/capas/lust-for-life.webp", "bibi/capas/nfr.webp", "bibi/capas/ocean-blvd.webp", "bibi/capas/paradise.webp", "bibi/capas/ultraviolence.webp", "java-bancada.html"]}, {"h": "12b36bc", "t": "2026-09-15T01:15:30+01:00", "s": "Leitor que se arrasta, lago que pára nos cisnes e cerejas limpas", "f": ["bibi/gravuras/cerejas.svg", "java-bancada.html"]}, {"h": "e78f63f", "t": "2026-09-15T01:16:15+01:00", "s": "Diário: gravura da cerejeira com as proporções certas", "f": ["java-bancada.html"]}, {"h": "95b2d0e", "t": "2026-09-15T01:24:00+01:00", "s": "Gira-discos: letra em tempo real e leitor pequeno maior, com tamanho à escolha", "f": ["java-bancada.html"]}, {"h": "e527ac4", "t": "2026-09-15T01:32:19+01:00", "s": "Letra por cima dos cisnes e o lago em sossego", "f": ["java-bancada.html"]}, {"h": "1f92c32", "t": "2026-09-15T01:43:26+01:00", "s": "Gira-discos redesenhado: disco, estante com as músicas e janela do vídeo", "f": ["java-bancada.html"]}, {"h": "a7c673c", "t": "2026-09-15T01:50:29+01:00", "s": "Gira-discos: vídeo limpo, volume, setas nas capas e moldura para arrastar", "f": ["java-bancada.html"]}, {"h": "fe72cb9", "t": "2026-09-15T01:53:08+01:00", "s": "Gira-discos: botão da letra no canto da estante e repetir", "f": ["java-bancada.html"]}, {"h": "a10ad1d", "t": "2026-09-15T02:18:45+01:00", "s": "Gira-discos: janela do vídeo de 200×200", "f": ["java-bancada.html"]}, {"h": "35ff3e8", "t": "2026-09-15T02:27:42+01:00", "s": "Gira-discos: recolher e pausar; «só o lago» por cima da janela", "f": ["java-bancada.html"]}, {"h": "32243b6", "t": "2026-09-15T02:44:34+01:00", "s": "Letra não fica por cima dos textos da cena do lago", "f": ["java-bancada.html"]}, {"h": "b61d2ae", "t": "2026-09-15T03:02:09+01:00", "s": "Estante dos livros: prateleiras certas em todos os ecrãs", "f": ["java-bancada.html"]}, {"h": "2d940d3", "t": "2026-09-15T03:15:30+01:00", "s": "Placar: Bibi contra Louzy nos jogos", "f": [".gitignore", "java-bancada.html"]}, {"h": "13d608c", "t": "2026-09-15T11:51:15+01:00", "s": "«Olá, Bibi» desvia-se da janela do vídeo", "f": ["java-bancada.html"]}, {"h": "5622d53", "t": "2026-09-15T11:51:15+01:00", "s": "Capturas automáticas do site no computador e no telemóvel", "f": [".gitignore", "bibi-capturas.py", "java-bancada.html"]}, {"h": "57added", "t": "2026-09-15T11:53:48+01:00", "s": "Anel do progresso com classes próprias", "f": ["java-bancada.html"]}, {"h": "50aa8fe", "t": "2026-09-15T11:55:54+01:00", "s": "Atalho para o placar no topo do Modo Bibi", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "67ca35f", "t": "2026-09-15T11:57:56+01:00", "s": "Swandoku do dia: dias seguidos", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "c19ebd0", "t": "2026-09-15T12:03:56+01:00", "s": "Adivinha a música: terceiro jogo, ligado ao gira-discos", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "633ede1", "t": "2026-09-15T12:06:23+01:00", "s": "Placar: botão «Revanche»", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "0e6602c", "t": "2026-09-15T12:38:38+01:00", "s": "«1 dia seguido» e tempos maiores no placar da semana", "f": ["java-bancada.html"]}, {"h": "7093a51", "t": "2026-09-15T12:41:13+01:00", "s": "Cartas: «Para ti» e «As que mandaste» em abas", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "3b55fad", "t": "2026-09-15T12:42:11+01:00", "s": "O jogo das cerejas passa a chamar-se «Swanrejas»", "f": ["java-bancada.html"]}, {"h": "3d7c62f", "t": "2026-09-15T12:51:41+01:00", "s": "Modo Bibi com a conta dele: os textos falam com ele", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "8c47bee", "t": "2026-09-15T12:54:54+01:00", "s": "Swandoku: rascunho e símbolos que faltam", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "b68aa7b", "t": "2026-09-15T12:58:51+01:00", "s": "Gira-discos: barra bordeaux para andar na música", "f": ["java-bancada.html"]}, {"h": "cebef60", "t": "2026-09-15T13:17:25+01:00", "s": "Jogos e placar cabem num só ecrã do computador", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "563caf7", "t": "2026-09-15T13:23:34+01:00", "s": "Gira-discos: a barra da música passa para o fundo da página", "f": ["java-bancada.html"]}, {"h": "efddc6e", "t": "2026-09-15T13:37:01+01:00", "s": "Barra da música com o estilo do Modo Bibi", "f": ["java-bancada.html"]}, {"h": "5e898a6", "t": "2026-09-15T13:40:56+01:00", "s": "Almanaque: estudar e arrumar no mesmo dia, e um diário que não cresce", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "2ee360b", "t": "2026-09-15T13:43:51+01:00", "s": "Cartas: aba «Abraços»", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "0356686", "t": "2026-09-15T13:49:47+01:00", "s": "Atalhos no topo para os jogos, o placar e as cartas", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "2d779bc", "t": "2026-09-15T13:52:08+01:00", "s": "Swandoku: o recorde dos dois em cada tamanho", "f": ["java-bancada.html"]}, {"h": "e48c454", "t": "2026-09-15T13:58:37+01:00", "s": "Swanrejas novo: mais tempo a cada cereja, níveis e um lago com profundidade", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "b36ddaf", "t": "2026-09-15T14:10:27+01:00", "s": "Swandoku: espaço para a coluna do lado em ecrãs médios", "f": ["java-bancada.html"]}, {"h": "24f26c1", "t": "2026-09-15T14:23:31+01:00", "s": "Swanrejas: a segunda partida já não congela, e dá para recomeçar", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "30bfdcd", "t": "2026-09-15T14:29:19+01:00", "s": "Swanrejas: recordes dos dois ao lado do título", "f": ["java-bancada.html"]}, {"h": "0ea8b3c", "t": "2026-09-15T15:00:49+01:00", "s": "Cartas: revanches numa aba à parte", "f": ["bibi-capturas.py", "java-bancada.html"]}, {"h": "85dd7fd", "t": "2026-09-16T00:19:00+00:00", "s": "Bancada: um exercício só conta quando o marcas", "f": ["java-bancada.html"]}, {"h": "7dec1f2", "t": "2026-09-16T00:19:09+00:00", "s": "Bancada: a fase atual é a 01, não a 02", "f": ["java-bancada.html"]}, {"h": "be1b601", "t": "2026-09-16T00:19:48+00:00", "s": "Bancada: o guião do Saudacao trata o hasNextInt por token", "f": ["java-bancada.html"]}, {"h": "7d7cc1a", "t": "2026-09-16T00:20:19+00:00", "s": "Roadmap: tira o estado daqui, que já vive na bancada", "f": ["ROADMAP.md"]}, {"h": "50c2e48", "t": "2026-09-16T00:27:18+00:00", "s": "Roadmap: secção 3 passa a ser o resumo para colar numa conversa", "f": ["ROADMAP.md"]}, {"h": "e56183a", "t": "2026-09-16T00:29:30+00:00", "s": "Roadmap: o professor escolhe a matéria, não eu", "f": ["ROADMAP.md"]}]/*@COMMITS:END*/;
 
 /* ---------- guiões de execução ----------
    Cada guião é um gerador: devolve um passo de cada vez.
@@ -2038,6 +2248,162 @@ const HISTORY = (() => {
   return {items, days, exDays, lastEx, streak, total: items.filter(i => i.kind === "ex").length};
 })();
 
+/* ---------- commits em direto ----------
+   A página vai buscar o histórico ao GitHub de minuto a minuto, sozinha.
+   Guarda o ETag: quando nada mudou, o GitHub responde 304, que não gasta
+   pedidos do limite de 60/hora. Sem rede, ou com o limite esgotado, fica-se
+   pelos commits embutidos no ficheiro, que nunca deixam a lista vazia.
+   A lista está sempre do mais recente para o mais antigo. */
+const REPO = "iouzy/aprender-java-do-zero";
+const GitLive = (() => {
+  const LISTA = `https://api.github.com/repos/${REPO}/commits?per_page=25`;
+  const CABEC = {Accept:"application/vnd.github+json"};
+  const memo = store("java-git-v1");            // {etag, at, list}
+  const memoF = store("java-git-ficheiros-v1"); // {sha:{f, add, del}}
+  const handlers = {lista:[], novos:[], estado:[]};
+  const emit = (k, v) => handlers[k].forEach(f => { try{ f(v); }catch(e){} });
+
+  // as linhas de rodapé do commit (Co-Authored-By e afins) não interessam a ninguém aqui
+  const RODAPE = /^(co-authored-by|claude-session|signed-off-by|reviewed-by|generated with):/i;
+  const corpoDe = msg => {
+    const txt = msg.split("\n").slice(1).filter(l => !RODAPE.test(l.trim())).join("\n").trim();
+    return txt.length > 420 ? txt.slice(0, 420).replace(/\s+\S*$/, "") + "…" : txt;
+  };
+  const daApi = c => ({
+    sha:c.sha, h:c.sha.slice(0, 7), t:(c.commit.author || c.commit.committer).date,
+    s:(c.commit.message || "").split("\n")[0],
+    corpo:corpoDe(c.commit.message || ""),
+    quem:(c.author && c.author.login) || (c.commit.author && c.commit.author.name) || "",
+    url:c.html_url
+  });
+  // os commits embutidos já trazem a lista de ficheiros: servem de rede de segurança
+  const doFicheiro = c => ({sha:c.h, h:c.h, t:c.t, s:c.s, corpo:"", quem:"", f:c.f,
+    url:`https://github.com/${REPO}/commit/${c.h}`});
+
+  let lista = [], etag = null, estado = "ligar", primeira = true, aLer = false, pausaAte = 0, ultimoOk = 0, relogio = null;
+  const guardado = memo.get();
+  if(guardado && Array.isArray(guardado.list) && guardado.list.length){ lista = guardado.list; etag = guardado.etag || null; ultimoOk = guardado.at || 0; }
+  else lista = COMMITS.slice().reverse().map(doFicheiro);
+  juntarFicheiros(memoF.get() || {});
+
+  function juntarFicheiros(mapa){ lista.forEach(c => { const d = mapa[c.sha]; if(d){ c.f = d.f; c.add = d.add; c.del = d.del; } }); }
+  function setEstado(v){ if(v !== estado){ estado = v; emit("estado", v); } }
+  function arruma(){ memo.set({etag, at:ultimoOk, list:lista.slice(0, 25)}); }
+
+  async function ler(forcar){
+    if(aLer || (!forcar && Date.now() < pausaAte)) return;
+    aLer = true;
+    try{
+      const r = await fetch(LISTA, {headers:etag ? {...CABEC, "If-None-Match":etag} : CABEC, cache:"no-store"});
+      if(r.status === 304){ ultimoOk = Date.now(); setEstado("ligado"); return; }
+      if(r.status === 403 || r.status === 429){
+        // limite por hora esgotado: espera pelo reset que o próprio GitHub indica
+        const reset = +r.headers.get("X-RateLimit-Reset") * 1000;
+        pausaAte = reset > Date.now() ? reset + 2000 : Date.now() + 15 * 60000;
+        setEstado("parado"); return;
+      }
+      if(!r.ok) throw new Error("HTTP " + r.status);
+      etag = r.headers.get("ETag");
+      const vindos = (await r.json()).map(daApi);
+      if(!vindos.length) throw new Error("lista vazia");
+      const conhecidos = new Set(lista.map(c => c.sha));
+      const frescos = vindos.filter(c => !conhecidos.has(c.sha));
+      lista = vindos;
+      juntarFicheiros(memoF.get() || {});
+      ultimoOk = Date.now();
+      arruma();
+      setEstado("ligado");
+      emit("lista", lista);
+      if(!primeira && frescos.length) emit("novos", frescos);
+      primeira = false;
+      await ficheiros(lista.slice(0, 8));
+    } catch(e){
+      setEstado("parado");
+    } finally { aLer = false; }
+  }
+
+  /* o endpoint da lista não diz que ficheiros mudaram: isso vem de um pedido
+     por commit, que fica guardado para nunca se repetir */
+  async function ficheiros(cs){
+    const mapa = memoF.get() || {};
+    const faltam = cs.filter(c => !mapa[c.sha]).slice(0, 4);
+    if(!faltam.length) return;
+    for(const c of faltam){
+      try{
+        const r = await fetch(`https://api.github.com/repos/${REPO}/commits/${c.sha}`, {headers:CABEC});
+        if(!r.ok){ if(r.status === 403 || r.status === 429) pausaAte = Date.now() + 15 * 60000; break; }
+        const j = await r.json();
+        mapa[c.sha] = {f:(j.files || []).map(f => f.filename), add:(j.stats || {}).additions || 0, del:(j.stats || {}).deletions || 0};
+      } catch(e){ break; }
+    }
+    const chaves = Object.keys(mapa);
+    if(chaves.length > 90) chaves.slice(0, chaves.length - 90).forEach(k => delete mapa[k]);
+    memoF.set(mapa);
+    juntarFicheiros(mapa);
+    arruma();
+    emit("lista", lista);
+  }
+
+  function arranca(){
+    if(relogio) return;
+    ler();
+    relogio = setInterval(() => { if(document.visibilityState === "visible") ler(); }, 60000);
+    document.addEventListener("visibilitychange", () => { if(document.visibilityState === "visible" && Date.now() - ultimoOk > 30000) ler(); });
+    window.addEventListener("online", () => ler(true));
+  }
+  return {arranca, agora:() => ler(true), lista:() => lista, ultimo:() => lista[0] || null,
+    estado:() => estado, visto:() => ultimoOk, on:(k, f) => { handlers[k].push(f); }};
+})();
+
+/* ---------- o que é que este commit fez ----------
+   A mesma leitura serve os dois modos: a bancada mostra os ficheiros, o Modo
+   Bibi mostra a frase. Sem a lista de ficheiros, sobra o assunto do commit. */
+const Commit = (() => {
+  const especie = p => /^exercicios\/.+\.java$/i.test(p) ? "java"
+    : /\.html$/i.test(p) ? "site"
+    : /\.md$/i.test(p) ? "texto"
+    : /^bibi\//i.test(p) ? "arte"
+    : /\.py$/i.test(p) ? "script"
+    : /\.sql$/i.test(p) ? "dados" : "outro";
+  function partes(c){
+    const f = c.f || [];
+    const ex = f.filter(p => especie(p) === "java").map(p => p.split("/").pop());
+    return {f, ex, site:f.filter(p => especie(p) === "site").length, texto:f.filter(p => especie(p) === "texto").length,
+      arte:f.filter(p => especie(p) === "arte").length, script:f.filter(p => especie(p) === "script").length};
+  }
+  const tipo = c => { const s = partes(c); return s.ex.length ? "ex" : s.texto && !s.site ? "plano" : s.site || s.arte ? "site" : "outro"; };
+  const plural = (n, um, muitos) => n + " " + (n === 1 ? um : muitos);
+  // resumo técnico, para a bancada
+  function resumo(c){
+    const s = partes(c);
+    if(!s.f.length) return "";
+    const ps = [];
+    if(s.ex.length) ps.push(plural(s.ex.length, "exercício", "exercícios"));
+    if(s.site) ps.push(plural(s.site, "página", "páginas"));
+    if(s.texto) ps.push(plural(s.texto, "texto", "textos"));
+    if(s.arte) ps.push(plural(s.arte, "imagem", "imagens"));
+    if(s.script) ps.push(plural(s.script, "script", "scripts"));
+    const resto = s.f.length - s.ex.length - s.site - s.texto - s.arte - s.script;
+    if(resto > 0) ps.push(plural(resto, "ficheiro", "ficheiros"));
+    return ps.join(" · ");
+  }
+  const etiqueta = c => ({ex:"exercício", plano:"plano", site:"site"})[tipo(c)] || "";
+  return {especie, partes, tipo, resumo, etiqueta, plural};
+})();
+
+/* quanto tempo faz, escrito como se fala */
+const desde = at => {
+  const d = at instanceof Date ? at : new Date(at);
+  const s = (Date.now() - d) / 1000;
+  if(s < 90) return "agora mesmo";
+  if(s < 3600) return "há " + Math.round(s / 60) + " min";
+  const dias = daysBetween(d, new Date());
+  if(dias === 0) return "há " + Math.max(1, Math.round(s / 3600)) + (Math.round(s / 3600) === 1 ? " hora" : " horas");
+  if(dias === 1) return "ontem, " + fmt.time(d);
+  if(dias < 7) return "há " + dias + " dias";
+  return fmt.short.format(d);
+};
+
 /* ---------- troca de modo ---------- */
 const BIBI_KEY = "java-bibi-v1";
 const bibiStore = store(BIBI_KEY);
@@ -2107,9 +2473,10 @@ const Conta = (() => {
 /* ---------- tempo real: cartas que chegam, quem está no site ---------- */
 const OTHER_NAME = me => me === "bibi" ? "louzy" : "bibi";
 const NICE = n => n === "bibi" ? "Bibi" : n === "louzy" ? "Louzy" : n;
+const O_NOME = n => (n === "bibi" ? "A " : "O ") + NICE(n);
 const Live = (() => {
-  let client = null, chCartas = null, chPres = null, chPartidas = null, beat = 0, authT = 0;
-  const handlers = {carta:[], presenca:[], partida:[]};
+  let client = null, chCartas = null, chPres = null, chPartidas = null, chSala = null, beat = 0, authT = 0;
+  const handlers = {carta:[], presenca:[], partida:[], estado:[], gesto:[]};
   let onlineNames = [];
   const emit = (k, v) => handlers[k].forEach(f => { try{ f(v); }catch(e){} });
   const markSeen = () => Conta.loggedIn() && Conta.api("presenca?on_conflict=autor", {method:"POST",
@@ -2127,6 +2494,11 @@ const Live = (() => {
     chPartidas = client.channel("partidas-novas")
       .on("postgres_changes", {event:"INSERT", schema:"public", table:"partidas"}, payload => emit("partida", payload.new))
       .subscribe();
+    // a sala: o que cada um está a fazer, sem passar pela base de dados
+    chSala = client.channel("sala", {config:{broadcast:{self:false, ack:false}}});
+    chSala.on("broadcast", {event:"estado"}, ({payload}) => emit("estado", payload))
+      .on("broadcast", {event:"gesto"}, ({payload}) => emit("gesto", payload))   // revisto no Sala/quem o recebe
+      .subscribe();
     chPres = client.channel("lago-presenca", {config:{presence:{key:me.nome}}});
     chPres.on("presence", {event:"sync"}, () => { onlineNames = Object.keys(chPres.presenceState()); emit("presenca", onlineNames); })
       .subscribe(async status => { if(status === "SUBSCRIBED") await chPres.track({nome:me.nome, desde:Date.now()}); });
@@ -2140,11 +2512,129 @@ const Live = (() => {
     clearInterval(beat); clearInterval(authT);
     document.removeEventListener("visibilitychange", markSeen);
     if(client){ try{ client.removeAllChannels(); }catch(e){} }
-    client = chCartas = chPres = chPartidas = null; onlineNames = [];
+    client = chCartas = chPres = chPartidas = chSala = null; onlineNames = [];
     emit("presenca", []);
   }
   const lastSeen = () => Conta.api("presenca?select=nome,visto").catch(() => []);
-  return {start, stop, on:(k, f) => handlers[k].push(f), online:() => onlineNames, lastSeen};
+  // só vale a pena falar quando há alguém do outro lado a ouvir
+  const acompanhado = () => !!chSala && onlineNames.length > 1;
+  function enviar(evento, payload){
+    if(!acompanhado()) return false;
+    try{ chSala.send({type:"broadcast", event:evento, payload}); }catch(e){ return false; }
+    return true;
+  }
+  return {start, stop, on:(k, f) => handlers[k].push(f), online:() => onlineNames, lastSeen, enviar, acompanhado};
+})();
+
+/* ---------- a sala: o que cada um está a fazer, ao vivo ----------
+   Tudo o que muda — jogo, sítio da página, rato — viaja num envelope só, no
+   máximo dez vezes por segundo, e só quando o outro está mesmo online. O
+   plano gratuito da Supabase dá dois milhões de mensagens por mês; o contador
+   aqui em baixo guarda uma estimativa do gasto, para não haver surpresas. */
+const Sala = (() => {
+  const RITMO = 100;
+  const LIMITE = 2e6;
+  let meu = {}, deles = null, delesAt = 0, sujo = false, timer = 0, ultimo = 0;
+  const cofre = store("java-sala-gasto");
+  let gasto = cofre.get() || {mes:"", n:0};
+  const mesAtual = () => new Date().toISOString().slice(0, 7);
+  function marca(){
+    const m = mesAtual();
+    if(gasto.mes !== m) gasto = {mes:m, n:0};
+    gasto.n++;
+    if(gasto.n % 20 === 0) cofre.set(gasto);   // gravar a cada mensagem seria escrever no disco 10 vezes por segundo
+  }
+  function envia(){
+    timer = 0;
+    if(!sujo || document.hidden) return;
+    const me = Conta.user();
+    if(!me) return;
+    if(Live.enviar("estado", Object.assign({nome:me.nome, em:Date.now()}, meu))){ sujo = false; ultimo = Date.now(); marca(); }
+  }
+  function agenda(){
+    if(timer || !Live.acompanhado()) return;
+    timer = setTimeout(envia, Math.max(0, RITMO - (Date.now() - ultimo)));
+  }
+  /* junta ao envelope e manda-o no próximo intervalo */
+  function poe(parcial){ Object.assign(meu, parcial); sujo = true; agenda(); }
+  function gesto(tipo, extra){
+    const me = Conta.user();
+    if(me && Live.enviar("gesto", Object.assign({nome:me.nome, tipo, em:Date.now()}, extra || {}))) marca();
+  }
+  const avisa = () => document.dispatchEvent(new CustomEvent("sala:estado", {detail:deles}));
+  /* O canal é aberto: quem tiver a chave da página pode escrever lá dentro.
+     Por isso nada do que chega é aproveitado como vem — só passam os campos
+     conhecidos, com o tipo e os limites certos. O resto cai. */
+  const num = (v, min, max) => { const n = +v; return Number.isFinite(n) ? Math.min(max, Math.max(min, n)) : null; };
+  const umDe = (v, lista) => lista.includes(v) ? v : null;
+  const fracao = v => { const n = +v; return Number.isFinite(n) ? Math.min(1.5, Math.max(-.5, n)) : null; };
+  function limpa(p){
+    if(!p || typeof p !== "object") return null;
+    const nome = umDe(p.nome, ["bibi", "louzy"]);
+    if(!nome) return null;
+    const out = {nome, em:num(p.em, 0, 4e12) || Date.now()};
+    const j = p.jogo;
+    if(j && typeof j === "object" && umDe(j.j, ["cerejas", "swandoku", "musica"]) && umDe(j.e, ["a jogar", "acabou", "resolveu", "parado"]))
+      out.jogo = {j:j.j, e:j.e, s:num(j.s, 0, 99999) || 0, n:num(j.n, 0, 999) || 0, r:num(j.r, 0, 99) || 0,
+        m:/^\d{1,2}×\d{1,2}$/.test(j.m) ? j.m : "", t0:num(j.t0, 0, 4e12) || Date.now(), t:num(j.t, 0, 86400) || 0,
+        dia:!!j.dia, em:num(j.em, 0, 4e12) || Date.now()};
+    ["onde", "rato"].forEach(k => {
+      const v = p[k];
+      // a chave da secção vai parar a um seletor CSS: só se aceita o formato que nós próprios geramos
+      if(v && typeof v === "object" && umDe(v.m, ["bibi", "bancada"]) && (v.s === null || v.s === undefined || /^[bj]\d{1,3}$/.test(v.s)))
+        out[k] = {m:v.m, s:v.s || null, x:fracao(v.x), y:fracao(v.y)};
+    });
+    const mu = p.musica;
+    if(mu && typeof mu === "object")
+      out.musica = {a:num(mu.a, 0, 99) || 0, i:num(mu.i, 0, 99) || 0, t:num(mu.t, 0, 36000) || 0, p:!!mu.p, em:num(mu.em, 0, 4e12) || 0};
+    if(p.escreve) out.escreve = num(p.escreve, 0, 4e12) || 0;
+    return out;
+  }
+  function recebe(p){
+    const bom = limpa(p);
+    if(!bom) return;
+    deles = bom; delesAt = Date.now(); marca(); avisa();
+  }
+  Live.on("estado", recebe);
+  Live.on("presenca", nomes => {
+    const me = Conta.user();
+    if(!me) return;
+    if(nomes.includes(OTHER_NAME(me.nome))){ sujo = true; agenda(); }   // entrou agora: diz-lhe já o que estás a fazer
+    else if(deles){ deles = null; avisa(); }
+  });
+  document.addEventListener("visibilitychange", () => { if(!document.hidden){ sujo = true; agenda(); } });
+  return {poe, gesto, recebe, deles:() => deles, quando:() => delesAt,
+    gasto:() => ({mes:gasto.mes, n:gasto.n, limite:LIMITE, pct:Math.round(gasto.n / LIMITE * 100)})};
+})();
+
+/* ---------- ler o envelope: o que é que o outro está a fazer ----------
+   O relógio do Swandoku não vem em cada mensagem: vem a hora a que a partida
+   começou e o relógio anda sozinho deste lado. Uma mensagem em vez de uma por
+   segundo. */
+const Atividade = (() => {
+  const JOGOS = {
+    cerejas:{nome:"Swanrejas", onde:'section[aria-labelledby="gameTitle"]'},
+    swandoku:{nome:"Swandoku", onde:'section[aria-labelledby="sdTitle"]'},
+    musica:{nome:"Adivinha a música", onde:"#musica"}
+  };
+  const rel = ms => Math.floor(ms / 60000) + ":" + String(Math.floor(ms / 1000) % 60).padStart(2, "0");
+  const VALIDADE = 3 * 60000;   // uma partida acabada fica à vista três minutos
+  function ler(p){
+    const j = p && p.jogo;
+    if(!j || !JOGOS[j.j]) return null;
+    if(!["a jogar", "acabou", "resolveu"].includes(j.e)) return null;
+    if(j.e !== "a jogar" && Date.now() - (j.em || 0) > VALIDADE) return null;
+    const info = JOGOS[j.j];
+    let texto, vivo = j.e === "a jogar";
+    if(j.j === "cerejas") texto = vivo ? `a jogar ${info.nome} · ${j.s} ${j.s === 1 ? "cereja" : "cerejas"}, nível ${j.n}`
+      : `acabou o ${info.nome} com ${j.s} ${j.s === 1 ? "cereja" : "cerejas"}`;
+    else if(j.j === "swandoku") texto = vivo ? `no ${info.nome} ${j.m} · ${rel(Date.now() - j.t0)}`
+      : `resolveu o ${info.nome} ${j.m} em ${rel((j.t || 0) * 1000)}`;
+    else texto = vivo ? `a adivinhar músicas · ${j.s} ${j.s === 1 ? "ponto" : "pontos"}`
+      : `acabou o jogo das músicas com ${j.s} ${j.s === 1 ? "ponto" : "pontos"}`;
+    return {texto, vivo, onde:info.onde, jogo:j.j, nome:info.nome, dados:j};
+  }
+  return {ler, rel};
 })();
 
 /* avisos na página e notificações do navegador */
@@ -2495,8 +2985,8 @@ const Disco = (() => {
         onReady:() => { ready = true; player.setShuffle(saved.shuffle); applyVolume(); if(!goPending() && pendingPlay){ pendingPlay = false; player.playVideo(); } },
         onStateChange:e => {
           if(goPending()) return;
-          if(e.data === 1){ setPlaying(true); syncNow(); loadLyrics(); }
-          else if(e.data === 2){ wanted = false; setPlaying(false); }
+          if(e.data === 1){ setPlaying(true); syncNow(); loadLyrics(); mandaMusica(); }
+          else if(e.data === 2){ wanted = false; setPlaying(false); mandaMusica(); }
           else if(e.data === 0){
             if(saved.repeat === "one"){ player.seekTo(0, true); player.playVideo(); return; }
             const list = player.getPlaylist() || [], i = player.getPlaylistIndex();
@@ -2623,7 +3113,7 @@ const Disco = (() => {
     paintPos(+seekIn.value, +seekIn.max);
   });
   seekIn.addEventListener("change", () => {
-    if(ready){ player.seekTo(+seekIn.value, true); lyr.idx = -2; }
+    if(ready){ player.seekTo(+seekIn.value, true); lyr.idx = -2; setTimeout(mandaMusica, 250); }
     seeking = false; seekBar.classList.remove("dragging"); setTimeout(tickSeek, 150);
   });
 
@@ -2898,14 +3388,90 @@ const Disco = (() => {
 
   renderCovers(); renderTracks(); markNow(); setLyrics(!!saved.lyrics);
 
+  /* ---------- ouvir juntos ----------
+     Só viajam os acontecimentos — pôr, parar, trocar de música — e um acerto
+     de relógio de doze em doze segundos. O som nunca passa por aqui: cada
+     lado toca o seu YouTube, com o relógio alinhado. */
+  let juntos = false, aplicando = 0, ultimoAplicado = 0;
+  const outro = () => { const me = Conta.user(); return me ? NICE(OTHER_NAME(me.nome)) : "o outro"; };
+  function marcaJuntos(){
+    acts("juntos").forEach(b => { b.setAttribute("aria-pressed", juntos); b.classList.toggle("juntos-on", juntos); });
+  }
+  const estadoMusica = () => ({a:saved.album, i:saved.index, t:ready && player.getCurrentTime ? player.getCurrentTime() : 0, p:playing, em:Date.now()});
+  function mandaMusica(){
+    if(!juntos || Date.now() < aplicando) return;
+    Sala.poe({musica:estadoMusica()});
+  }
+  function aplicaMusica(m){
+    if(!juntos || !m || m.em === ultimoAplicado) return;
+    if(!ALBUMS[m.a] || !ALBUMS[m.a][5][m.i]) return;   // veio um disco que não existe: ignora-se
+    ultimoAplicado = m.em;
+    aplicando = Date.now() + 1800;   // não devolver o eco do que acabou de se aplicar
+    const alvo = m.t + (m.p ? (Date.now() - m.em) / 1000 : 0);
+    if(m.a !== saved.album || m.i !== saved.index){
+      playTrack(m.a, m.i);
+      setTimeout(() => { if(ready && alvo > 2) player.seekTo(alvo, true); }, 1400);
+      return;
+    }
+    if(!ready){ if(m.p) playTrack(m.a, m.i); return; }
+    const agora = player.getCurrentTime ? player.getCurrentTime() : 0;
+    if(Math.abs(agora - alvo) > 2) player.seekTo(Math.max(0, alvo), true);
+    if(m.p && !playing){ want(); player.playVideo(); }
+    else if(!m.p && playing) player.pauseVideo();
+  }
+  function setJuntos(on, avisar){
+    if(on && !Live.acompanhado()){ say(`${outro()} não está aqui agora`, 4000); return; }
+    juntos = on; marcaJuntos();
+    say(on ? `a ouvir com ${outro()}` : "a ouvir sozinho", 4000);
+    if(avisar) Sala.gesto(on ? "musica-convite" : "musica-fim", on ? estadoMusica() : {});
+    if(on) mandaMusica();
+  }
+  acts("juntos").forEach(b => b.addEventListener("click", () => setJuntos(!juntos, true)));
+  setInterval(() => { if(juntos && playing) mandaMusica(); }, 12000);   // acerto de relógio
+
   function sync(){
     const on = Conta.loggedIn();
+    if(!on && juntos) setJuntos(false, false);
     root.hidden = win.hidden = !on;
     if(on){ loadApi(); place(); }   // a API já pronta quando carregar num disco
     if(!on){ if(ready){ try{ player.stopVideo(); }catch(e){} } wanted = false; setPlaying(false); closeShelf(); win.classList.add("off"); }
   }
-  return {sync, albums:ALBUMS, tocar:playTrack};
+  return {sync, albums:ALBUMS, tocar:playTrack, aplicar:aplicaMusica, juntos:setJuntos,
+    aJuntos:() => juntos, estado:estadoMusica};
 })();
+
+/* ---------- convites para ouvir juntos ---------- */
+const GESTOS = ["musica-convite", "musica-sim", "musica-fim", "torcida", "desafio"];
+Live.on("gesto", g => {
+  const me = Conta.user();
+  if(!me || !g || typeof g !== "object") return;
+  if(!["bibi", "louzy"].includes(g.nome) || g.nome === me.nome) return;
+  if(!GESTOS.includes(g.tipo)) return;
+  if(g.tipo === "musica-convite"){
+    if(Disco.aJuntos()) return Disco.aplicar(g);   // já estavam ligados: isto é só um acerto
+    Aviso.toast(`${NICE(g.nome)} quer ouvir música contigo`, "Ficam na mesma música, ao mesmo tempo.",
+      {label:"Ouvir juntos", run:() => { Disco.juntos(true, false); Disco.aplicar(g); Sala.gesto("musica-sim", {}); }});
+    Aviso.notify(`${NICE(g.nome)} quer ouvir música contigo`, "Abre o site para ouvirem ao mesmo tempo.");
+  } else if(g.tipo === "musica-sim"){
+    Aviso.toast(`${NICE(g.nome)} está a ouvir contigo`, "", null);
+  } else if(g.tipo === "torcida"){
+    Aviso.toast(`${NICE(g.nome)} está a torcer por ti!`, "", null);
+    document.dispatchEvent(new CustomEvent("sala:torcida", {detail:g}));
+  } else if(g.tipo === "desafio"){
+    const onde = {cerejas:'section[aria-labelledby="gameTitle"]', swandoku:'section[aria-labelledby="sdTitle"]', musica:"#musica"}[g.jogo];
+    const nome = {cerejas:"Swanrejas", swandoku:"Swandoku", musica:"adivinhar músicas"}[g.jogo] || "um jogo";
+    Aviso.toast(`${NICE(g.nome)} desafiou-te para o ${nome}`, "Quem faz melhor?",
+      {label:"Aceitar", run:() => {
+        if(document.body.dataset.mode !== "bibi") setMode("bibi");
+        setTimeout(() => { const el = document.querySelector(onde); if(el) el.scrollIntoView({behavior:reduceMotion.matches ? "auto" : "smooth", block:"start"}); }, 500);
+      }});
+    Aviso.notify(`${NICE(g.nome)} desafiou-te para o ${nome}`, "Abre o site para jogar.");
+  } else if(g.tipo === "musica-fim"){
+    if(Disco.aJuntos()) Disco.juntos(false, false);
+    Aviso.toast(`${NICE(g.nome)} passou a ouvir sozinho`, "", null);
+  }
+});
+document.addEventListener("sala:estado", () => { const p = Sala.deles(); if(p && p.musica) Disco.aplicar(p.musica); });
 
 /* quem está no site */
 let seenCache = [];
@@ -2915,7 +3481,16 @@ async function renderPresence(){
   const other = OTHER_NAME(me.nome), on = Live.online().includes(other);
   el.hidden = false;
   el.classList.toggle("on", on);
-  if(on){ el.querySelector("span").textContent = `${NICE(other)} está aqui`; return; }
+  if(on){
+    const act = Atividade.ler(Sala.deles());
+    el.querySelector("span").textContent = act ? `${NICE(other)} ${act.texto}` : `${NICE(other)} está aqui`;
+    el.classList.toggle("a-jogar", !!(act && act.vivo));
+    el.dataset.onde = act ? act.onde : "";
+    el.title = act ? "Ir ver" : "";
+    return;
+  }
+  el.classList.remove("a-jogar");
+  el.dataset.onde = "";
   const row = seenCache.find(r => r.nome === other);
   if(!row){ el.querySelector("span").textContent = `${NICE(other)} ainda não entrou`; return; }
   const mins = Math.round((Date.now() - new Date(row.visto)) / 60000);
@@ -2924,7 +3499,174 @@ async function renderPresence(){
     : mins < 1440 ? `${NICE(other)} esteve cá há ${Math.round(mins / 60)} h`
     : `${NICE(other)} esteve cá a ${fmt.short.format(new Date(row.visto))}`;
 }
-Live.on("presenca", renderPresence);
+/* o aviso ao lado de cada jogo: «ela está a jogar agora» */
+function renderAoVivo(){
+  const me = Conta.user(), a = Atividade.ler(Sala.deles());
+  const dela = me ? O_NOME(OTHER_NAME(me.nome)) : "";
+  const juntos = !!me && Live.online().includes(OTHER_NAME(me.nome));
+  [["cerejas", "#gLive", "Swanrejas"], ["swandoku", "#sdLive", "Swandoku"], ["musica", "#muLive", "as músicas"]].forEach(([j, sel, nome]) => {
+    const el = $(sel);
+    if(!el) return;
+    el.hidden = !juntos;
+    if(!juntos) return;
+    const aqui = !!(a && a.jogo === j), d = aqui ? a.dados : null;
+    let txt, botao;
+    if(!aqui){
+      // está no site mas não neste jogo: fica o convite
+      txt = a ? `está ${esc(a.texto)}` : "está aqui";
+      botao = `<button type="button" class="ao-vivo-btn" data-desafio="${j}">Desafiar para ${esc(nome)}</button>`;
+    } else if(j === "cerejas") txt = a.vivo ? `está a jogar agora — ${esc(d.s)} ${d.s === 1 ? "cereja" : "cerejas"}, nível ${esc(d.n)}`
+      : `acabou agora com ${esc(d.s)} ${d.s === 1 ? "cereja" : "cerejas"}`;
+    else if(j === "swandoku") txt = a.vivo ? `está no ${esc(d.m)} — ${esc(Atividade.rel(Date.now() - d.t0))}${d.dia ? " (o do dia)" : ""}`
+      : `resolveu o ${esc(d.m)} em ${esc(Atividade.rel((d.t || 0) * 1000))}`;
+    else txt = a.vivo ? `está a jogar — ${esc(d.s)} ${d.s === 1 ? "ponto" : "pontos"}` : `acabou com ${esc(d.s)} ${d.s === 1 ? "ponto" : "pontos"}`;
+    if(aqui && a.vivo) botao = `<button type="button" class="ao-vivo-btn" data-torcer="${j}">Torcer</button>`;
+    el.innerHTML = `<i class="${aqui && a.vivo ? "viva" : ""}" aria-hidden="true"></i><span>${esc(dela)} ${txt}</span>${botao || ""}`;
+  });
+}
+/* «está a escrever…»: uma marca no envelope, renovada de dois em dois segundos */
+let ultimoEscreve = 0;
+document.addEventListener("input", e => {
+  if(e.target.id !== "noteText") return;
+  if(Date.now() - ultimoEscreve < 2000) return;
+  ultimoEscreve = Date.now();
+  Sala.poe({escreve:ultimoEscreve});
+});
+function renderEscreve(){
+  const el = $("#cartaLive"), me = Conta.user(), p = Sala.deles();
+  if(!el) return;
+  const on = !!(me && p && p.escreve && Date.now() - p.escreve < 6000);
+  el.hidden = !on;
+  if(on) el.innerHTML = `<i class="viva" aria-hidden="true"></i><span>${esc(O_NOME(OTHER_NAME(me.nome)))} está a escrever-te…</span>`;
+}
+
+/* torcer e desafiar: um gesto solto, fora do envelope do estado */
+document.addEventListener("click", e => {
+  const tor = e.target.closest("[data-torcer]"), des = e.target.closest("[data-desafio]");
+  if(tor){ Sala.gesto("torcida", {jogo:tor.dataset.torcer}); Aviso.toast("Torcida enviada", "", null); }
+  if(des){ Sala.gesto("desafio", {jogo:des.dataset.desafio}); Aviso.toast("Desafio enviado", "", null); }
+});
+/* ---------- rastros: o rato do outro e o sítio da página onde ele está ----------
+   Os ecrãs são diferentes, por isso não se mandam pixéis: manda-se a secção
+   («o almanaque») e a posição dentro dela em fração. Do outro lado, isso
+   volta a ser um ponto no ecrã dele, seja qual for o tamanho. Rato e scroll
+   vão no mesmo envelope da Sala, que já está limitado a dez por segundo. */
+const Rastros = (() => {
+  const PARADO = 2000;     // sem mexer o rato: deixa de o mandar
+  const ESQUECE = 10000;   // sem notícias: o rato do outro desaparece
+  let seccoes = [], marcado = false;
+  const rastro = $("#rastro"), trilho = $("#trilho"), dot = $("#trilhoDot"), lbl = $("#trilhoLbl");
+  let alvo = null, agora = null, ultimoRato = 0, mandouParado = true, raf = 0;
+
+  /* cada secção ganha uma chave estável, igual nos dois aparelhos */
+  function marca(){
+    if(marcado) return;
+    marcado = true;
+    const lista = [
+      ...document.querySelectorAll("#mBancada > .wrap > .hero, #mBancada .pane"),
+      ...document.querySelectorAll("#mBibi > section")
+    ];
+    lista.forEach((el, i) => { el.dataset.sala = (el.closest("#mBibi") ? "b" : "j") + i; seccoes.push(el); });
+  }
+  const modo = () => document.body.dataset.mode === "bibi" ? "bibi" : "bancada";
+  const visivel = el => { const r = el.getBoundingClientRect(); return r.height > 0 && r.bottom > 0 && r.top < innerHeight; };
+  /* que secção está debaixo deste ponto do ecrã, e onde dentro dela */
+  function ondeEsta(clientY, clientX){
+    marca();
+    for(const el of seccoes){
+      if(el.closest("[hidden]") || !visivel(el)) continue;
+      const r = el.getBoundingClientRect();
+      if(clientY >= r.top - 1 && clientY <= r.bottom + 1 && r.height > 0)
+        return {s:el.dataset.sala, x:clientX === undefined ? .5 : (clientX - r.left) / Math.max(1, r.width), y:(clientY - r.top) / Math.max(1, r.height)};
+    }
+    return null;
+  }
+  const doMeuLado = p => p && p.onde && p.onde.m === modo();
+  /* o caminho de volta: chave + fração -> ponto no meu ecrã */
+  function paraEcra(pos){
+    if(!pos) return null;
+    const el = document.querySelector(`[data-sala="${pos.s}"]`);
+    if(!el || el.closest("[hidden]")) return null;
+    const r = el.getBoundingClientRect();
+    return {x:r.left + pos.x * r.width, y:r.top + pos.y * r.height, dentro:r.bottom > 0 && r.top < innerHeight};
+  }
+  const titulo = chave => {
+    const el = document.querySelector(`[data-sala="${chave}"]`);
+    const h = el && el.querySelector("h1,h2,h3");
+    return h ? h.textContent.trim() : "";
+  };
+
+  /* ---------- o que eu mando ---------- */
+  function mandaPos(){ Sala.poe({onde:Object.assign({m:modo()}, ondeEsta(innerHeight / 2) || {s:null, y:0})}); }
+  addEventListener("pointermove", e => {
+    if(e.pointerType === "touch") return;
+    ultimoRato = Date.now(); mandouParado = false;
+    Sala.poe({rato:Object.assign({m:modo()}, ondeEsta(e.clientY, e.clientX) || {})});
+  }, {passive:true});
+  addEventListener("scroll", () => mandaPos(), {passive:true});
+  addEventListener("resize", () => mandaPos());
+  window.addEventListener("bancada:show", mandaPos);
+  window.addEventListener("bibi:show", mandaPos);
+  setInterval(() => {
+    // parou de mexer: diz-lhe uma vez e cala-te
+    if(!mandouParado && Date.now() - ultimoRato > PARADO){ mandouParado = true; Sala.poe({rato:null}); }
+  }, 700);
+
+  /* ---------- o que eu recebo ---------- */
+  function pinta(){
+    raf = 0;
+    const p = Sala.deles(), me = Conta.user();
+    const fresco = p && Date.now() - Sala.quando() < ESQUECE;
+    // o rato
+    const r = fresco && p.rato && p.rato.m === modo() && p.rato.s ? paraEcra(p.rato) : null;
+    if(r && r.dentro){
+      alvo = r;
+      if(!agora || reduceMotion.matches) agora = {x:r.x, y:r.y};
+      else { agora.x += (alvo.x - agora.x) * .22; agora.y += (alvo.y - agora.y) * .22; }
+      rastro.hidden = false;
+      rastro.style.transform = `translate3d(${agora.x}px, ${agora.y}px, 0)`;
+      $("#rastroNome").textContent = me ? NICE(OTHER_NAME(me.nome)) : "";
+      if(Math.abs(alvo.x - agora.x) > .5 || Math.abs(alvo.y - agora.y) > .5) pede();
+    } else { rastro.hidden = true; agora = null; }
+    // o trilho: onde é que ele está na página
+    const pos = fresco && p.onde && p.onde.m === modo() && p.onde.s ? paraEcra(p.onde) : null;
+    const noutroModo = fresco && p.onde && p.onde.m && p.onde.m !== modo();
+    trilho.hidden = !(pos || noutroModo);
+    if(pos){
+      // a calha é mais curta do que o ecrã: a posição dele vira fração da calha
+      const alto = trilho.clientHeight || innerHeight;
+      const y = Math.max(0, Math.min(1, pos.y / innerHeight)) * alto;
+      dot.style.transform = `translateY(${y}px)`;
+      dot.dataset.perto = pos.y > 0 && pos.y < innerHeight ? "true" : "false";
+      lbl.style.transform = `translateY(${y}px)`;
+      const nome = me ? NICE(OTHER_NAME(me.nome)) : "";
+      const tit = titulo(p.onde.s);
+      lbl.textContent = tit ? `${nome} · ${tit}` : nome;
+    } else if(noutroModo){
+      dot.style.transform = "translateY(0px)";
+      dot.dataset.perto = "false";
+      lbl.style.transform = "translateY(0px)";
+      lbl.textContent = (me ? NICE(OTHER_NAME(me.nome)) : "") + (p.onde.m === "bibi" ? " · no Modo Bibi" : " · na bancada");
+    }
+  }
+  const pede = () => { if(!raf) raf = requestAnimationFrame(pinta); };
+  document.addEventListener("sala:estado", pede);
+  addEventListener("scroll", pede, {passive:true});
+  setInterval(pede, 1000);   // apaga-se sozinho quando as notícias envelhecem
+  return {marca, pinta:pede};
+})();
+
+Live.on("presenca", () => { renderPresence(); renderAoVivo(); });
+document.addEventListener("sala:estado", () => { renderPresence(); renderAoVivo(); renderEscreve(); });
+// o relógio do Swandoku do outro lado anda aqui, sem gastar mensagens
+setInterval(() => { const a = Atividade.ler(Sala.deles()); if(a){ renderPresence(); renderAoVivo(); } renderEscreve(); }, 1000);
+// carregar na presença leva ao sítio onde ele ou ela está
+$("#presence").addEventListener("click", () => {
+  const onde = $("#presence").dataset.onde;
+  if(!onde) return;
+  if(document.body.dataset.mode !== "bibi") setMode("bibi");
+  setTimeout(() => { const el = document.querySelector(onde); if(el) el.scrollIntoView({behavior:reduceMotion.matches ? "auto" : "smooth", block:"start"}); }, 400);
+});
 async function refreshSeen(){ if(Conta.loggedIn()){ seenCache = await Live.lastSeen(); renderPresence(); } }
 setInterval(refreshSeen, 60000);
 function startLive(){ if(Conta.loggedIn()){ Live.start(); refreshSeen(); Placar.load(); } else { Live.stop(); renderPresence(); Placar.limpar(); } Disco.sync(); }
@@ -2945,7 +3687,7 @@ function setMode(mode, push){
   $("#footBancada").hidden = bibi;
   document.querySelectorAll(".modes button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === mode));
   Aviso.setTitle();
-  $("#themeColor").setAttribute("content", bibi ? "#140F0C" : "#0E1016");
+  $("#themeColor").setAttribute("content", bibi ? "#140F0C" : "#090B11");
   $("#brandSub").textContent = bibi ? ((Conta.user() && Conta.user().nome !== "bibi") ? "o lago" : "para a Bibi") : "~/java";
   if(push !== false){
     try{ history.replaceState(null, "", bibi ? "#bibi" : location.pathname + location.search); }catch(e){}
@@ -3243,7 +3985,15 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
 
   /* ---------- menu ---------- */
   const menuBtn = $("#menuBtn"), menuList = $("#menuList");
-  const setMenu = open => { menuList.dataset.open = open; menuBtn.setAttribute("aria-expanded", open); if(open) menuList.querySelector("button").focus(); };
+  const setMenu = open => {
+    menuList.dataset.open = open; menuBtn.setAttribute("aria-expanded", open);
+    if(open){ mostraUso(); menuList.querySelector("button").focus(); }
+  };
+  /* quanto do tempo real do mês já foi gasto (estimativa deste aparelho) */
+  function mostraUso(){
+    const g = Sala.gasto();
+    $("#usoSala").textContent = g.n ? `tempo real: ${g.n.toLocaleString("pt-PT")} de ${(g.limite / 1e6)} M mensagens este mês (${g.pct}%)` : "tempo real: nada gasto este mês";
+  }
   menuBtn.addEventListener("click", e => { e.stopPropagation(); setMenu(menuList.dataset.open !== "true"); });
   document.addEventListener("click", e => { if(!e.target.closest(".menu")) setMenu(false); });
   document.addEventListener("keydown", e => { if(e.key === "Escape" && menuList.dataset.open === "true"){ setMenu(false); menuBtn.focus(); } });
@@ -3318,6 +4068,95 @@ window.addEventListener("hashchange", () => setMode(location.hash === "#bibi" ? 
     a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 2000);
   }
+
+  /* ---------- registo em direto ---------- */
+  const ESTADOS = {ligado:"a ouvir o GitHub", parado:"sem ligação ao GitHub", ligar:"a ligar ao GitHub…"};
+  const novosShas = new Set();
+
+  function renderStrip(){
+    const c = GitLive.ultimo();
+    const est = GitLive.estado();
+    $("#livePulse").dataset.s = est;
+    const lbl = $("#liveState");
+    lbl.dataset.s = est; lbl.textContent = ESTADOS[est];
+    if(!c) return;
+    $("#liveMsg").textContent = c.s;
+    $("#liveMsg").title = c.s;
+    const r = Commit.resumo(c);
+    $("#liveMeta").innerHTML = [
+      `<span><b>${esc(desde(c.t))}</b></span>`,
+      `<span>${esc(c.h)}</span>`,
+      r ? `<span>${esc(r)}</span>` : ""
+    ].join("");
+  }
+
+  function renderFeed(){
+    const cs = GitLive.lista();
+    const pill = $("#livePill"), est = GitLive.estado();
+    pill.dataset.s = est;
+    pill.querySelector("i").dataset.s = est;
+    pill.querySelector("span").textContent = ESTADOS[est];
+    $("#feedNote").textContent = GitLive.visto()
+      ? "última leitura " + desde(GitLive.visto()) + " · procura sozinho a cada minuto"
+      : "sem leitura ainda";
+    if(!cs.length){ $("#feed").innerHTML = `<li class="feed-empty">Ainda não há commits para mostrar.</li>`; return; }
+    let dia = "";
+    $("#feed").innerHTML = cs.map(c => {
+      const at = new Date(c.t), k = dayKey(at);
+      let cab = "";
+      if(k !== dia){
+        dia = k;
+        const rel = daysBetween(at, new Date());
+        const nome = rel === 0 ? "hoje" : rel === 1 ? "ontem" : fmt.long.format(at);
+        cab = `<li class="feed-day">${esc(nome)}</li>`;
+      }
+      const s = Commit.partes(c), tag = Commit.etiqueta(c), resumo = Commit.resumo(c);
+      const mostra = s.f.slice(0, 5).map(f =>
+        `<span class="chip ${Commit.especie(f) === "java" ? "java" : ""}">${esc(f.split("/").pop())}</span>`).join("");
+      const mais = s.f.length > 5 ? `<span class="chip mais">+${s.f.length - 5}</span>` : "";
+      return cab + `<li class="fe ${novosShas.has(c.sha) ? "novo" : ""}" data-k="${esc(Commit.tipo(c))}">
+        <div class="fe-when"><span>${esc(fmt.time(at))}</span><b>${esc(desde(c.t))}</b></div>
+        <div class="fe-main">
+          <div class="fe-title"><b>${esc(c.s)}</b>${tag ? `<span class="fe-tag ${esc(Commit.tipo(c))}">${esc(tag)}</span>` : ""}
+            <a class="fe-sha" href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.h)}</a></div>
+          ${c.corpo ? `<p class="fe-body">${esc(c.corpo)}</p>` : ""}
+          ${s.f.length ? `<div class="fe-files">${mostra}${mais}</div>` : ""}
+          ${s.f.length ? `<div class="fe-stat"><span>${esc(resumo)}</span>${c.add !== undefined ? `<span><span class="add">+${c.add}</span> <span class="del">−${c.del}</span></span>` : ""}</div>` : ""}
+        </div></li>`;
+    }).join("");
+  }
+
+  const pintaLive = () => { renderStrip(); renderFeed(); };
+  GitLive.on("lista", pintaLive);
+  GitLive.on("estado", pintaLive);
+  GitLive.on("novos", cs => {
+    cs.forEach(c => novosShas.add(c.sha));
+    setTimeout(() => { cs.forEach(c => novosShas.delete(c.sha)); }, 8000);
+    pintaLive();
+    const c = cs[0];
+    // no Modo Bibi o aviso fala a língua dela e leva ao caderno, não ao separador
+    const naBibi = document.body.dataset.mode === "bibi";
+    const quantos = cs.length === 1 ? "" : " (" + cs.length + " de uma vez)";
+    Aviso.toast(naBibi ? "Ele acabou de guardar trabalho novo" + quantos : "Commit novo no GitHub" + quantos, c.s,
+      naBibi
+        ? {label:"Ver o caderno", run:() => $("#agora").scrollIntoView({behavior:reduceMotion.matches ? "auto" : "smooth", block:"start"})}
+        : {label:"Ver o registo", run:() => { setMode("bancada"); selectTab($("#t-live")); }});
+    // a Bibi é avisada mesmo com o separador fechado; ele não precisa de aviso do que acabou de fazer
+    const eu = Conta.user();
+    if(eu && eu.nome === "bibi") Aviso.notify("Ele está a estudar agora mesmo", c.s);
+  });
+  $("#liveGo").addEventListener("click", () => { selectTab($("#t-live")); $("#p-live").scrollIntoView({behavior:reduceMotion.matches ? "auto" : "smooth", block:"start"}); });
+  $("#liveRefresh").addEventListener("click", async e => {
+    const b = e.currentTarget;
+    b.disabled = true; b.textContent = "A procurar…";
+    await GitLive.agora();
+    b.disabled = false; b.textContent = "Procurar agora";
+    pintaLive();
+  });
+  // os "há 4 min" envelhecem sozinhos
+  setInterval(() => { if(document.visibilityState === "visible" && document.body.dataset.mode === "bancada") pintaLive(); }, 60000);
+  pintaLive();
+  GitLive.arranca();
 
   renderTop(); renderHeat(); renderStatic(); renderList();
   const startTab = tabs.find(t => location.hash === "#" + t.id.slice(2)) || tabs[0];
@@ -3434,6 +4273,11 @@ function initBibi(){
   }
 
   /* ---------- corações ---------- */
+  document.addEventListener("sala:torcida", e => {
+    const alvo = {cerejas:"#game", swandoku:"#sdBoard", musica:"#musica"}[e.detail && e.detail.jogo] || "#game";
+    const el = document.querySelector(alvo);
+    if(el && el.getBoundingClientRect().height) hearts(...centerOf(el), 14);
+  });
   function hearts(x, y, n = 8){
     if(reduceMotion.matches) return;
     for(let i = 0; i < n; i++){
@@ -3774,6 +4618,83 @@ function initBibi(){
   }
   $("#week").innerHTML = week.join("");
 
+  /* ---------- caderno de bordo: o que ele acabou de fazer ----------
+     Vem do GitHub em direto. A frase é a mesma do diário quando o ficheiro é
+     conhecido; quando não é, fica o que ele escreveu no commit. */
+  const ESTADO_LIVRO = {
+    ligado: T("o caderno dele está aberto à tua frente", "o teu caderno está aberto"),
+    parado: "sem ligação — isto é o que já se sabia",
+    ligar: T("a espreitar o caderno dele…", "a ler o teu caderno…")
+  };
+  const livroNovos = new Set();
+  /* o assunto do commit, dito como uma frase: sem o prefixo «Roadmap:», com
+     maiúscula e com ponto final */
+  const frase = s => {
+    const x = String(s).replace(/^[^:]{2,24}:\s+/, "") || String(s);
+    const y = x.charAt(0).toUpperCase() + x.slice(1);
+    return /[.!?…]$/.test(y) ? y : y + ".";
+  };
+
+  function livroEntrada(c){
+    const s = Commit.partes(c);
+    const conhecido = s.ex.map(f => CUTE[f.toLowerCase()]).filter(Boolean);
+    let titulo, texto, k = Commit.tipo(c);
+    if(conhecido.length){
+      titulo = conhecido[0][0];
+      texto = conhecido[0][1];
+      if(conhecido.length > 1) texto += " " + T("E ainda mexeu em mais " + Commit.plural(conhecido.length - 1, "exercício", "exercícios") + ".",
+        "E ainda mexeste em mais " + Commit.plural(conhecido.length - 1, "exercício", "exercícios") + ".");
+    } else if(s.ex.length){
+      titulo = "Exercício novo: " + s.ex.join(", ");
+      texto = frase(c.s);
+    } else if(k === "site"){
+      titulo = T("Mexeu nesta página", "Mexeste nesta página");
+      texto = frase(c.s);
+    } else if(k === "plano"){
+      titulo = T("Arrumou o plano de estudo", "Arrumaste o plano de estudo");
+      texto = frase(c.s);
+    } else {
+      titulo = "Arrumações";
+      texto = c.f ? frase(c.s) : tidyText(c.s);
+    }
+    const selos = [];
+    if(s.ex.length) selos.push(`<span class="selo ex">${esc(Commit.plural(s.ex.length, "exercício", "exercícios"))}</span>`);
+    if(s.f.length) selos.push(`<span class="selo">${esc(Commit.plural(s.f.length, "ficheiro mexido", "ficheiros mexidos"))}</span>`);
+    const at = new Date(c.t);
+    return `<li class="lv ${livroNovos.has(c.sha) ? "novo" : ""}" data-k="${esc(k)}">
+      <time datetime="${esc(c.t)}">${esc(desde(c.t))} · ${esc(fmt.time(at))}</time>
+      <b>${esc(titulo)}</b>
+      <p>${esc(texto)}</p>
+      ${selos.length ? `<div class="lv-selos">${selos.join("")}</div>` : ""}
+    </li>`;
+  }
+
+  function renderLivro(){
+    const cs = GitLive.lista().slice(0, 12);
+    const est = GitLive.estado(), box = $("#livroEstado");
+    box.dataset.s = est;
+    box.querySelector("span").textContent = ESTADO_LIVRO[est];
+    $("#livroLista").innerHTML = cs.length
+      ? cs.map(livroEntrada).join("")
+      : `<li class="lv"><b>Ainda não há nada escrito</b><p>Assim que ele guardar trabalho, a primeira linha aparece aqui.</p></li>`;
+    const ultimo = cs[0];
+    $("#livroPe").textContent = ultimo
+      ? T("A última vez que ele guardou alguma coisa foi " + desde(ultimo.t) + ". Esta folha escreve-se sozinha.",
+          "A última vez que guardaste alguma coisa foi " + desde(ultimo.t) + ". Esta folha escreve-se sozinha.")
+      : "";
+  }
+
+  GitLive.on("lista", renderLivro);
+  GitLive.on("estado", renderLivro);
+  GitLive.on("novos", cs => {
+    cs.forEach(c => livroNovos.add(c.sha));
+    setTimeout(() => { cs.forEach(c => livroNovos.delete(c.sha)); renderLivro(); }, 9000);
+    renderLivro();
+  });
+  setInterval(() => { if(document.visibilityState === "visible" && document.body.dataset.mode === "bibi") renderLivro(); }, 60000);
+  renderLivro();
+  GitLive.arranca();
+
   /* ---------- almanaque ---------- */
   const activeDays = [...HISTORY.days.keys()].sort();
   const firstAt = HISTORY.items.length ? HISTORY.items[0].at : now;
@@ -3990,6 +4911,7 @@ function initBibi(){
     env.setAttribute("aria-label", env.getAttribute("aria-label").replace(/: (abrir|fechar)$/, open ? ": fechar" : ": abrir"));
   });
   $("#noteForm").addEventListener("submit", async e => {
+    Sala.poe({escreve:0});
     e.preventDefault();
     const ta = $("#noteText"), msg = ta.value.trim(), btn = $("#noteForm button[type=submit]");
     if(!msg){ formMsg.textContent = "Escreve alguma coisa primeiro, nem que seja só um olá."; ta.focus(); return; }
@@ -4159,7 +5081,7 @@ function initSwandoku(hearts, centerOf){
   const doneText = g => g.placar === "ok" ? `Resolvido em ${time(Math.round(g.elapsed))}. Já está no placar; amanhã há outro.`
     : g.placar === "repetida" ? "Já tinhas resolvido este noutro aparelho: conta o primeiro tempo." : `Resolvido em ${time(Math.round(g.elapsed))}. Amanhã há outro.`;
   function openMode(m, n){
-    if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; }
+    if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; eco(); }
     mode = m;
     document.querySelectorAll("#sdMode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.m === m));
     if(m === "dia") return openDaily(n);
@@ -4258,6 +5180,19 @@ function initSwandoku(hearts, centerOf){
   document.addEventListener("placar:atualizado", updateBest);
 
   function updateClock(){ clock.textContent = time(elapsedNow()); }
+  /* o outro lado precisa de saber a que horas começou: o relógio anda sozinho lá,
+     em vez de gastar uma mensagem por segundo */
+  let ecoSD = "";
+  function eco(){
+    if(!game) return;
+    const vivo = !!startedAt && !game.done;
+    const e = game.done ? "resolveu" : vivo ? "a jogar" : "parado";
+    const chave = e + game.n + Math.round(game.elapsed);
+    if(chave === ecoSD) return;
+    ecoSD = chave;
+    Sala.poe({jogo:{j:"swandoku", m:game.n + "×" + game.n, t0:Date.now() - elapsedNow() * 1000,
+      e, t:Math.round(elapsedNow()), dia:!!game.dia, em:Date.now()}});
+  }
 
   // o histórico guarda também o rascunho, para «Anular» o desfazer
   const snap = i => [i, game.cur[i], game.notes.slice()];
@@ -4286,6 +5221,7 @@ function initSwandoku(hearts, centerOf){
   function checkWin(){
     if(game.cur.every((v, i) => v === game.sol[i])){
       game.elapsed = elapsedNow(); startedAt = 0; game.done = true;
+      eco();
       const t = Math.round(game.elapsed), n = game.n, record = !best[n] || t < best[n];
       hearts(...centerOf(board), 18);
       if(game.dia){
@@ -4364,7 +5300,7 @@ function initSwandoku(hearts, centerOf){
     else if(startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); }
   });
   io.observe(board);
-  tick = setInterval(() => { if(game && startedAt && !game.done) updateClock(); }, 1000);
+  tick = setInterval(() => { if(game && startedAt && !game.done){ updateClock(); eco(); } }, 1000);
   window.addEventListener("pagehide", () => { if(game && startedAt){ game.elapsed = elapsedNow(); startedAt = 0; save(); } });
 
   openMode(mode, [4, 6, 9].includes(saved.n) ? saved.n : 6);
@@ -4434,6 +5370,7 @@ function initMusica(hearts, centerOf){
     $("#muRound").textContent = jogo ? `pergunta ${r + 1} de ${RONDAS}` : `${RONDAS} perguntas · ${SEGUNDOS} segundos cada`;
     $("#muScore").innerHTML = jogo || estado === "fim" ? `<b class="num">${pontos}</b> pontos` : saved.best ? `recorde <b class="num">${saved.best}</b>` : "";
     if(!jogo) fuse.style.transform = "scaleX(0)";
+    if(jogo || estado === "fim") Sala.poe({jogo:{j:"musica", s:pontos, r:r + 1, e:jogo ? "a jogar" : "acabou", em:Date.now()}});
   }
   function inicio(msg){
     estado = "inicio"; hud();
@@ -4825,6 +5762,11 @@ function initGame(data, saveData, hearts, centerOf){
     if(scoreEl.textContent !== s) scoreEl.textContent = s;
     if(timeEl.textContent !== tm) timeEl.textContent = tm;
     if(levelEl.textContent !== lv) levelEl.textContent = lv;
+    // do outro lado vê-se a partida a acontecer (a Sala junta tudo num envelope só)
+    if(running && (score !== ecoScore || level !== ecoNivel)){
+      ecoScore = score; ecoNivel = level;
+      Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"a jogar", em:Date.now()}});
+    }
     fuse.style.transform = `scaleX(${clamp(left / MAX_LEFT, 0, 1)})`;
     fuse.parentElement.classList.toggle("low", left < 6);
   }
@@ -4877,9 +5819,12 @@ function initGame(data, saveData, hearts, centerOf){
     draw(t);
     raf = requestAnimationFrame(loop);   // o lago continua vivo depois de a partida acabar (antes o ciclo parava aqui e a partida seguinte ficava congelada)
   }
+  let ecoScore = -1, ecoNivel = -1;
   function start(){
     fitScale();
     running = true; left = START; score = 0; caught = 0; level = 1; combo = 0; bestCombo = 0; played = 0;
+    ecoScore = -1; ecoNivel = -1;
+    Sala.poe({jogo:{j:"cerejas", s:0, n:1, e:"a jogar", em:Date.now()}});
     drops = []; sparks = []; rings = []; texts = []; spawnIn = .3; shake = 0; flash = null;
     ui.dataset.show = "false"; hud();
     $("#gRestart").hidden = false;
@@ -4901,6 +5846,7 @@ function initGame(data, saveData, hearts, centerOf){
   function end(){
     const natural = left <= 0;
     running = false; $("#gRestart").hidden = true;
+    Sala.poe({jogo:{j:"cerejas", s:score, n:level, e:"acabou", em:Date.now()}});
     if(natural) Placar.registar("cerejas", 0, score);   // só conta a partida jogada até ao fim
     const record = score > (data.best || 0);
     if(record){ data.best = score; saveData(); }

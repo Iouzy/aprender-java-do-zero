@@ -352,7 +352,7 @@ def correr(p, base, nome, opts, res):
     res.check(nome, f"placar com as {CATEGORIAS} categorias", linhas == CATEGORIAS, f"{linhas} linhas")
 
     # os atalhos do topo levam a cada jogo, ao placar e às cartas (no telemóvel, pelo menu)
-    for alvo in ['section[aria-labelledby="gameTitle"]', 'section[aria-labelledby="sdTitle"]', "#musica", "#placar", 'section[aria-label="Cartas"]']:
+    for alvo in ['section[aria-labelledby="gameTitle"]', 'section[aria-labelledby="sdTitle"]', "#musica", "#placar", "#agora", 'section[aria-label="Cartas"]']:
         page.evaluate("window.scrollTo(0, 0)")
         page.wait_for_timeout(300)
         if page.is_visible("#jumpBtn"):
