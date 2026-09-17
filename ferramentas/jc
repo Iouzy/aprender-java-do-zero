@@ -31,7 +31,7 @@ else
 fi
 
 # --- 2. a compilação -------------------------------------------------------
-SAIDA="$(javac -d "$REPO/out" "$FICH" 2>&1)"; CODIGO=$?
+SAIDA="$(javac -encoding UTF-8 -d "$REPO/out" "$FICH" 2>&1)"; CODIGO=$?
 # tira o ruído que a JVM despeja em alguns ambientes; o erro do compilador fica intacto
 SAIDA="$(printf '%s\n' "$SAIDA" | grep -v '^Picked up JAVA_TOOL_OPTIONS' || true)"
 {
@@ -46,6 +46,28 @@ if [ $CODIGO -ne 0 ]; then
 fi
 
 # --- 3. a corrida ----------------------------------------------------------
+# O erro que conta em arrays não é de compilação: é o ArrayIndexOutOfBounds a
+# correr. Por isso a corrida também vai para o log.
+# Corre dentro do `script` para o programa continuar a ver um terminal a sério:
+# com Scanner, uma saída capturada faria o "Escreve a nota:" aparecer tarde.
 echo "jc: compilou (v$N). A correr:"
 echo "---"
-java -cp "$REPO/out" "$CLASSE"
+TS_FALLBACK="$(mktemp)"
+if command -v script >/dev/null; then
+  TS="$(mktemp)"
+  script -q -e -c "java -Dfile.encoding=UTF-8 -cp '$REPO/out' '$CLASSE'" "$TS"; RUN=$?
+  SAIDA_RUN="$(tr -d '\r' < "$TS" | grep -v '^Picked up JAVA_TOOL_OPTIONS' || true)"
+  rm -f "$TS"
+else
+  # sem `script`: grava com tee. Um prompt sem \n pode aparecer tarde.
+  java -Dfile.encoding=UTF-8 -cp "$REPO/out" "$CLASSE" 2>&1 | tee "$TS_FALLBACK"
+  RUN=${PIPESTATUS[0]}
+  SAIDA_RUN="$(grep -v '^Picked up JAVA_TOOL_OPTIONS' "$TS_FALLBACK" || true)"
+  rm -f "$TS_FALLBACK"
+fi
+{
+  echo "-- $(date -Is) $CLASSE v$N run=$RUN"
+  [ -n "$SAIDA_RUN" ] && printf '%s\n' "$SAIDA_RUN"
+} >> "$LOG"
+[ $RUN -eq 0 ] || echo "jc: rebentou a correr (v$N registada)"
+exit $RUN
