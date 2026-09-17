@@ -28,37 +28,54 @@ O estado guarda-se sozinho (ver `ferramentas/README.md`):
 
 Durante a aula, **nunca lhe pedir para escrever ou atualizar ficheiros de
 estado**. Pedir-lhe notas é trabalho de escriturário e ele não o vai fazer.
-Se faltar um dado que não deixa rasto no disco, viver sem ele.
+
+### Dono de cada ficheiro — nunca dois escribas
+
+| Ficheiro | Quem escreve |
+|---|---|
+| `versoes/`, `sessoes/erros-bruto.log` | o `jc`, a cada compilação |
+| `sessoes/notas-hoje.md` | o tutor da aula (ver abaixo), ou o Leonardo |
+| `sessoes/conversas/AAAA-MM-DD.txt` | uma colagem do Leonardo, se lhe apetecer |
+| `ESTADO.md`, `sessoes/AAAA-MM-DD.md`, `HISTORICO.md`, `ERROS.md` | **só a Routine noturna** |
+
+Uma sessão de Claude Code **não** escreve os quatro últimos, mesmo no fecho.
+Se ele pedir explicitamente ("escreve tu o ESTADO agora"), fazer — e dizer-lhe
+que a Routine o vai reescrever à noite.
+
+### Guardar as dúvidas dele durante a aula
+
+Se esta sessão tiver acesso ao repo (Claude Code), sempre que ele fizer uma
+pergunta de **conceito novo**, ou entrar em loop de perguntas sem escrever
+código, acrescentar UMA linha a `sessoes/notas-hoje.md`, sem avisar e sem
+pedir licença:
+
+```
+- [21:12] dúvida: length em arrays é campo ou método
+- [21:40] 4ª pergunta seguida sem escrever código (a adiar o cast)
+```
+
+É uma linha, não um relatório, e nunca interrompe a correção. No fim da aula,
+fazer commit e push do ramo `bruto` (nunca do `main`).
+
+Se a aula for no claude.ai, sem acesso ao repo: no fim, quando ele disser que
+vai fechar, dar-lhe as linhas já formatadas para ele colar no
+`sessoes/notas-hoje.md`. Nunca mais do que 6 linhas.
 
 ## Fecho de sessão
 
-Quando o Leonardo disser algo como "vou trocar de sessão", "fecha a
-sessão", "vou encerrar" (ou equivalente), fazer automaticamente, sem
-pedir confirmação extra:
+Quando o Leonardo disser "vou trocar de sessão", "fecha a sessão", "vou
+encerrar" (ou equivalente), fazer automaticamente, sem pedir confirmação:
 
-1. Copiar `sessoes/_template.md` para `sessoes/AAAA-MM-DD.md` e
-   preencher com o que aconteceu nesta sessão. Campos:
-   - Duração aproximada da sessão e tempo desde a última sessão
-     (comparar a data do último ficheiro em sessoes/).
-   - Dúvidas de conceito novo (primeira vez nesta sessão).
-   - Erros por fraqueza conhecida — usar sempre as 6 listadas no
-     ROADMAP.md secção 3, nunca inventar categorias novas.
-   - Ferramentas/processo (git, bancada, repo — não conta como
-     dificuldade de Java).
-   - Padrão de adiamento: contar mensagens antes do primeiro código e
-     mensagens totais até o exercício funcionar, dar o rácio.
-   - Código: nº de versões até compilar e correr bem, por exercício,
-     com o tipo de erro de cada versão.
-   - Simulador: aprovado (dd/mm) ou pendente, por exercício trabalhado.
-2. Acrescentar uma linha a `sessoes/HISTORICO.md`, com uma coluna por
-   fraqueza (não um número agregado) mais duração, gap, ferramentas,
-   rácio de adiamento, versões de código e simulador aprovado.
-3. Reescrever `ESTADO.md` do zero (repetir as instruções completas no
-   topo dele — nunca resumir, senão perde-se na sessão seguinte).
-4. `git add` dos ficheiros pelo nome exato (nunca `git add .`).
-5. `git commit` com mensagem sobre o porquê da sessão, não só "update".
-6. `git push origin main`.
-7. Confirmar ao Leonardo em 2-3 linhas o que foi guardado.
+1. Fechar o `sessoes/notas-hoje.md` com as dúvidas e os loops desta aula
+   (ver a secção anterior).
+2. `git add` pelo nome exato do `notas-hoje.md` e do que ele escreveu,
+   commit com o porquê, e `git push origin bruto`.
+3. Confirmar em 2 linhas o que ficou guardado, e dizer-lhe que o
+   `ESTADO.md`, o ficheiro da sessão, o `HISTORICO.md` e o `ERROS.md`
+   saem à noite, sem ele fazer nada.
+
+Nunca escrever nem reescrever esses quatro aqui: são da Routine. Dois
+escribas no mesmo ficheiro dão conflitos de merge, e ele já apanhou um.
 
 ## Ensino
 
