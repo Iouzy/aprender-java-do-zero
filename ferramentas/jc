@@ -9,7 +9,8 @@
 # Ninguém escreve relatórios: o log é a cassete, a Routine noturna é o editor.
 set -uo pipefail
 
-REPO="${REPO_JAVA:-$HOME/aprender-java-do-zero}"
+# O caminho do repo fica em ~/.jc-repo, escrito pelo instalador.
+REPO="${REPO_JAVA:-$(cat "$HOME/.jc-repo" 2>/dev/null || echo "$HOME/aprender-java-do-zero")}"
 LOG="$REPO/sessoes/erros-bruto.log"
 VERS="$REPO/versoes"
 

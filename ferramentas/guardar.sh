@@ -6,7 +6,8 @@
 # Se não mexeste em nada, não faz commit nenhum.
 set -uo pipefail
 
-REPO="${REPO_JAVA:-$HOME/aprender-java-do-zero}"
+# O caminho do repo fica em ~/.jc-repo, escrito pelo instalador.
+REPO="${REPO_JAVA:-$(cat "$HOME/.jc-repo" 2>/dev/null || echo "$HOME/aprender-java-do-zero")}"
 cd "$REPO" || exit 0
 
 RAMO="$(git rev-parse --abbrev-ref HEAD)"
