@@ -16,9 +16,16 @@ git rev-parse --verify --quiet bruto >/dev/null || git branch bruto
 git checkout bruto
 git push -u origin bruto || true
 
-# 3. o cron de 10 em 10 minutos
+# 3. o cron de 10 em 10 minutos.
+# Construído num ficheiro à parte: com `set -e`, um `crontab -l` a falhar
+# (ainda não há crontab) matava o subshell antes de a linha ser acrescentada.
+command -v crontab >/dev/null || { echo "Falta o cron: sudo apt install cron"; exit 1; }
 LINHA="*/10 * * * * $HOME/bin/guardar-java.sh >/dev/null 2>&1"
-( crontab -l 2>/dev/null | grep -v 'guardar-java.sh'; echo "$LINHA" ) | crontab -
+TMP="$(mktemp)"
+crontab -l 2>/dev/null | grep -v 'guardar-java.sh' > "$TMP" || true
+echo "$LINHA" >> "$TMP"
+crontab "$TMP"
+rm -f "$TMP"
 
 echo
 echo "Feito. Abre um terminal novo e a partir de agora:"
