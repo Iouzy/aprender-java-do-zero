@@ -18,7 +18,9 @@ printf '%s\n' "$REPO" > "$HOME/.jc-repo"
 # O PATH vai para a consola que tu usas — zsh não lê o .bashrc.
 for RC in "$HOME/.zshrc" "$HOME/.bashrc"; do
   [ -e "$RC" ] || continue
-  grep -q 'HOME/bin' "$RC" || echo 'export PATH="$HOME/bin:$PATH"' >> "$RC"
+  # Uma linha comentada não põe nada no PATH: só conta export activo.
+  grep -qE '^[[:space:]]*export[[:space:]]+PATH=.*HOME/bin' "$RC" \
+    || echo 'export PATH="$HOME/bin:$PATH"' >> "$RC"
 done
 if [ ! -e "$HOME/.zshrc" ] && [ ! -e "$HOME/.bashrc" ]; then
   echo 'export PATH="$HOME/bin:$PATH"' >> "$HOME/.profile"
