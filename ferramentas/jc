@@ -55,12 +55,12 @@ echo "---"
 TS_FALLBACK="$(mktemp)"
 if command -v script >/dev/null; then
   TS="$(mktemp)"
-  script -q -e -c "java -Dfile.encoding=UTF-8 -cp '$REPO/out' '$CLASSE'" "$TS"; RUN=$?
-  SAIDA_RUN="$(tr -d '\r' < "$TS" | grep -v '^Picked up JAVA_TOOL_OPTIONS' || true)"
+  script -q -e -c "java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp '$REPO/out' '$CLASSE'" "$TS"; RUN=$?
+  SAIDA_RUN="$(tr -d '\r' < "$TS" | grep -Ev '^(Picked up JAVA_TOOL_OPTIONS|Script (started|done) on )' || true)"
   rm -f "$TS"
 else
   # sem `script`: grava com tee. Um prompt sem \n pode aparecer tarde.
-  java -Dfile.encoding=UTF-8 -cp "$REPO/out" "$CLASSE" 2>&1 | tee "$TS_FALLBACK"
+  java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "$REPO/out" "$CLASSE" 2>&1 | tee "$TS_FALLBACK"
   RUN=${PIPESTATUS[0]}
   SAIDA_RUN="$(grep -v '^Picked up JAVA_TOOL_OPTIONS' "$TS_FALLBACK" || true)"
   rm -f "$TS_FALLBACK"
