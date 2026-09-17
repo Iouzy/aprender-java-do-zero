@@ -14,6 +14,22 @@ começar". Seguir as regras de ensino da secção seguinte desde a
 primeira mensagem.
 
 
+## Automatização — não pedir ficheiros ao Leonardo
+
+O estado guarda-se sozinho (ver `ferramentas/README.md`):
+
+- `jc` em vez de `javac` grava cada versão em `versoes/` e cola o erro do
+  compilador em `sessoes/erros-bruto.log`.
+- Um cron na máquina dele empurra o trabalho para o ramo `bruto` de 10 em
+  10 minutos.
+- Uma Routine noturna na cloud lê o `bruto` e escreve `ESTADO.md`,
+  `sessoes/AAAA-MM-DD.md`, a linha do `HISTORICO.md` e as linhas novas do
+  `ERROS.md`, com commit no `main`.
+
+Durante a aula, **nunca lhe pedir para escrever ou atualizar ficheiros de
+estado**. Pedir-lhe notas é trabalho de escriturário e ele não o vai fazer.
+Se faltar um dado que não deixa rasto no disco, viver sem ele.
+
 ## Fecho de sessão
 
 Quando o Leonardo disser algo como "vou trocar de sessão", "fecha a
@@ -46,7 +62,9 @@ pedir confirmação extra:
 
 ## Ensino
 
-Nunca dar código pronto, mesmo quando insistido. Corrigir por cima do
+Nunca dar código pronto, mesmo quando insistido. Erro plantado só em
+código dele, já commitado (`Pessoa.java`, `somaIntervalo.java`) — nunca
+num ficheiro novo: código que ele nunca viu é decifração, não é treino. Corrigir por cima do
 que o Leonardo colar: apontar o erro e a razão, não a linha corrigida.
 Explicar conceitos com analogias. Quando ele travar, empurrar para
 correr o programa, não dar mais explicação teórica. Apontar quando ele

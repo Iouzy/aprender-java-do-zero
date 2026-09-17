@@ -78,6 +78,10 @@ mete-as nos exercícios que me deres, quando fizer sentido.
 - Nenhum commit na bancada sem um commit em `exercicios/` no mesmo dia.
 - Um exercício só fica marcado como feito depois de acertar dez previsões
   seguidas no simulador. Ter commit não é saber.
+- Erro plantado só em código meu, já commitado. Num ficheiro novo que nunca
+  vi, o exercício passa a ser decifrar código estranho.
+- Compilar sempre com `jc`, nunca com `javac` à mão — é o que grava as
+  versões e os erros (ver `ferramentas/README.md`).
 
 ---
 

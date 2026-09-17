@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# jc — compila e corre um exercício, e grava a telemetria sem pedires nada.
+#
+# Usa isto em vez de "javac -d out X.java && java -cp out X".
+# Cada vez que corres:
+#   1. guarda esta tentativa em versoes/<Classe>/vN.java (só se mudou);
+#   2. compila e cola o erro do compilador, em bruto, em sessoes/erros-bruto.log;
+#   3. se compilou, corre o programa.
+# Ninguém escreve relatórios: o log é a cassete, a Routine noturna é o editor.
+set -uo pipefail
+
+REPO="${REPO_JAVA:-$HOME/aprender-java-do-zero}"
+LOG="$REPO/sessoes/erros-bruto.log"
+VERS="$REPO/versoes"
+
+[ $# -eq 1 ] || { echo "uso: jc Ficheiro.java"; exit 2; }
+FICH="$1"
+[ -f "$FICH" ] || { echo "jc: não existe $FICH"; exit 2; }
+
+CLASSE="$(basename "$FICH" .java)"
+mkdir -p "$VERS/$CLASSE" "$REPO/out" "$(dirname "$LOG")"
+
+# --- 1. a versão -----------------------------------------------------------
+ULTIMA="$(ls -1 "$VERS/$CLASSE" 2>/dev/null | sort -V | tail -1)"
+JA=$(ls -1 "$VERS/$CLASSE" 2>/dev/null | wc -l)
+if [ -z "$ULTIMA" ] || ! cmp -s "$FICH" "$VERS/$CLASSE/$ULTIMA"; then
+  N=$((JA + 1))
+  cp "$FICH" "$VERS/$CLASSE/v$N.java"
+else
+  N=$JA          # recompilar sem mudar nada não inventa uma versão nova
+fi
+
+# --- 2. a compilação -------------------------------------------------------
+SAIDA="$(javac -d "$REPO/out" "$FICH" 2>&1)"; CODIGO=$?
+# tira o ruído que a JVM despeja em alguns ambientes; o erro do compilador fica intacto
+SAIDA="$(printf '%s\n' "$SAIDA" | grep -v '^Picked up JAVA_TOOL_OPTIONS' || true)"
+{
+  echo "== $(date -Is) $CLASSE v$N exit=$CODIGO"
+  [ -n "$SAIDA" ] && printf '%s\n' "$SAIDA"
+} >> "$LOG"
+
+if [ $CODIGO -ne 0 ]; then
+  printf '%s\n' "$SAIDA"
+  echo "jc: não compilou — v$N registada em versoes/$CLASSE/"
+  exit 1
+fi
+
+# --- 3. a corrida ----------------------------------------------------------
+echo "jc: compilou (v$N). A correr:"
+echo "---"
+java -cp "$REPO/out" "$CLASSE"

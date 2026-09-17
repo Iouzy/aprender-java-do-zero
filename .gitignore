@@ -2,3 +2,5 @@
 bibi/videos/
 bibi/placar.sql
 capturas/
+out/
+versoes/*/out/
