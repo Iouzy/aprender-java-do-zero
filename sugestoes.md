@@ -1,108 +1,81 @@
-# Sugestões — 2026-09-16
+# Sugestões — 2026-09-17
 
 Rascunho de coisas que valeria a pena mudar. Nada disto foi feito — é para
-decidires amanhã o que faz sentido.
+decidires amanhã o que faz sentido. (As sugestões de 16/09 já resolvidas
+ou já decididas saíram daqui; ver histórico do ficheiro no git se precisares
+de as reler.)
 
-## 1. Fechar o canal da sala aos estranhos (segurança) — feito
+## 1. Verificação de hoje: datas, acesso e bugs
 
-A política em `realtime.messages` foi corrida no SQL Editor do Supabase
-(sem a linha `alter table ... enable row level security`, que dá erro de
-posse do lado do Supabase — a tabela já vem com RLS ligado de origem, só
-faltavam as políticas). Depois disso, `private:true` foi acrescentado ao
-`config` dos dois `client.channel(...)` (`sala` e `lago-presenca`,
-`java-bancada.html`). A partir de agora só entra no canal quem tiver
-sessão numa das duas contas — antes, quem tirasse a chave publicável do
-HTML conseguia ligar-se e escrever lá dentro com um nome à escolha.
+Pediste para verificar as datas dos exercícios, se algum estranho consegue
+mandar mensagens/comandos/código no site, e para corrigir bugs. O que
+encontrei e já corrigi (não é sugestão, já está feito e vai no mesmo commit):
 
-## 2. Recorde do Swanrejas a mostrar o número errado (bug, já corrigido)
+- **`notaFinal.java` não aparecia na bancada.** Foi criado na sessão de
+  16/09 mas nunca foi adicionado à lista `EXERCISES` do `java-bancada.html`
+  — por isso não tinha simulador, não contava para o total de exercícios
+  (ficava em 16, devia ser 17) e não tinha como ser marcado como feito.
+  Acrescentei a entrada; a data resolve-se sozinha a partir do commit
+  `745e92b` (16 de setembro, a hora certa), sem precisar de correção manual.
+- **Lista de commits embutida estava um commit atrasada** (`java-bancada.html`,
+  bloco `@COMMITS`): tinha o hash antigo do último commit da sessão de 16/09,
+  de antes de um amend/reescrita. Corri o `bibi-atualizar.py` (já fora de
+  clone raso — tinha de fazer `git fetch --unshallow` primeiro) e ficou
+  atualizada. As datas dos 16 exercícios anteriores continuavam todas certas,
+  nenhuma tinha voltado a colapsar em 14/09 22:26.
+- **As datas que reportaste erradas não estavam erradas no repositório.**
+  Conferi os dados guardados (`EXERCISES`/`FEITO_EM`/`@COMMITS`) e todos os
+  17 exercícios resolvem para a data real de quando foram escritos, não para
+  14/09 22:26. Se ainda estás a ver essa data errada no browser, é quase de
+  certeza o `localStorage` desse aparelho com uma cópia antiga por trás de
+  cache — experimenta recarregar a página a limpar a cache (Ctrl+Shift+R) e,
+  se persistir, diz-me o aparelho/browser para eu tentar reproduzir.
+- **"Marcar como concluídos" não dá para fazer eu sozinho.** O estado de
+  "feito" de cada exercício vive no `localStorage` do teu aparelho, não no
+  repositório — não há ficheiro nem base de dados que eu possa editar a
+  partir daqui para isso acontecer. Continua a ser o botão "Repor marcações
+  do Git" (menu ⋮ da bancada) que faz isso por ti, com as datas certas, a
+  correr no teu próprio browser.
+- **Acesso não autorizado:** revi o SQL (`bibi/supabase.sql`) e o código do
+  canal em tempo real (`java-bancada.html`). RLS está ligado, as políticas
+  só deixam contas autenticadas ler/escrever nos tópicos certos, os inserts
+  em `cartas` só aceitam `tipo`/`texto`/`selo` (autor e nome vêm sempre do
+  servidor) e todo o texto de mensagens é escapado antes de ir para o HTML
+  (`esc()`), por isso não há injeção de HTML/script pelas cartas. Não
+  encontrei forma de um estranho mandar mensagens, comandos ou código sem
+  sessão numa das duas contas. Duas coisas que o código sozinho não
+  confirma, porque vivem só nas definições do Supabase, não no
+  repositório — vale a pena ires confirmar lá:
+  - Authentication → registo de contas novas continua desligado?
+  - O SQL de `bibi/supabase.sql` está mesmo corrido tal como está agora no
+    ficheiro (a versão das cartas, não só a versão antiga dos recados)?
 
-Reportado: a caixa "Pronto?" do Swanrejas dizia "O teu recorde é 317", mas
-esse número nunca subia nem batia certo com o cartão do placar ao lado
-(que mostrava 170, certinho com a base de dados).
+## 2. Sistema de fecho de sessão — ainda por testar em condições reais
 
-Descartei primeiro a hipótese de ser a base de dados (não há constraint nem
-índice a bloquear partidas repetidas do Swanrejas no mesmo dia — só existe
-o `partidas_swandoku_uma_vez`, e esse já vem com condição própria, só para
-o Swandoku). A tabela `partidas` só tinha 19 linhas ao todo, e o valor mais
-alto lá registado em cerejas era 221 (Bibi) e 170 (Louzy) — o 317 não
-existia em lado nenhum da base de dados.
+A sessão de 16/09 criou o `sessoes/_template.md`, `sessoes/HISTORICO.md` e
+as instruções de fecho no `CLAUDE.md`, mas só correu uma vez, no fim dessa
+mesma sessão que as criou — nunca foi posto à prova numa sessão normal, do
+início ao fecho. Vale a pena veres se o `sessoes/2026-09-16.md` reflete bem
+o que passou-se, e se as colunas do `HISTORICO.md` fazem sentido depois de
+mais uma ou duas sessões — pode ser cedo para saber se o formato é o certo.
 
-A causa real: o "317" vinha do `data.best`, guardado em `localStorage` sob
-uma chave única (`BIBI_KEY = "java-bibi-v1"`, `java-bancada.html:2408`) que
-**não distingue quem está autenticado** — é do aparelho, não da conta. Um
-número desse aparelho, de outra sessão (provavelmente da Bibi, ou de antes
-de existir login por conta), ficava a aparecer como "o teu recorde" a quem
-quer que estivesse com sessão aberta nesse browser, e como estava sempre
-acima do que a conta realmente tinha feito, nunca "subia" — parecia preso.
+## 3. Nome da conta continua a não estar amarrado à sessão (baixo risco)
 
-Corrigido: a caixa "Pronto?" e a deteção de "novo recorde" no fim do jogo
-passam a usar primeiro o recorde da conta que já vem certo do placar
-partilhado (`Placar.recordes`), só caindo para o valor local do aparelho
-quando não há sessão ou o Supabase está em baixo. O `data.best` continua a
-existir só como retrocesso para esse caso.
+Registado desde 16/09, ainda por decidir: `Live.on("gesto"...)` confia no
+campo `nome` que vem dentro do payload da mensagem, só confere que é
+"bibi" ou "louzy" e que não é o teu próprio nome. Como o canal já exige
+sessão de uma das duas contas, o único cenário é a conta do Bibi dizer que
+é o Louzy (ou vice-versa) — as duas contas são de confiança mútua, por
+isso o risco real é baixo. Dava para fechar de vez lendo o nome de
+`Conta.user().nome` em vez do payload, se quiseres a coisa mais correta em
+vez de suficiente.
 
-## 3. Reforçar quem pode dizer que é quem, dentro do canal já privado
+## 4. Vídeo partilhado entre duas faixas no gira-discos (por confirmar)
 
-Mesmo depois do `private:true`, o campo `nome` de cada mensagem continua a vir
-do que quem envia decidir mandar — o código só confere que é "bibi" ou "louzy"
-e que não é o teu próprio nome (`Live.on("gesto"...)`, `Sala` em
-`java-bancada.html`). Ou seja, a conta do Bibi consegue tecnicamente mandar um
-gesto a dizer que é o Louzy. Como são só duas contas de confiança mútua, o
-risco é baixo — mas dava para fechar de vez amarrando o `nome` à sessão
-(`Conta.user().nome`) em vez de confiar no campo que vem no payload.
-
-## 4. Impedir que o `bibi-atualizar.py` volte a partir-se com um clone raso
-
-Já corrigido o guarda-costas no próprio script (aborta se
-`git rev-parse --is-shallow-repository` for `true`), que foi a causa das datas
-dos exercícios teres aparecido todas em 14/09 22:26. Fica como nota para não
-esquecer: se algum dia isto correr outra vez num ambiente com clone raso
-(sandboxes, CI, etc.), o script agora avisa em vez de corromper as datas em
-silêncio. Vale a pena, no entanto, pensar num hook `post-commit` (o próprio
-cabeçalho do script já sugere isto) para deixar de depender de correr o
-script à mão.
-
-## 5. "Repor marcações do Git" — comportamento a confirmar
-
-Corrigi o botão do menu "Repor marcações do Git": antes apagava todas as
-marcações (`state.done = {}`), ao contrário do que o próprio texto do
-`confirm()` prometia. Agora marca como feito qualquer exercício que tenha
-commit no histórico, e desmarca os que não têm. Isto também é o que preenche
-os 16 exercícios como concluídos, nas datas corretas — mas só depois de
-clicares nesse botão no teu browser (o estado de "feito" vive no
-`localStorage` de cada aparelho, não no repositório, por isso não há como eu
-fazer essa marcação por ti a partir daqui).
-
-Vale a pena confirmares que é isto que queres como comportamento definitivo
-do botão (marcar tudo o que tem commit, sem olhar às dez previsões certas no
-simulador que a regra da bancada pede) — ou se preferes um botão separado só
-para "marcar como feito os que já têm commit, mas nunca desmarcar os que já
-tinhas marcado à mão".
-
-## 6. Vídeo trocado no gira-discos (bug a confirmar, não corrigi sozinho)
-
-No álbum "Norman Fucking Rockwell!" (`java-bancada.html`, à volta da linha
-2879), o id de vídeo do YouTube `LrSX_OcpeJg` aparece duas vezes na mesma
-lista: na faixa 4 ("Fuck it I love you") e na faixa 11 ("The greatest"). O
-`TRACK` é um `Map()` indexado pelo id do vídeo, por isso a segunda entrada
-substitui a primeira — sempre que esse vídeo está a tocar, o site identifica-o
-como "The greatest", nunca como "Fuck it I love you" (afeta a letra em tempo
-real e o jogo "Adivinha a música").
-
-Não corrigi isto sozinho porque `LrSX_OcpeJg` é mesmo o vídeo oficial
-duplo "Fuck it I love you / The greatest" — as duas faixas partilham o
-mesmo vídeo de propósito, não foi copy-paste. Se quiseres separar as duas
-faixas para a identificação ficar certa, precisas de escolher um vídeo (ou
-áudio) só para "The greatest" — encontrei candidato em busca:
-`https://www.youtube.com/watch?v=EqOwBkxhSZI` ("Lana Del Rey - The
-greatest"), mas não confirmei que é o oficial que queres usar, por isso é
-melhor confirmares tu antes de trocar o id.
-
-## 7. Registo de novas contas no Supabase
-
-O `bibi/supabase.sql` assume "registo de contas novas desligado" nas
-definições de Authentication do projeto. Não dá para confirmar isso a partir
-do código — vale a pena ires lá confirmar que a opção continua desligada,
-até porque combina diretamente com o ponto 1 (sem isso, um estranho podia
-simplesmente criar conta própria e entrar por essa porta, mesmo com o canal
-privado).
+Ainda por resolver desde 16/09: o id do YouTube `LrSX_OcpeJg` está em duas
+faixas do álbum "Norman Fucking Rockwell!" de propósito (vídeo oficial
+duplo), mas faz o `Map()` de identificação do "Adivinha a música" e da
+letra em tempo real assumirem sempre a segunda faixa ("The greatest").
+Encontrei candidato para separar (`EqOwBkxhSZI`, "Lana Del Rey - The
+greatest") mas não confirmei que é o oficial — precisa da tua palavra
+antes de trocar.
