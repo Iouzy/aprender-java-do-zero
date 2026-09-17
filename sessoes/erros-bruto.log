@@ -1,0 +1,4 @@
+== 2026-09-17T21:33:42+01:00 Maior v1 exit=0
+-- 2026-09-17T21:33:43+01:00 Maior v1 run=1
+Error: Could not find or load main class Maior
+Caused by: java.lang.ClassNotFoundException: Maior
