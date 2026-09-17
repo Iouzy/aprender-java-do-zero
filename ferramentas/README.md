@@ -19,7 +19,7 @@ Isso põe o `jc` no PATH, passa-te para o ramo `bruto` e mete o cron de 10 em
 |---|---|---|---|
 | `jc` | tua máquina | a cada compilação | grava a versão, cola o erro do compilador no log, corre o programa |
 | `guardar.sh` (cron) | tua máquina | de 10 em 10 min | `git push` do trabalho para o ramo `bruto` |
-| Routine | cloud | 1×/dia | lê o `bruto`, conta, julga, escreve os documentos, commit no `main` |
+| Routine | cloud | 1×/dia | lê o `bruto`, faz *squash merge* dele para o `main`, conta, julga, escreve os documentos, e fecha tudo num commit |
 
 A tua máquina só precisa de estar ligada enquanto estudas. A Routine corre com
 o PC desligado — mas só vê o que o cron já empurrou.
@@ -46,9 +46,17 @@ MediaArray.java:7: error: incompatible types: possible lossy conversion from dou
 ## O ramo `bruto`
 
 Trabalhas sempre no `bruto`. Os commits de 10 em 10 minutos são fita de
-gravação — não são commits de ideia, e por isso não sujam o `main`.
-O `main` é escrito pela Routine, com mensagens sobre o porquê da sessão.
-Nunca faças `git checkout main` na tua máquina: lê o `main` no GitHub.
+gravação — não são commits de ideia, e por isso não vão assim para o `main`.
+
+À noite a Routine faz `git merge --squash origin/bruto` e fecha o dia num
+único commit no `main`, junto com os documentos. Resultado: o `main` fica
+com o código **e** o dossier, um commit por dia de estudo, com mensagem
+sobre o porquê. O `bruto` fica atrás de propósito — é a cassete, não o
+dossier, e ninguém o lê.
+
+Tu não fazes merges nem pulls. Nunca faças `git checkout main` na tua
+máquina: lê o `main` no GitHub. Se um dia quiseres o dossier em casa,
+`git fetch origin && git show origin/main:ESTADO.md`.
 
 ## O que é automático e o que não é
 

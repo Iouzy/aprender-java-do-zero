@@ -22,9 +22,10 @@ O estado guarda-se sozinho (ver `ferramentas/README.md`):
   compilador em `sessoes/erros-bruto.log`.
 - Um cron na máquina dele empurra o trabalho para o ramo `bruto` de 10 em
   10 minutos.
-- Uma Routine noturna na cloud lê o `bruto` e escreve `ESTADO.md`,
-  `sessoes/AAAA-MM-DD.md`, a linha do `HISTORICO.md` e as linhas novas do
-  `ERROS.md`, com commit no `main`.
+- Uma Routine noturna na cloud faz *squash merge* do `bruto` para o `main` e
+  escreve por cima `ESTADO.md`, `sessoes/AAAA-MM-DD.md`, a linha do
+  `HISTORICO.md` e as linhas novas do `ERROS.md` — tudo num commit só, por
+  dia de estudo. Ele não faz merges nem pulls: trabalha sempre no `bruto`.
 
 Durante a aula, **nunca lhe pedir para escrever ou atualizar ficheiros de
 estado**. Pedir-lhe notas é trabalho de escriturário e ele não o vai fazer.
