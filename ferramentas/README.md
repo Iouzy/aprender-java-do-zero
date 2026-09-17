@@ -27,17 +27,30 @@ o PC desligado — mas só vê o que o cron já empurrou.
 ## `jc` — usa isto em vez do javac
 
 ```bash
-jc MediaArray.java
+jc MediaArray.java               # um ficheiro
+jc Programa.java                 # o javac encontra o Pessoa.java ao lado
+jc Pessoa.java Programa.java     # ou dá-os todos
 ```
 
+Corre a classe que tem o `main`, seja qual for a que lhe deste. Se nenhuma
+tiver `main`, compila e diz que não há nada para correr.
+
 - Cada tentativa diferente vai para `versoes/MediaArray/v1.java`, `v2.java`, …
-  Recompilar sem mudar nada não inventa uma versão nova.
+  Guarda **todos** os `.java` da pasta que mudaram, não só o que lhe deste:
+  se mexeste no `Pessoa` e corres `jc Programa.java`, o `Pessoa` também fica
+  com versão nova. Recompilar sem mudar nada não inventa versão.
 - Cada compilação escreve em `sessoes/erros-bruto.log`:
 
 ```
+~~ 2026-09-17T21:14:02+01:00 guardadas: Pessoa v2 Programa v5
 == 2026-09-17T21:14:03+01:00 MediaArray v3 exit=1
 MediaArray.java:7: error: incompatible types: possible lossy conversion from double to int
+-- 2026-09-17T21:16:40+01:00 MediaArray v4 run=1
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5
 ```
+
+Três tipos de linha: `~~` as versões guardadas (é esta que manda, quando há
+vários ficheiros), `==` a compilação, `--` a corrida.
 
   Uma linha `==` por compilação (data ISO, classe, versão, código de saída), e
   por baixo o erro do compilador **em bruto**. É o formato que a Routine lê.

@@ -2,10 +2,14 @@
 # jc — compila e corre um exercício, e grava a telemetria sem pedires nada.
 #
 # Usa isto em vez de "javac -d out X.java && java -cp out X".
-# Cada vez que corres:
-#   1. guarda esta tentativa em versoes/<Classe>/vN.java (só se mudou);
+#   jc Programa.java                 (o javac encontra o Pessoa.java ao lado)
+#   jc Pessoa.java Programa.java     (também podes dá-los todos)
+# Corre a classe que tem o main. Cada vez que corres:
+#   1. guarda em versoes/<Classe>/vN.java TODOS os .java da pasta que mudaram
+#      desde a última vez — o Pessoa conta, mesmo que o main esteja no Programa;
 #   2. compila e cola o erro do compilador, em bruto, em sessoes/erros-bruto.log;
-#   3. se compilou, corre o programa.
+#   3. corre, e a corrida também vai para o log (é lá que mora o
+#      ArrayIndexOutOfBounds, que nenhum compilador apanha).
 # Ninguém escreve relatórios: o log é a cassete, a Routine noturna é o editor.
 set -uo pipefail
 
@@ -14,25 +18,37 @@ REPO="${REPO_JAVA:-$(cat "$HOME/.jc-repo" 2>/dev/null || echo "$HOME/aprender-ja
 LOG="$REPO/sessoes/erros-bruto.log"
 VERS="$REPO/versoes"
 
-[ $# -eq 1 ] || { echo "uso: jc Ficheiro.java"; exit 2; }
-FICH="$1"
-[ -f "$FICH" ] || { echo "jc: não existe $FICH"; exit 2; }
+[ $# -ge 1 ] || { echo "uso: jc Ficheiro.java [Outro.java ...]"; exit 2; }
+for f in "$@"; do
+  [ -f "$f" ] || { echo "jc: não existe $f"; exit 2; }
+done
+mkdir -p "$REPO/out" "$(dirname "$LOG")"
 
-CLASSE="$(basename "$FICH" .java)"
-mkdir -p "$VERS/$CLASSE" "$REPO/out" "$(dirname "$LOG")"
-
-# --- 1. a versão -----------------------------------------------------------
-ULTIMA="$(ls -1 "$VERS/$CLASSE" 2>/dev/null | sort -V | tail -1)"
-JA=$(ls -1 "$VERS/$CLASSE" 2>/dev/null | wc -l)
-if [ -z "$ULTIMA" ] || ! cmp -s "$FICH" "$VERS/$CLASSE/$ULTIMA"; then
-  N=$((JA + 1))
-  cp "$FICH" "$VERS/$CLASSE/v$N.java"
-else
-  N=$JA          # recompilar sem mudar nada não inventa uma versão nova
-fi
+# --- 1. as versões: todos os .java da pasta que mudaram --------------------
+PASTA="$(cd "$(dirname "$1")" && pwd)"
+GUARDADAS=""
+N=0
+for FICH in "$PASTA"/*.java; do
+  [ -f "$FICH" ] || continue
+  CL="$(basename "$FICH" .java)"
+  mkdir -p "$VERS/$CL"
+  ULTIMA="$(ls -1 "$VERS/$CL" 2>/dev/null | sort -V | tail -1)"
+  JA=$(ls -1 "$VERS/$CL" 2>/dev/null | wc -l)
+  if [ -z "$ULTIMA" ] || ! cmp -s "$FICH" "$VERS/$CL/$ULTIMA"; then
+    V=$((JA + 1))
+    cp "$FICH" "$VERS/$CL/v$V.java"
+    GUARDADAS="$GUARDADAS $CL v$V"
+  else
+    V=$JA        # recompilar sem mudar nada não inventa uma versão nova
+  fi
+  # a versão que aparece na linha do log é a do primeiro ficheiro dado
+  [ "$CL" = "$(basename "$1" .java)" ] && N=$V
+done
+[ -n "$GUARDADAS" ] && echo "~~ $(date -Is) guardadas:$GUARDADAS" >> "$LOG"
 
 # --- 2. a compilação -------------------------------------------------------
-SAIDA="$(javac -encoding UTF-8 -d "$REPO/out" "$FICH" 2>&1)"; CODIGO=$?
+CLASSE="$(basename "$1" .java)"
+SAIDA="$(javac -encoding UTF-8 -d "$REPO/out" "$@" 2>&1)"; CODIGO=$?
 # tira o ruído que a JVM despeja em alguns ambientes; o erro do compilador fica intacto
 SAIDA="$(printf '%s\n' "$SAIDA" | grep -v '^Picked up JAVA_TOOL_OPTIONS' || true)"
 {
@@ -47,27 +63,41 @@ if [ $CODIGO -ne 0 ]; then
 fi
 
 # --- 3. a corrida ----------------------------------------------------------
-# O erro que conta em arrays não é de compilação: é o ArrayIndexOutOfBounds a
-# correr. Por isso a corrida também vai para o log.
+# Qual das classes tem o main? A última que o tiver, entre as que deste.
+PRINCIPAL=""
+for f in "$@"; do
+  grep -q 'static void main' "$f" && PRINCIPAL="$(basename "$f" .java)"
+done
+if [ -z "$PRINCIPAL" ]; then
+  # nenhum dos ficheiros dados tem main: procura-o na pasta (ex.: jc Pessoa.java)
+  for f in "$PASTA"/*.java; do
+    grep -q 'static void main' "$f" 2>/dev/null && PRINCIPAL="$(basename "$f" .java)"
+  done
+fi
+if [ -z "$PRINCIPAL" ]; then
+  echo "jc: compilou (v$N). Nenhuma classe com main — nada para correr."
+  exit 0
+fi
+
 # Corre dentro do `script` para o programa continuar a ver um terminal a sério:
 # com Scanner, uma saída capturada faria o "Escreve a nota:" aparecer tarde.
-echo "jc: compilou (v$N). A correr:"
+echo "jc: compilou (v$N). A correr $PRINCIPAL:"
 echo "---"
 TS_FALLBACK="$(mktemp)"
 if command -v script >/dev/null; then
   TS="$(mktemp)"
-  script -q -e -c "java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp '$REPO/out' '$CLASSE'" "$TS"; RUN=$?
+  script -q -e -c "java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp '$REPO/out' '$PRINCIPAL'" "$TS"; RUN=$?
   SAIDA_RUN="$(tr -d '\r' < "$TS" | grep -Ev '^(Picked up JAVA_TOOL_OPTIONS|Script (started|done) on )' || true)"
   rm -f "$TS"
 else
   # sem `script`: grava com tee. Um prompt sem \n pode aparecer tarde.
-  java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "$REPO/out" "$CLASSE" 2>&1 | tee "$TS_FALLBACK"
+  java -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -cp "$REPO/out" "$PRINCIPAL" 2>&1 | tee "$TS_FALLBACK"
   RUN=${PIPESTATUS[0]}
   SAIDA_RUN="$(grep -v '^Picked up JAVA_TOOL_OPTIONS' "$TS_FALLBACK" || true)"
-  rm -f "$TS_FALLBACK"
 fi
+rm -f "$TS_FALLBACK"
 {
-  echo "-- $(date -Is) $CLASSE v$N run=$RUN"
+  echo "-- $(date -Is) $PRINCIPAL v$N run=$RUN"
   [ -n "$SAIDA_RUN" ] && printf '%s\n' "$SAIDA_RUN"
 } >> "$LOG"
 [ $RUN -eq 0 ] || echo "jc: rebentou a correr (v$N registada)"
