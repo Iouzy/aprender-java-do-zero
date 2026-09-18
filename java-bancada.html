@@ -2595,7 +2595,8 @@ const Sala = (() => {
   function poe(parcial){ Object.assign(meu, parcial); sujo = true; agenda(); }
   function gesto(tipo, extra){
     const me = Conta.user();
-    if(me && Live.enviar("gesto", Object.assign({nome:me.nome, tipo, em:Date.now()}, extra || {}))) marca();
+    // nome/tipo/em por último: um "extra" com esses campos nunca pode substituir quem realmente envia
+    if(me && Live.enviar("gesto", Object.assign({}, extra || {}, {nome:me.nome, tipo, em:Date.now()}))) marca();
   }
   const avisa = () => document.dispatchEvent(new CustomEvent("sala:estado", {detail:deles}));
   /* O canal é aberto: quem tiver a chave da página pode escrever lá dentro.
@@ -5477,6 +5478,14 @@ function initMusica(hearts, centerOf){
   }
 
   const card = $("#musica"), body = $("#muBody"), fuse = $("#muFuse");
+  // o recorde da conta (placar partilhado) manda; "saved.best" é só o retrocesso
+  // para quando não há sessão — sem isto, um aparelho partilhado pelos dois
+  // mostra a um o recorde que o outro fez lá (o mesmo bug já corrigido no Swanrejas)
+  function meuRecorde(){
+    const me = Conta.user();
+    if(me && Placar.ligado()){ const r = Placar.recordes("musica", 0)[me.nome]; if(r !== null && r !== undefined) return r; }
+    return saved.best || 0;
+  }
   const capa = m => `bibi/capas/${m.slug}.webp`;
   const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>';
   let estado = "inicio", rondas = [], r = 0, pontos = 0, acertos = 0, restante = 0, raf = 0, last = 0, visivel = false;
@@ -5484,7 +5493,7 @@ function initMusica(hearts, centerOf){
   function hud(){
     const jogo = estado === "pergunta" || estado === "resposta";
     $("#muRound").textContent = jogo ? `pergunta ${r + 1} de ${RONDAS}` : `${RONDAS} perguntas · ${SEGUNDOS} segundos cada`;
-    $("#muScore").innerHTML = jogo || estado === "fim" ? `<b class="num">${pontos}</b> pontos` : saved.best ? `recorde <b class="num">${saved.best}</b>` : "";
+    $("#muScore").innerHTML = jogo || estado === "fim" ? `<b class="num">${pontos}</b> pontos` : meuRecorde() ? `recorde <b class="num">${meuRecorde()}</b>` : "";
     if(!jogo) fuse.style.transform = "scaleX(0)";
     if(jogo || estado === "fim") Sala.poe({jogo:{j:"musica", s:pontos, r:r + 1, e:jogo ? "a jogar" : "acabou", em:Date.now()}});
   }
@@ -5538,9 +5547,9 @@ function initMusica(hearts, centerOf){
   }
   async function fim(){
     estado = "fim"; hud();
-    const recorde = pontos > saved.best;
-    if(recorde){ saved.best = pontos; st.set(saved); }
-    const antes = recorde && pontos ? "Novo recorde neste aparelho. " : "";
+    const recorde = pontos > meuRecorde();
+    if(pontos > saved.best){ saved.best = pontos; st.set(saved); }
+    const antes = recorde && pontos ? "Novo recorde. " : "";
     body.innerHTML = `<p class="script">${acertos >= 6 ? "que ouvido" : acertos >= 3 ? "nada mal" : "fica para a próxima"}</p>
       <h3>Acertaste ${acertos} de ${RONDAS}: ${pontos} pontos</h3>
       <p class="mu-msg" id="muPlacar">${antes}A pôr no placar…</p>

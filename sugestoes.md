@@ -1,108 +1,117 @@
-# Sugestões — 2026-09-16
+# Sugestões — 2026-09-18
 
-Rascunho de coisas que valeria a pena mudar. Nada disto foi feito — é para
-decidires amanhã o que faz sentido.
+Pediste para ver as datas dos exercícios, confirmar que mais ninguém consegue
+fazer coisas no site sem autorização, corrigir bugs, e deixar aqui um rascunho
+do que falta — nada disto foi feito para além do que está marcado "já
+corrigido"; o resto é para decidires amanhã.
 
-## 1. Fechar o canal da sala aos estranhos (segurança) — feito
+## 1. As datas "todas em 14/09 22:26" — a causa já estava corrigida, o sintoma pode ainda estar no teu browser
 
-A política em `realtime.messages` foi corrida no SQL Editor do Supabase
-(sem a linha `alter table ... enable row level security`, que dá erro de
-posse do lado do Supabase — a tabela já vem com RLS ligado de origem, só
-faltavam as políticas). Depois disso, `private:true` foi acrescentado ao
-`config` dos dois `client.channel(...)` (`sala` e `lago-presenca`,
-`java-bancada.html`). A partir de agora só entra no canal quem tiver
-sessão numa das duas contas — antes, quem tirasse a chave publicável do
-HTML conseguia ligar-se e escrever lá dentro com um nome à escolha.
+Confirmei o histórico do Git (`main` e `bruto`, os dois atualizados) e os
+dados de datas embutidos no `java-bancada.html`: não há nenhuma data
+colapsada — cada exercício tem a data real do commit dele, espalhadas entre
+7 e 17 de setembro. O `dc45cfd`…`f9882f4` só têm mesmo um commit genuíno às
+14/09 22:26:29 ("Modo Bibi: legendas dos números mais legíveis sobre a
+névoa") — não é o bug, é só um commit normal a essa hora.
 
-## 2. Recorde do Swanrejas a mostrar o número errado (bug, já corrigido)
+A causa do bug em si (um clone raso a colapsar todas as datas antigas na do
+commit mais recente disponível) já tinha sido corrigida a 16/09 com um
+guarda no `bibi-atualizar.py`, que agora recusa a correr nesse caso em vez
+de gravar datas erradas — confirmei que esse guarda continua no sítio.
 
-Reportado: a caixa "Pronto?" do Swanrejas dizia "O teu recorde é 317", mas
-esse número nunca subia nem batia certo com o cartão do placar ao lado
-(que mostrava 170, certinho com a base de dados).
+O que a página mostra de cada exercício (`dateLabel` em `java-bancada.html`)
+é sempre calculado ao vivo a partir desses dados, nunca guardado em cache no
+`localStorage` — por isso, se ainda vês 14/09 22:26 em todos, o mais
+provável é o browser ter uma cópia antiga da página em cache (do GitHub
+Pages ou do próprio browser), de antes da correção de dia 16. **Experimenta
+um refresh a sério (Ctrl+Shift+R / Cmd+Shift+R) e volta a olhar** — se
+continuar errado depois disso, avisa-me com uma captura de ecrã, porque aí é
+outra coisa que ainda não vi.
 
-Descartei primeiro a hipótese de ser a base de dados (não há constraint nem
-índice a bloquear partidas repetidas do Swanrejas no mesmo dia — só existe
-o `partidas_swandoku_uma_vez`, e esse já vem com condição própria, só para
-o Swandoku). A tabela `partidas` só tinha 19 linhas ao todo, e o valor mais
-alto lá registado em cerejas era 221 (Bibi) e 170 (Louzy) — o 317 não
-existia em lado nenhum da base de dados.
+Não há nada mais para eu corrigir no repositório quanto a isto — os dados
+já estão certos.
 
-A causa real: o "317" vinha do `data.best`, guardado em `localStorage` sob
-uma chave única (`BIBI_KEY = "java-bibi-v1"`, `java-bancada.html:2408`) que
-**não distingue quem está autenticado** — é do aparelho, não da conta. Um
-número desse aparelho, de outra sessão (provavelmente da Bibi, ou de antes
-de existir login por conta), ficava a aparecer como "o teu recorde" a quem
-quer que estivesse com sessão aberta nesse browser, e como estava sempre
-acima do que a conta realmente tinha feito, nunca "subia" — parecia preso.
+## 2. "Marcar todos como concluídos" — não consigo fazer isto por ti a partir daqui
 
-Corrigido: a caixa "Pronto?" e a deteção de "novo recorde" no fim do jogo
-passam a usar primeiro o recorde da conta que já vem certo do placar
-partilhado (`Placar.recordes`), só caindo para o valor local do aparelho
-quando não há sessão ou o Supabase está em baixo. O `data.best` continua a
-existir só como retrocesso para esse caso.
+O ficheiro `java-bancada.html` já tem o botão certo para isto (menu ⋮ →
+"Repor marcações do Git"), que desde dia 16 marca como feito qualquer
+exercício com commit, e desmarca os que não têm (ver ponto 5 do rascunho
+anterior). Mas essa marcação ("feito"/"não feito") vive no `localStorage` do
+teu aparelho, não no repositório — não há ficheiro nenhum que eu possa
+editar aqui que mude o que aparece no teu browser. Depois do refresh do
+ponto 1, clica nesse botão e os exercícios com commit ficam marcados, com a
+data certa ao lado.
 
-## 3. Reforçar quem pode dizer que é quem, dentro do canal já privado
+Nota à parte, já que pediste para marcar "todos": a própria bancada (e o
+`ROADMAP.md`, secção 2) diz que um exercício só conta como sabido depois de
+acertares dez previsões seguidas no simulador — ter commit não é saber. O
+botão "Repor marcações do Git" ignora essa regra de propósito (marca por
+commit, não por simulador) porque foi pensado para depois de um raio
+apagar tudo, não para o dia a dia. Só chamo a atenção para não usares como
+atalho a saltar o simulador.
 
-Mesmo depois do `private:true`, o campo `nome` de cada mensagem continua a vir
-do que quem envia decidir mandar — o código só confere que é "bibi" ou "louzy"
-e que não é o teu próprio nome (`Live.on("gesto"...)`, `Sala` em
-`java-bancada.html`). Ou seja, a conta do Bibi consegue tecnicamente mandar um
-gesto a dizer que é o Louzy. Como são só duas contas de confiança mútua, o
-risco é baixo — mas dava para fechar de vez amarrando o `nome` à sessão
-(`Conta.user().nome`) em vez de confiar no campo que vem no payload.
+## 3. Quem consegue fazer o quê no site sem autorização — revi tudo, está sólido
 
-## 4. Impedir que o `bibi-atualizar.py` volte a partir-se com um clone raso
+Verifiquei: as políticas de RLS em `bibi/supabase.sql`, os 47 sítios onde a
+página escreve HTML a partir de dados (mensagens, notas, nomes), o canal em
+tempo real (`sala`/`lago-presenca`) e quem tem acesso de escrita ao
+repositório no GitHub.
 
-Já corrigido o guarda-costas no próprio script (aborta se
-`git rev-parse --is-shallow-repository` for `true`), que foi a causa das datas
-dos exercícios teres aparecido todas em 14/09 22:26. Fica como nota para não
-esquecer: se algum dia isto correr outra vez num ambiente com clone raso
-(sandboxes, CI, etc.), o script agora avisa em vez de corromper as datas em
-silêncio. Vale a pena, no entanto, pensar num hook `post-commit` (o próprio
-cabeçalho do script já sugere isto) para deixar de depender de correr o
-script à mão.
+- **GitHub**: só a tua conta (`Iouzy`) tem acesso de escrita ao repositório.
+  Mais ninguém pode alterar código por aí.
+- **Canal em tempo real e mensagens**: continuam fechados a quem não tiver
+  sessão numa das duas contas (`private:true` + política em
+  `realtime.messages`, confirmei que ainda lá está). Todo o texto que vem de
+  fora (cartas, notas, nomes) passa por `esc(...)` antes de ir para o ecrã —
+  não encontrei nenhum sítio por escapar.
+- **Tabela `cartas`**: um utilizador autenticado não consegue escrever em
+  nome do outro — `autor`, `nome` e `criado` vêm sempre do servidor, nunca
+  do que o cliente manda.
 
-## 5. "Repor marcações do Git" — comportamento a confirmar
+Duas coisas que fica a valer a pena confirmares tu (não dá para ver por
+código):
 
-Corrigi o botão do menu "Repor marcações do Git": antes apagava todas as
-marcações (`state.done = {}`), ao contrário do que o próprio texto do
-`confirm()` prometia. Agora marca como feito qualquer exercício que tenha
-commit no histórico, e desmarca os que não têm. Isto também é o que preenche
-os 16 exercícios como concluídos, nas datas corretas — mas só depois de
-clicares nesse botão no teu browser (o estado de "feito" vive no
-`localStorage` de cada aparelho, não no repositório, por isso não há como eu
-fazer essa marcação por ti a partir daqui).
+- **Registo de contas novas no Supabase** — continua a assumir-se desligado
+  nas definições do projeto; se estiver ligado, um estranho podia criar
+  conta própria e entrar por aí. Vale confirmar no painel do Supabase.
+- **Tabelas `partidas` e `presenca` (o placar e "quem esteve cá") não têm
+  políticas no `bibi/supabase.sql`** — só `cartas` e o canal da sala têm.
+  O código do cliente nunca manda `nome`/`autor` nos pedidos a estas duas
+  tabelas, o que só é seguro se a base de dados os preencher sozinha (como
+  faz com `cartas`) — mas isso não está no SQL que temos guardado, por isso
+  não consigo confirmar por aqui se está mesmo protegido do lado do
+  Supabase, ou se falta esse SQL no repositório. Risco baixo (só há duas
+  contas de confiança), mas se um dia quiseres fechar isto de vez, digo-te
+  o que falta escrever.
 
-Vale a pena confirmares que é isto que queres como comportamento definitivo
-do botão (marcar tudo o que tem commit, sem olhar às dez previsões certas no
-simulador que a regra da bancada pede) — ou se preferes um botão separado só
-para "marcar como feito os que já têm commit, mas nunca desmarcar os que já
-tinhas marcado à mão".
+## 4. Bugs — dois corrigidos agora, um encontrado mas deixado por decidir
 
-## 6. Vídeo trocado no gira-discos (bug a confirmar, não corrigi sozinho)
+### Corrigidos
 
-No álbum "Norman Fucking Rockwell!" (`java-bancada.html`, à volta da linha
-2879), o id de vídeo do YouTube `LrSX_OcpeJg` aparece duas vezes na mesma
-lista: na faixa 4 ("Fuck it I love you") e na faixa 11 ("The greatest"). O
-`TRACK` é um `Map()` indexado pelo id do vídeo, por isso a segunda entrada
-substitui a primeira — sempre que esse vídeo está a tocar, o site identifica-o
-como "The greatest", nunca como "Fuck it I love you" (afeta a letra em tempo
-real e o jogo "Adivinha a música").
+- **"Adivinha a música": o recorde mostrado era o do aparelho, não o da
+  conta** — o mesmo bug que já tinha sido corrigido no Swanrejas dia 16,
+  mas ficou por corrigir aqui. Num aparelho partilhado pelos dois, o
+  recorde e o "novo recorde!" deste jogo estavam a misturar as contas.
+  Corrigido da mesma forma: passa a usar primeiro o recorde do placar
+  partilhado (`Placar.recordes`), só caindo para o valor local quando não
+  há sessão.
+- **`Sala.gesto()` deixava o campo `nome` por cima de um `extra` que também
+  tivesse essa chave** — nenhum sítio da página faz isso hoje, mas era um
+  descuido: bastava um `extra` com `nome` para o gesto sair com o nome
+  errado. Troquei a ordem para o nome verdadeiro vencer sempre.
 
-Não corrigi isto sozinho porque `LrSX_OcpeJg` é mesmo o vídeo oficial
-duplo "Fuck it I love you / The greatest" — as duas faixas partilham o
-mesmo vídeo de propósito, não foi copy-paste. Se quiseres separar as duas
-faixas para a identificação ficar certa, precisas de escolher um vídeo (ou
-áudio) só para "The greatest" — encontrei candidato em busca:
-`https://www.youtube.com/watch?v=EqOwBkxhSZI` ("Lana Del Rey - The
-greatest"), mas não confirmei que é o oficial que queres usar, por isso é
-melhor confirmares tu antes de trocar o id.
+### Por decidir (não corrigi sozinho)
 
-## 7. Registo de novas contas no Supabase
+- **Vídeo trocado no gira-discos** (já reportado a 16/09, continua por
+  resolver): o `id` do YouTube `LrSX_OcpeJg` serve as duas faixas "Fuck it
+  I love you" e "The greatest" do NFR, de propósito (é o vídeo oficial
+  duplo) — mas isso faz o site identificar sempre a faixa a tocar como "The
+  greatest". Precisas de escolher um vídeo/áudio só para "The greatest" se
+  quiseres separar as duas.
 
-O `bibi/supabase.sql` assume "registo de contas novas desligado" nas
-definições de Authentication do projeto. Não dá para confirmar isso a partir
-do código — vale a pena ires lá confirmar que a opção continua desligada,
-até porque combina diretamente com o ponto 1 (sem isso, um estranho podia
-simplesmente criar conta própria e entrar por essa porta, mesmo com o canal
-privado).
+## 5. Nada mais para além disto
+
+Não encontrei outros bugs concretos (com linha e cenário de falha) na parte
+de acompanhamento dos exercícios (marcação, datas, filtros) nem no
+login/sessão — revi com cuidado e estava tudo a bater certo com o que já
+tinha sido corrigido antes.
