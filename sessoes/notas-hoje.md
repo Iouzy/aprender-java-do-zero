@@ -1,0 +1,2 @@
+- [17:17] dúvida: sintaxe de arrays (declarar, [0], .length) — não sabia por onde começar o Maior.java
+- [17:17] 2ª mensagem seguida sem escrever código (a adiar o arranque dos arrays)
