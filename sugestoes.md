@@ -1,3 +1,117 @@
+# Sugestões — 2026-09-19
+
+Pediste para repor as datas dos exercícios (estavam todas a aparecer em 14 de
+setembro 22:26), conferir se mais alguém consegue mexer no site sem
+permissão, e corrigir bugs. Fica aqui o que encontrei, o que já corrigi, e o
+que fica para decidires — nada dos pontos "a decidir" foi feito.
+
+## Datas dos exercícios: já estavam certas no `main` — encontrei outra coisa a mais
+
+Fui ver o `java-bancada.html` que está no `main` (commit `314a0e0`, o mesmo
+que o GitHub Pages serve) e as datas embutidas em `COMMITS` já vão de 7 a 16
+de setembro, sem colapso nenhum — o guarda-costas contra o clone raso que
+ficou no `bibi-atualizar.py` (ver a secção de 16/09 mais abaixo) está a
+funcionar: tentei mesmo correr o script aqui, num ambiente com clone raso, e
+ele recusou-se a mexer no ficheiro, como devia.
+
+Ou seja: o código e os dados já estão corretos desde 16/09. Se ainda vês
+14/09 22:26 no ecrã, o mais provável é a página estar aberta numa aba antiga
+(as datas só são lidas uma vez, quando a página carrega) ou uma cópia em
+cache do browser/GitHub Pages — experimenta fechar a aba de vez e abrir o
+site outra vez (ou Ctrl+Shift+R). Se depois disso ainda aparecer errado,
+avisa que há aqui um bug novo por encontrar.
+
+**O que encontrei a mais, e já corrigi:** o `notaFinal.java` (o exercício de
+switch+do-while de 16/09) tinha commit próprio no histórico mas nunca tinha
+sido acrescentado às listas `EXERCISES` e `CUTE` do `java-bancada.html`. Não
+aparecia sequer como opção na bancada (contava sempre "16" exercícios, nunca
+os 17 reais), e o Modo Bibi já o contava por baixo dos panos — por isso o
+total de "cerejas" no Modo Bibi e o "x/16" da bancada nunca batiam certo, e o
+dia 16/09 no calendário/diário mostrava o nome cru do ficheiro em vez de uma
+descrição em português. Já corrigido: entrou nas duas listas.
+
+## Marcar tudo como concluído: só tu consegues, num clique
+
+O "feito"/"não feito" de cada exercício vive no `localStorage` do teu
+próprio aparelho, não no repositório — por isso não há como eu marcar isso
+por ti a partir daqui (a mesma limitação já registada a 16/09, ver secção de
+baixo, ponto 5). O menu já tem o botão certo para isto: **"Repor marcações
+do Git"** marca como feito qualquer exercício com commit no histórico
+(agora os 17, incluindo o notaFinal.java) nas datas certas, e desmarca os
+que não têm. Um clique nesse botão faz exatamente o que pediste.
+
+## Bugs que corrigi
+
+- **Adivinha a música mostrava o recorde errado** — o mesmo bug que já
+  tinha sido corrigido no Swanrejas (ver 16/09, ponto 2): o "recorde" da
+  caixa inicial e o aviso de "novo recorde" vinham de `localStorage`
+  (`java-musica-v1`), que é do aparelho, não da conta. Num aparelho
+  partilhado pelos dois, um via como seu o recorde que o outro tinha feito.
+  Corrigido para usar primeiro `Placar.recordes("musica", 0)` — o recorde
+  partilhado da conta — tal como o Swanrejas já fazia, só caindo para o
+  valor local quando não há sessão ou o Supabase está em baixo.
+- **`notaFinal.java` em falta na bancada** — descrito acima.
+- **Valor do placar sem escape ao entrar no `innerHTML`** — ver a secção de
+  segurança a seguir.
+
+## Segurança: quem consegue mexer no site sem ser um dos dois
+
+Pedi uma auditoria de tudo o que o `java-bancada.html` manda para o
+Supabase (mensagens, cartas, presença, jogos, o canal em tempo real) à
+procura de alguma forma de outra pessoa mandar mensagens, comandos ou
+código sem ser uma das duas contas. Resumo:
+
+- **Nada encontrado que um estranho na internet consiga explorar hoje.** A
+  tabela `cartas` e o canal em tempo real (`sala`, `lago-presenca`) — os
+  dois sítios com o SQL completo aqui no repositório — estão bem fechados:
+  RLS ligado, só para contas autenticadas, e o autor de cada carta vem
+  sempre do servidor (`auth.uid()`), nunca do que o browser manda, por isso
+  ninguém consegue escrever a fingir ser o outro.
+- **Ponto cego real: `bibi/placar.sql`** (as tabelas dos jogos e placares)
+  está no `.gitignore` e nunca chegou a este repositório — não há como eu
+  confirmar que tem as mesmas proteções da `cartas` (RLS só para contas
+  autenticadas, autor preenchido pelo servidor). Pelo que o site manda,
+  parece seguir o mesmo padrão seguro, mas isto precisa de ser confirmado
+  a olhar para o SQL real no painel do Supabase — ou, melhor ainda,
+  versionar uma cópia desse ficheiro (já sem segredos, é só estrutura de
+  tabela) para deixar de ser um ponto cego.
+- **A verificação mais importante de todas não dá para fazer por código:**
+  no painel do Supabase, em Authentication, confirma que "permitir novas
+  contas" continua desligado. Enquanto isso estiver desligado, só as duas
+  contas de sempre entram. Se algum dia for ligado sem querer, a política
+  de leitura da `cartas` (`for select to authenticated using (true)`) deixa
+  qualquer conta nova ler tudo — por isso este interruptor é o que separa
+  "fechado aos dois" de "aberto a quem se registar".
+- Corrigido de qualquer forma, por segurança extra: o valor de cada jogador
+  na tabela do placar (`Placar.render`, `java-bancada.html` à volta da linha
+  2861) ia direto para `innerHTML` sem passar pelo `esc()` que o resto da
+  página usa. Hoje em dia o valor chega sempre como número, então não dá
+  para explorar isto através do próprio site — mas se a tabela do placar
+  não tiver a coluna bem tipada (o tal ponto cego de cima), uma das duas
+  contas podia mandar uma string feita à medida direto para a API e pôr
+  código a correr no ecrã da outra. Sem custo nenhum corrigir já, por isso
+  corrigi.
+
+## A confirmares tu, quando decidires (nada disto foi feito)
+
+1. Confirmar no painel do Supabase que o registo de contas novas continua
+   desligado (o ponto mais importante da lista acima).
+2. Ver o SQL real de `bibi/placar.sql` no Supabase e confirmar que segue o
+   mesmo padrão da `cartas` — e considerar versionar uma cópia sem segredos
+   dele aqui, para deixar de ser um ponto cego em auditorias futuras.
+3. Não encontrei nenhuma tabela `swandoku` a ser chamada pelo site (o nome
+   só aparece como valor dentro das linhas de `partidas`) — vale a pena
+   confirmares se essa tabela ainda existe mesmo no Supabase ou se é sobra
+   de uma versão antiga.
+4. Uma ideia para o `notaFinal.java` não se repetir: um exercício novo só
+   aparece na bancada quando alguém se lembra de o acrescentar a duas
+   listas (`EXERCISES` e `CUTE`) à mão. Dava para a bancada avisar sozinha
+   quando um ficheiro em `exercicios/*.java` tem commit mas não está em
+   nenhuma das duas listas — pequeno, mas evita que isto volte a acontecer
+   caladinho.
+
+---
+
 # Sugestões — 2026-09-16
 
 Rascunho de coisas que valeria a pena mudar. Nada disto foi feito — é para
