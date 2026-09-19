@@ -2205,7 +2205,8 @@ const CUTE = {
   "aquecimento1.java":["Aquecimento","O programa insiste até lhe darem uma idade que faça sentido."],
   "excontagem.java":["Contar com paciência","Pede um número e conta até lá, mostrando só os pares."],
   "somapares.java":["Somar os pares","Soma todos os números pares até um número. Contas de cabeça? Já não é com ele."],
-  "somaintervalo.java":["Somar entre dois números","Soma os pares entre dois números. Este deu luta, mas ele ganhou."]
+  "somaintervalo.java":["Somar entre dois números","Soma os pares entre dois números. Este deu luta, mas ele ganhou."],
+  "notafinal.java":["Notas de A a F","Um switch que insiste até receber uma nota válida — maiúscula ou não, tanto faz."]
 };
 
 /* ---------- utilidades partilhadas ---------- */
@@ -5481,10 +5482,19 @@ function initMusica(hearts, centerOf){
   const PLAY = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5v14l11-7Z" fill="currentColor"/></svg>';
   let estado = "inicio", rondas = [], r = 0, pontos = 0, acertos = 0, restante = 0, raf = 0, last = 0, visivel = false;
 
+  // o recorde da conta (placar partilhado) manda; "saved.best" é só o retrocesso
+  // para quando não há sessão — como no Swanrejas, sem isto um aparelho partilhado
+  // pelos dois mostra a um o recorde que o outro fez lá
+  function meuRecorde(){
+    const me = Conta.user();
+    if(me && Placar.ligado()){ const rec = Placar.recordes("musica", 0)[me.nome]; if(rec !== null && rec !== undefined) return rec; }
+    return saved.best || 0;
+  }
   function hud(){
     const jogo = estado === "pergunta" || estado === "resposta";
     $("#muRound").textContent = jogo ? `pergunta ${r + 1} de ${RONDAS}` : `${RONDAS} perguntas · ${SEGUNDOS} segundos cada`;
-    $("#muScore").innerHTML = jogo || estado === "fim" ? `<b class="num">${pontos}</b> pontos` : saved.best ? `recorde <b class="num">${saved.best}</b>` : "";
+    const recordeAtual = meuRecorde();
+    $("#muScore").innerHTML = jogo || estado === "fim" ? `<b class="num">${pontos}</b> pontos` : recordeAtual ? `recorde <b class="num">${recordeAtual}</b>` : "";
     if(!jogo) fuse.style.transform = "scaleX(0)";
     if(jogo || estado === "fim") Sala.poe({jogo:{j:"musica", s:pontos, r:r + 1, e:jogo ? "a jogar" : "acabou", em:Date.now()}});
   }
@@ -5538,9 +5548,9 @@ function initMusica(hearts, centerOf){
   }
   async function fim(){
     estado = "fim"; hud();
-    const recorde = pontos > saved.best;
-    if(recorde){ saved.best = pontos; st.set(saved); }
-    const antes = recorde && pontos ? "Novo recorde neste aparelho. " : "";
+    const recorde = pontos > meuRecorde();
+    if(pontos > (saved.best || 0)){ saved.best = pontos; st.set(saved); }
+    const antes = recorde && pontos ? "Novo recorde! " : "";
     body.innerHTML = `<p class="script">${acertos >= 6 ? "que ouvido" : acertos >= 3 ? "nada mal" : "fica para a próxima"}</p>
       <h3>Acertaste ${acertos} de ${RONDAS}: ${pontos} pontos</h3>
       <p class="mu-msg" id="muPlacar">${antes}A pôr no placar…</p>
