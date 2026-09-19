@@ -2858,7 +2858,7 @@ const Placar = (() => {
         // quem está a perder nesta categoria pode pedir revanche ao outro, com uma carta já escrita
         const pede = me && me.nome === j && w && w !== j;
         const rv = pede ? `<button type="button" class="pl-rev" data-rev="${idCat(c)}" ${revEnviada(c) ? "disabled" : ""}>${revEnviada(c) ? "carta enviada" : "Revanche"}</button>` : "";
-        return `<div class="pl-v ${w === j ? "win" : ""} ${none ? "none" : ""}"><span class="pl-main"><b>${main}</b>${sub ? `<small>${sub}</small>` : ""}${aberto}</span>${rv}</div>`;
+        return `<div class="pl-v ${w === j ? "win" : ""} ${none ? "none" : ""}"><span class="pl-main"><b>${esc(main)}</b>${sub ? `<small>${sub}</small>` : ""}${aberto}</span>${rv}</div>`;
       };
       const legenda = c.jogo === "swandoku" ? (view === "semana" ? "dias ganhos" : "melhor tempo") : (view === "semana" ? "melhor da semana" : "recorde");
       return `<li>${cell("bibi")}<div class="pl-cat">${c.nome}<small>${legenda}</small></div>${cell("louzy")}</li>`;
