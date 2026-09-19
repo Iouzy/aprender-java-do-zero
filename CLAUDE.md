@@ -29,6 +29,13 @@ O estado guarda-se sozinho (ver `ferramentas/README.md`):
 Durante a aula, **nunca lhe pedir para escrever ou atualizar ficheiros de
 estado**. Pedir-lhe notas é trabalho de escriturário e ele não o vai fazer.
 
+Quando um exercício novo for commitado, correr `python3 exercicios-atualizar.py`
+na sessão que tiver o repo à mão. Lê a pasta `exercicios/` e reescreve a lista
+do separador Exercícios entre os marcadores `@EXERCICIOS`. Sem isso o ficheiro
+fica no repo e nunca aparece na bancada — foi o que aconteceu ao `notaFinal.java`
+durante três dias. O script avisa (e devolve 1) quando um exercício entra sem
+descrição: escreve-a no campo `"d"` do HTML e volta a correr.
+
 ### Dono de cada ficheiro — nunca dois escribas
 
 | Ficheiro | Quem escreve |
@@ -37,6 +44,7 @@ estado**. Pedir-lhe notas é trabalho de escriturário e ele não o vai fazer.
 | `sessoes/notas-hoje.md` | o tutor da aula (ver abaixo), ou o Leonardo |
 | `sessoes/conversas/AAAA-MM-DD.txt` | uma colagem do Leonardo, se lhe apetecer |
 | `ESTADO.md`, `sessoes/AAAA-MM-DD.md`, `HISTORICO.md`, `ERROS.md` | **só a Routine noturna** |
+| a lista de exercícios do `java-bancada.html` | o `exercicios-atualizar.py` |
 
 Uma sessão de Claude Code **não** escreve os quatro últimos, mesmo no fecho.
 Se ele pedir explicitamente ("escreve tu o ESTADO agora"), fazer — e dizer-lhe
